@@ -31,13 +31,25 @@
                 <div class="w-10 h-10 bg-brgyGreen rounded-lg flex items-center justify-center font-bold text-white shadow-sm">417</div>
                 <span class="font-bold tracking-tight text-brgyGreen uppercase">Barangay 417</span>
             </div>
-            <div class="hidden md:flex gap-8 text-sm font-medium uppercase tracking-wider">
-                <a href="#" class="hover:text-brgyGreen transition">Home</a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium uppercase tracking-wider">
+                <a href="#" class="hover:text-brgyGreen transition">Dashboard</a>
                 <a href="#services" class="hover:text-brgyGreen transition">Services</a>
                 <a href="#officials" class="hover:text-brgyGreen transition">Officials</a>
                 <a href="#schedule" class="hover:text-brgyGreen transition">Schedule</a>
                 <a href="#" class="text-brgyGreen font-bold border-b-2 border-brgyGreen">Contact</a>
-            </div>
+                
+                @if (Route::has('login'))
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="ml-4 px-5 py-2 bg-brgyNavy text-white rounded-full text-xs font-bold hover:bg-brgyGreen transition-all shadow-md">
+                            Go to Dashboard
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="ml-4 px-5 py-2 bg-brgyGreen text-white rounded-full text-xs font-bold hover:bg-brgyNavy transition-all shadow-md">
+                            Member Login
+                        </a>
+                    @endauth
+                @endif
+                </div>
         </div>
     </nav>
 
@@ -134,55 +146,8 @@
         </div>
     </section>
 
-    <section id="schedule" class="py-24 bg-white">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="mb-16 text-center">
-                <div class="w-12 h-1 bg-brgyGold mb-4 mx-auto"></div>
-                <h2 class="text-3xl font-bold text-brgyGreen uppercase tracking-widest">Schedule of Activities</h2>
-                <p class="text-slate-500 mt-2">Stay updated with our upcoming community events and programs.</p>
-            </div>
-
-            <div class="space-y-6">
-                <div class="flex flex-col md:flex-row gap-6 p-6 bg-slate-50 border-l-4 border-brgyGreen rounded-r-xl shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex-shrink-0 w-24 h-24 bg-brgyGreen text-white rounded-lg flex flex-col items-center justify-center shadow-inner">
-                        <span class="text-xs uppercase font-bold opacity-80">Jan</span>
-                        <span class="text-3xl font-black">28</span>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 bg-brgyGold/20 text-brgyGreen text-[10px] font-bold uppercase rounded">Health</span>
-                            <span class="text-slate-400 text-sm italic">8:00 AM - 12:00 PM</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-brgyNavy">Community General Cleaning</h3>
-                        <p class="text-slate-600 mt-2 text-sm leading-relaxed">
-                            Join us for our monthly clean-up drive starting at the Barangay Hall.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-6 p-6 bg-slate-50 border-l-4 border-brgyGold rounded-r-xl shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex-shrink-0 w-24 h-24 bg-brgyNavy text-white rounded-lg flex flex-col items-center justify-center shadow-inner">
-                        <span class="text-xs uppercase font-bold opacity-80">Feb</span>
-                        <span class="text-3xl font-black">05</span>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 bg-brgyGold/20 text-brgyGreen text-[10px] font-bold uppercase rounded">Meeting</span>
-                            <span class="text-slate-400 text-sm italic">2:00 PM</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-brgyNavy">Monthly Town Hall Meeting</h3>
-                        <p class="text-slate-600 mt-2 text-sm leading-relaxed">
-                            Open forum regarding upcoming summer youth programs and infrastructure projects.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <footer class="bg-[#1e3d1a] text-white pt-16 pb-8 border-t border-white/10">
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
-            
             <div class="space-y-4">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 bg-brgyGold rounded flex items-center justify-center font-bold text-brgyGreen text-sm">417</div>
@@ -197,7 +162,7 @@
             <div>
                 <h4 class="font-bold text-brgyGold uppercase tracking-widest text-xs mb-6">Quick Navigation</h4>
                 <ul class="space-y-3 text-sm text-slate-300">
-                    <li><a href="#" class="hover:text-brgyGold transition">Home</a></li>
+                    <li><a href="{{ route('dashboard') }}" class="hover:text-brgyGold transition">Dashboard</a></li>
                     <li><a href="#services" class="hover:text-brgyGold transition">Barangay Services</a></li>
                     <li><a href="#officials" class="hover:text-brgyGold transition">Elected Officials</a></li>
                     <li><a href="#schedule" class="hover:text-brgyGold transition">Announcements</a></li>
@@ -222,7 +187,6 @@
                 </ul>
             </div>
         </div>
-
         <div class="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-white/5 text-center text-xs text-slate-400">
             <p>&copy; 2026 Barangay 417, Zone 43. All Rights Reserved.</p>
         </div>
