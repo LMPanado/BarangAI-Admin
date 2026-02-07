@@ -2,12 +2,13 @@
 
 @section('content')
 {{-- 
-    We use 'p-6' to create a consistent outer gutter and 'space-y-6' 
-    to ensure uniform vertical gaps between the header and the grid.
+    This container is the key to consistency. 
+    p-6: Standard gutter. 
+    space-y-6: Matches the vertical rhythm of your other pages.
 --}}
 <div class="p-6 bg-[#f4f7fe] min-h-screen font-sans space-y-6">
     
-    {{-- Header Section - Standardized Placement --}}
+    {{-- Header Section - Standardized Position --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 class="text-xl font-bold text-gray-800">Event Scheduler</h1>
@@ -25,9 +26,8 @@
         </div>
     </div>
 
-    {{-- Main Content Grid --}}
+    {{-- Content Grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {{-- Main Calendar Card --}}
         <div class="lg:col-span-3 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
             {{-- Calendar Header --}}
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
@@ -46,6 +46,7 @@
                 </div>
             </div>
 
+            {{-- Calendar Days Grid --}}
             <div class="grid grid-cols-7">
                 @foreach(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as $dayName)
                     <div class="p-3 text-center bg-gray-50 border-b border-r border-gray-100">
@@ -81,13 +82,9 @@
                             @foreach($dayEvents as $event)
                                 <div class="group/item flex flex-col bg-blue-50 border-l-2 border-blue-500 px-1.5 py-1 rounded-sm relative">
                                     <div class="flex justify-between items-start">
-                                        <span class="text-[8px] leading-tight font-black text-blue-400 uppercase">
+                                        <span class="text-[8px] font-black text-blue-400 uppercase">
                                             {{ \Carbon\Carbon::parse($event->schedule_time)->format('g:i A') }}
                                         </span>
-                                        <form action="{{ route('admin.schedules.destroy', $event->id) }}" method="POST" onclick="event.stopPropagation();">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-blue-300 hover:text-red-500 text-[9px]" onclick="return confirm('Delete event?')">✕</button>
-                                        </form>
                                     </div>
                                     <span class="text-[9px] font-bold text-blue-800 truncate uppercase mt-0.5">{{ $event->title }}</span>
                                 </div>
