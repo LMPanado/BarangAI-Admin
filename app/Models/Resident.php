@@ -9,25 +9,33 @@ class Resident extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-protected $fillable = [
-    'first_name', 
-    'last_name', 
-    'middle_name', 
-    'email', 
-    'phone', 
-    'age', 
-    'gender', 
-    'civil_status', 
-    'birth_date', 
-    'place_birth', 
-    'height_cm', 
-    'weight_kg', 
-    'address', 
-    'is_voter'
-];
+    protected $fillable = [
+        'user_id',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'suffix',
+        'email',
+        'phone',
+        'age',
+        'gender',
+        'civil_status',
+        'address',
+        'is_voter',
+        'birth_date',
+        'place_birth',
+        'height_cm',
+        'weight_kg',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Addition: Link back to requests
+    public function documentRequests()
+    {
+        return $this->hasMany(DocumentRequest::class, 'resident_id');
+    }
 }

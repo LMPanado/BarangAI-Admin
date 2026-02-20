@@ -1,66 +1,62 @@
 @extends('layouts.admin')
 
 @section('content')
-{{-- 
-    This container is the key to consistency. 
-    p-6: Standard gutter. 
-    space-y-6: Matches the vertical rhythm of your other pages.
---}}
-<div class="p-6 bg-[#f4f7fe] min-h-screen font-sans space-y-6">
+<div class="space-y-8 p-4 font-sans">
     
-    {{-- Header Section - Standardized Position --}}
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    {{-- Page Header --}}
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-8">
         <div>
-            <h1 class="text-xl font-bold text-gray-800">Event Scheduler</h1>
-            <p class="text-sm text-gray-500">Real-time barangay operations and activity calendar.</p>
+            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight text-left">Event Scheduler</h1>
+            <p class="text-slate-500 text-sm mt-1 font-medium">Real-time operations for <span class="text-barangayGreen font-bold">Barangay 419</span>.</p>
         </div>
         
-        <div class="flex flex-col items-end gap-1">
-            <div class="text-[12px] text-gray-400">
-                Home / <span class="text-[#3b82f6]">Schedules</span>
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <div class="flex bg-white p-1 rounded-2xl border-2 border-slate-100 shadow-sm">
+                <a href="{{ route('admin.schedules.index', ['month' => $prevDate->month, 'year' => $prevDate->year]) }}" 
+                   class="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-barangayGreen">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+                <div class="px-4 flex items-center justify-center min-w-[140px]">
+                    <span class="text-xs font-black uppercase tracking-widest text-slate-700">{{ $selectedDate->format('F Y') }}</span>
+                </div>
+                <a href="{{ route('admin.schedules.index', ['month' => $nextDate->month, 'year' => $nextDate->year]) }}" 
+                   class="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-barangayGreen">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
             </div>
+
             <a href="{{ route('admin.schedules.index') }}" 
-               class="text-[11px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-tight transition-colors">
-                Back to Today
+               class="w-full sm:w-auto bg-slate-800 text-white px-8 py-3.5 text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-black shadow-lg transition-all text-center">
+                Today
             </a>
         </div>
     </div>
 
     {{-- Content Grid --}}
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div class="lg:col-span-3 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-            {{-- Calendar Header --}}
-            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
-                <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide">
-                    {{ $selectedDate->format('F Y') }}
-                </h2>
-                <div class="flex space-x-2">
-                    <a href="{{ route('admin.schedules.index', ['month' => $prevDate->month, 'year' => $prevDate->year]) }}" 
-                       class="px-3 py-1 text-xs border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors">
-                       &larr; Previous
-                    </a>
-                    <a href="{{ route('admin.schedules.index', ['month' => $nextDate->month, 'year' => $nextDate->year]) }}" 
-                       class="px-3 py-1 text-xs border border-gray-200 rounded hover:bg-gray-50 text-gray-600 transition-colors">
-                       Next &rarr;
-                    </a>
-                </div>
-            </div>
-
-            {{-- Calendar Days Grid --}}
-            <div class="grid grid-cols-7">
-                @foreach(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as $dayName)
-                    <div class="p-3 text-center bg-gray-50 border-b border-r border-gray-100">
-                        <span class="text-[10px] font-bold text-gray-400 tracking-widest">{{ $dayName }}</span>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        {{-- Calendar Main --}}
+        <div class="lg:col-span-3 bg-white rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden">
+            <div class="grid grid-cols-7 border-b border-slate-100">
+                @foreach(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $dayName)
+                    <div class="py-5 text-center bg-slate-50/50">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ $dayName }}</span>
                     </div>
                 @endforeach
+            </div>
 
+            <div class="grid grid-cols-7">
                 @php
                     $daysInMonth = $selectedDate->daysInMonth;
                     $firstDayOfWeek = $selectedDate->dayOfWeek;
                 @endphp
 
                 @for($i = 0; $i < $firstDayOfWeek; $i++)
-                    <div class="h-32 border-b border-r border-gray-50 bg-gray-50/30"></div>
+                    <div class="h-40 border-b border-r border-slate-50 bg-slate-50/20"></div>
                 @endfor
 
                 @for($day = 1; $day <= $daysInMonth; $day++)
@@ -72,21 +68,23 @@
                     @endphp
                     
                     <div onclick="openModal('{{ $dateString }}')" 
-                         class="h-32 p-2 border-b border-r border-gray-100 hover:bg-blue-50/30 cursor-pointer transition-all group overflow-hidden {{ $isToday ? 'bg-blue-50/20' : '' }}">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-xs font-semibold {{ $isToday ? 'bg-blue-600 text-white px-1.5 rounded-full' : ($dayEvents->count() > 0 ? 'text-blue-600' : 'text-gray-400') }}">
+                         class="h-40 p-4 border-b border-r border-slate-50 hover:bg-slate-50/50 cursor-pointer transition-all group overflow-hidden relative">
+                        
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-black {{ $isToday ? 'bg-barangayGreen text-white w-8 h-8 flex items-center justify-center rounded-xl shadow-lg shadow-barangayGreen/30' : 'text-slate-400 group-hover:text-barangayGreen' }}">
                                 {{ $day }}
                             </span>
                         </div>
-                        <div class="space-y-1 overflow-y-auto max-h-[80px] scrollbar-hide">
+
+                        <div class="space-y-2 overflow-y-auto max-h-[85px] scrollbar-hide">
                             @foreach($dayEvents as $event)
-                                <div class="group/item flex flex-col bg-blue-50 border-l-2 border-blue-500 px-1.5 py-1 rounded-sm relative">
-                                    <div class="flex justify-between items-start">
-                                        <span class="text-[8px] font-black text-blue-400 uppercase">
-                                            {{ \Carbon\Carbon::parse($event->schedule_time)->format('g:i A') }}
-                                        </span>
+                                <div class="bg-white border border-slate-100 p-2 rounded-xl shadow-sm group-hover:border-barangayGreen/30 transition-all">
+                                    <div class="text-[8px] font-black text-barangayGreen uppercase tracking-tighter mb-0.5">
+                                        {{ \Carbon\Carbon::parse($event->schedule_time)->format('g:i A') }}
                                     </div>
-                                    <span class="text-[9px] font-bold text-blue-800 truncate uppercase mt-0.5">{{ $event->title }}</span>
+                                    <div class="text-[10px] font-bold text-slate-700 truncate leading-tight uppercase">
+                                        {{ $event->title }}
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -97,25 +95,42 @@
 
         {{-- Sidebar --}}
         <div class="space-y-6">
-            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
-                <h3 class="text-xs font-bold text-gray-700 uppercase mb-4 border-b border-gray-50 pb-2">Upcoming Activities</h3>
-                <div class="space-y-4">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8 border-b border-slate-50 pb-4">Upcoming Activities</h3>
+                
+                <div class="space-y-8">
                     @forelse($upcomingActivities as $upcoming)
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-blue-600 text-white p-2 rounded text-[10px] font-bold text-center leading-tight min-w-[42px] shadow-sm">
-                                {{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('d') }}<br>
-                                <span class="opacity-75 uppercase">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('M') }}</span>
+                        <div class="flex items-center space-x-4 group">
+                            <div class="bg-slate-50 group-hover:bg-barangayGreen transition-all p-3 rounded-2xl text-center min-w-[55px]">
+                                <div class="text-sm font-black text-slate-800 group-hover:text-white leading-none">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('d') }}</div>
+                                <div class="text-[9px] font-black text-slate-400 group-hover:text-white/80 uppercase mt-1">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('M') }}</div>
                             </div>
                             <div class="overflow-hidden">
-                                <p class="text-[11px] font-bold text-gray-800 truncate uppercase">{{ $upcoming->title }}</p>
-                                <p class="text-[10px] text-blue-500 font-medium">
+                                <p class="text-[11px] font-black text-slate-800 truncate uppercase tracking-tight group-hover:text-barangayGreen transition-colors">{{ $upcoming->title }}</p>
+                                <p class="text-[10px] text-slate-400 font-bold mt-0.5">
                                     {{ \Carbon\Carbon::parse($upcoming->schedule_time)->format('g:i A') }}
                                 </p>
                             </div>
                         </div>
                     @empty
-                        <p class="text-xs text-gray-400 italic text-center py-4">No events scheduled</p>
+                        <div class="text-center py-10">
+                            <div class="text-slate-200 mb-2 font-black text-4xl">!</div>
+                            <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Events Found</p>
+                        </div>
                     @endforelse
+                </div>
+            </div>
+
+            {{-- New Event Prompt --}}
+            <div class="bg-barangayGreen p-8 rounded-[2.5rem] shadow-lg shadow-barangayGreen/20 text-white relative overflow-hidden group">
+                <div class="relative z-10">
+                    <h4 class="text-sm font-black uppercase tracking-widest mb-2">New Schedule?</h4>
+                    <p class="text-white/70 text-[10px] font-medium leading-relaxed mb-4">Click any date on the calendar to add a new event or operation.</p>
+                </div>
+                <div class="absolute -right-4 -bottom-4 text-white/10 group-hover:scale-110 transition-transform duration-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                 </div>
             </div>
         </div>
@@ -127,12 +142,19 @@
 <script>
     function openModal(date) {
         document.getElementById('modal_date').value = date;
-        document.getElementById('scheduleModal').classList.remove('hidden');
-        document.getElementById('scheduleModal').classList.add('flex');
+        const modal = document.getElementById('scheduleModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex', 'animate-in', 'fade-in', 'duration-300');
     }
     function closeModal() {
-        document.getElementById('scheduleModal').classList.add('hidden');
-        document.getElementById('scheduleModal').classList.remove('flex');
+        const modal = document.getElementById('scheduleModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
     }
 </script>
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 @endsection

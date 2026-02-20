@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -21,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',     // Added 'role' if you use it for admin/client split
+        'is_admin', 
     ];
 
     /**
@@ -43,6 +46,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the resident profile associated with the user.
+     * * This is the "Inverse" of the relationship in Resident.php
+     */
+    public function resident(): HasOne
+    {
+        return $this->hasOne(Resident::class);
     }
 }

@@ -1,38 +1,77 @@
 <?php
 
+use App\Models\Resident; 
+use App\Models\DocumentRequest;
+use App\Models\User;
+use App\Models\Schedule;
 use App\Http\Controllers\Admin\ResidentController;
 use App\Http\Controllers\Admin\ScheduleController;
-use Illuminate\Support\Facades\Route;
-use App\Models\Resident; 
 use App\Http\Controllers\Admin\DocumentRequestController;
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\AuthController; 
+use Illuminate\Support\Facades\Route;
 
-Route::get('/admin/documents', [DocumentRequestController::class, 'index'])->name('admin.documents.index');
-Route::get('/admin/documents/create/{id}', [DocumentRequestController::class, 'create'])->name('admin.documents.create');
+/*
+|--------------------------------------------------------------------------
+| Public / Client Routes
+|--------------------------------------------------------------------------
+*/
 
-// Public routes
-Route::get('/', function () {
-    return redirect()->route('login');
+Route::get('/', [HomeController::class, 'index'])->name('client.index');
+Route::get('/services', [HomeController::class, 'services'])->name('services');
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+
+    Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
+    Route::post('/admin/login', [AuthController::class, 'login']);
 });
 
-require __DIR__.'/auth.php';
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Protected Admin Routes
-Route::middleware(['auth', 'App\Http\Middleware\AdminMiddleware'])->prefix('admin')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Protected Resident Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/request-document', [HomeController::class, 'requestDocument'])->name('client.request');
+    Route::post('/request-document', [HomeController::class, 'storeDocumentRequest'])->name('client.request.store');
+
+    // FIXED: Ensured these names match your navbar route() calls exactly
+    Route::get('/profile', [HomeController::class, 'profile'])->name('client.profile');
+    Route::get('/my-requests', [HomeController::class, 'requests'])->name('client.requests');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Protected Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->group(function () {
     
-    // 1. Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard', [
             'totalPopulation' => Resident::count(),
             'maleCount'       => Resident::where('gender', 'Male')->count(),
             'femaleCount'     => Resident::where('gender', 'Female')->count(),
             'voterCount'      => Resident::where('is_voter', true)->count(),
-            'pendingRequests' => 0, 
+            'pendingRequests' => DocumentRequest::where('status', 'pending')->count(), 
         ]);
     })->name('dashboard');
 
-    // 2. Resident Management
-    // Removed the 'admin.' from inside the group name because the prefix 'admin' 
-    // combined with 'residents' already creates the logical structure.
     Route::prefix('residents')->name('admin.residents.')->group(function() {
         Route::get('/', [ResidentController::class, 'index'])->name('index');
         Route::get('/create', [ResidentController::class, 'create'])->name('create');
@@ -42,11 +81,15 @@ Route::middleware(['auth', 'App\Http\Middleware\AdminMiddleware'])->prefix('admi
         Route::delete('/{resident}', [ResidentController::class, 'destroy'])->name('destroy');
     });
 
-    // 3. Schedules
-    // This will now result in URL: /admin/schedules and Name: admin.schedules.index
     Route::prefix('schedules')->name('admin.schedules.')->group(function () {
         Route::get('/', [ScheduleController::class, 'index'])->name('index');
         Route::post('/', [ScheduleController::class, 'store'])->name('store');
         Route::delete('/{schedule}', [ScheduleController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('documents')->name('admin.documents.')->group(function () {
+        Route::get('/', [DocumentRequestController::class, 'index'])->name('index');
+        Route::get('/issuance/{id}', [DocumentRequestController::class, 'issuance'])->name('issuance');
+        Route::patch('/{id}/status', [DocumentRequestController::class, 'updateStatus'])->name('updateStatus');
     });
 });
