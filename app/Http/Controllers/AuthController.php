@@ -2,75 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function showRegister() 
-    { 
-        return view('auth.register'); 
-    } 
-
-    public function register(Request $request) 
+    /**
+     * Show the login form.
+     * Fixes the "Undefined method showAdminLogin" error.
+     */
+    public function showAdminLogin()
     {
-        $request->validate([
-            'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_admin' => false,
-        ]);
-
-        Auth::login($user);
-        
-        // FIXED: Using route() helper to point to your public index
-        return redirect()->route('client.index')->with('success', 'Account created successfully!');
-    }
-
-    public function showLogin() 
-    { 
+        // Ensure this blade file exists at resources/views/auth/login.blade.php
         return view('auth.login'); 
     }
 
-    public function showAdminLogin() 
-    {
-        return view('admin.login'); 
-    }
-
-    public function login(Request $request) 
+    /**
+     * Handle the login request.
+     */
+    public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            $user = Auth::user();
 
-            if (Auth::user()->is_admin) {
-                return redirect()->route('dashboard');
+            // Role check: 1=Admin, 2=Captain, 3=Official
+            if (in_array((int)$user->role, [1, 2, 3])) {
+                $request->session()->regenerate();
+                return redirect()->intended(route('dashboard'));
             }
 
-            // FIXED: Use route name correctly. intended() takes a URL, route() takes a name.
-            return redirect()->intended(route('client.index'));
+            // If the user role is not staff (e.g., a Resident)
+            Auth::logout();
+            return back()->with('error', 'Residents are not allowed to access the admin portal.');
         }
 
-        return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+        return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
-    public function logout(Request $request) 
+    /**
+     * Handle the logout request.
+     */
+    public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

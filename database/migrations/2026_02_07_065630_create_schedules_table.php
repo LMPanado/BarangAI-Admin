@@ -14,11 +14,12 @@ public function up(): void
     Schema::create('schedules', function (Blueprint $table) {
         $table->id();
         $table->string('title');
-        $table->date('schedule_date'); // The date of the event
-        $table->time('schedule_time')->nullable(); // ADD THIS LINE: Fixes the 'Column not found' error
-        $table->time('schedule_time_to'); // Ensure this exists
-        $table->time('end_time')->nullable();
+        $table->date('schedule_date');
+        $table->time('schedule_time'); 
+        $table->time('schedule_time_to'); // Matches your form 'name' attribute
+        $table->string('location')->nullable(); // Added this because it's in your Model/Controller
         $table->text('description')->nullable();
+        $table->string('image')->nullable();
         $table->timestamps();
     });
 }

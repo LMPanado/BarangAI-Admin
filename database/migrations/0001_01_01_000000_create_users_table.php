@@ -18,7 +18,12 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             
-            // CRITICAL FIX: Add this line so the Seeder can create the Admin account
+            /**
+             * ADDED ROLE COLUMN:
+             * 0: Resident, 1: Admin, 2: Captain, 3: Official
+             */
+            $table->integer('role')->default(0); 
+
             $table->boolean('is_admin')->default(false); 
             
             $table->rememberToken();

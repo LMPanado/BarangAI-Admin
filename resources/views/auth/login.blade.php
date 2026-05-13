@@ -3,100 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Barangay 419</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brgyGreen: '#2d5a27',
-                        brgyGold: '#f1c40f',
-                        darkGreen: '#1e3d1a'
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    }
-                }
-            }
+    <title>Admin Login | Barangay 419</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
         }
-    </script>
+
+        .brgy-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        .input-field {
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            background: white;
+            border-color: #1e3d1a;
+            box-shadow: 0 0 0 4px rgba(30, 61, 26, 0.05);
+        }
+
+        .btn-primary {
+            background-color: #1e3d1a;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2d5a27;
+            transform: translateY(-1px);
+        }
+    </style>
 </head>
-<body class="bg-[#f8fafc] min-h-screen flex items-center justify-center p-4">
-
-    <a href="/" class="absolute top-8 left-8 text-sm font-semibold text-slate-500 hover:text-brgyGreen transition flex items-center gap-2 group">
-        <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to Home
-    </a>
-
-    <div class="max-w-4xl w-full bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+<body class="antialiased text-slate-900">
+    <div class="min-h-screen flex flex-col items-center justify-center px-6">
         
-        <div class="md:w-5/12 bg-brgyGreen relative flex items-center justify-center p-12 overflow-hidden">
-            <div class="absolute inset-0 opacity-20">
-                <div class="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-white blur-3xl"></div>
-                <div class="absolute -bottom-24 -right-24 w-64 h-64 rounded-full bg-brgyGold blur-3xl"></div>
-            </div>
-            
-            <div class="relative z-10 text-center">
-                <div class="w-20 h-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center font-bold text-white shadow-2xl mx-auto mb-6 text-3xl">
-                    419
-                </div>
-                <h1 class="text-white text-3xl font-bold tracking-tight mb-4">Official Resident Portal</h1>
-                <p class="text-white/70 text-sm leading-relaxed font-light">
-                    Access your documents, view community updates, and stay connected with Zone 43.
-                </p>
-            </div>
+        {{-- Header --}}
+        <div class="mb-8 text-center">
+            <a href="/">
+                <img src="{{ asset('images/brgy_logo.png') }}" 
+                     class="w-20 h-20 mx-auto mb-4 drop-shadow-sm" 
+                     alt="Logo">
+            </a>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-800">Admin Login</h1>
+            <p class="text-slate-500 text-sm mt-1 font-medium">Barangay 419 Management System</p>
         </div>
 
-        <div class="md:w-7/12 p-8 md:p-16 flex flex-col justify-center">
-            <div class="mb-10">
-                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Welcome Back</h2>
-                <p class="text-slate-500 mt-2 font-medium">Please enter your details to sign in.</p>
-            </div>
+        {{-- Login Card --}}
+        <div class="w-full max-w-[400px] brgy-card p-8 sm:p-10 rounded-[2rem]">
+            
+            @if ($errors->any())
+                <div class="mb-6 p-3 rounded-xl bg-red-50 border border-red-100 text-[10px] font-bold text-red-600 text-center uppercase tracking-wider">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
-            <form action="{{ route('login') }}" method="POST" class="space-y-6">
+            <form method="POST" action="{{ route('login.post') }}" class="space-y-6">
                 @csrf
-                
+
+                {{-- Email --}}
                 <div class="space-y-2">
-                    <label class="block text-sm font-semibold text-slate-700 ml-1">Email Address</label>
-                    <input type="email" name="email" 
-                        class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-brgyGreen/10 focus:border-brgyGreen focus:bg-white outline-none transition-all duration-200 placeholder:text-slate-400" 
-                        placeholder="name@email.com"
-                        required>
+                    <label for="email" class="text-[11px] font-bold uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
+                    <input id="email" 
+                           class="input-field block w-full rounded-xl py-3.5 px-5 outline-none text-sm" 
+                           type="email" 
+                           name="email" 
+                           placeholder="admin@barangay419.ph"
+                           value="{{ old('email') }}" 
+                           required autofocus />
                 </div>
 
+                {{-- Password --}}
                 <div class="space-y-2">
                     <div class="flex justify-between items-center ml-1">
-                        <label class="text-sm font-semibold text-slate-700">Password</label>
-                        <a href="#" class="text-xs font-bold text-brgyGreen hover:text-brgyGold transition">Forgot Password?</a>
+                        <label for="password" class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Password</label>
+                        <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-[#1e3d1a] transition-colors uppercase tracking-widest">Forgot Password?</a>
                     </div>
-                    <input type="password" name="password" 
-                        class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-brgyGreen/10 focus:border-brgyGreen focus:bg-white outline-none transition-all duration-200 placeholder:text-slate-400" 
-                        placeholder="••••••••"
-                        required>
+                    <input id="password" 
+                           class="input-field block w-full rounded-xl py-3.5 px-5 outline-none text-sm"
+                           type="password"
+                           name="password"
+                           placeholder="••••••••••••"
+                           required />
                 </div>
 
-                <div class="flex items-center gap-2 ml-1">
-                    <input type="checkbox" id="remember" class="w-4 h-4 rounded text-brgyGreen focus:ring-brgyGreen">
-                    <label for="remember" class="text-sm text-slate-600 cursor-pointer">Remember this device</label>
+                {{-- Action Button --}}
+                <div class="pt-2">
+                    <button type="submit" class="btn-primary w-full text-white font-bold py-4 rounded-xl shadow-lg shadow-green-900/10 active:scale-[0.98]">
+                        Sign In
+                    </button>
                 </div>
-
-                <button type="submit" 
-                    class="w-full py-4 bg-brgyGreen text-white font-bold rounded-2xl hover:bg-darkGreen transition-all duration-300 shadow-lg shadow-brgyGreen/20 hover:shadow-xl active:scale-[0.98] uppercase tracking-widest text-xs">
-                    Sign In
-                </button>
             </form>
-
-            <div class="mt-10 pt-8 border-t border-slate-100 text-center">
-                <p class="text-slate-500 text-sm font-medium">
-                    New resident? 
-                    <a href="{{ route('register') }}" class="text-brgyGreen font-bold hover:underline decoration-brgyGold decoration-2 underline-offset-4 transition-all">
-                        Create an account
-                    </a>
-                </p>
-            </div>
         </div>
-    </div>
 
+        {{-- Simple Back Link --}}
+        <a href="/" class="mt-8 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-[#1e3d1a] transition-colors">
+            ← Back to Home
+        </a>
+    </div>
 </body>
 </html>

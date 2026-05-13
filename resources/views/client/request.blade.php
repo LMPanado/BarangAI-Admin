@@ -33,7 +33,7 @@
                 </div>
                 @endif
 
-                {{-- ERROR MESSAGE BLOCK (Crucial for troubleshooting) --}}
+                {{-- ERROR MESSAGE BLOCK --}}
                 @if($errors->any())
                 <div class="mb-10 p-5 bg-red-50 border-l-4 border-red-500 rounded-r-2xl">
                     <div class="flex items-center mb-3">
@@ -48,7 +48,8 @@
                 </div>
                 @endif
 
-                <form action="{{ route('client.request.store') }}" method="POST" class="space-y-10">
+                {{-- Added enctype for file uploads --}}
+                <form action="{{ route('client.request.store') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
                     @csrf
                     
                     <div class="relative group">
@@ -61,6 +62,8 @@
                                 <option value="clearance" {{ old('document_type') == 'clearance' ? 'selected' : '' }}>Barangay Clearance</option>
                                 <option value="residency" {{ old('document_type') == 'residency' ? 'selected' : '' }}>Certificate of Residency</option>
                                 <option value="permit" {{ old('document_type') == 'permit' ? 'selected' : '' }}>Business Permit</option>
+                                <option value="brgyid" {{ old('document_type') == 'brgyid' ? 'selected' : '' }}>Barangay ID</option>
+                                <option value="cedula" {{ old('document_type') == 'cedula' ? 'selected' : '' }}>Cedula</option>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-6 text-brgyGreen">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
@@ -73,6 +76,16 @@
                         <textarea id="purpose" name="purpose" rows="4" required 
                                   placeholder="Provide specific reason (e.g. For Scholarship Application at TESDA)"
                                   class="block w-full px-6 py-5 text-slate-700 bg-slate-50 border-2 {{ $errors->has('purpose') ? 'border-red-200' : 'border-slate-50' }} rounded-2xl focus:outline-none focus:bg-white focus:border-brgyGreen/20 transition-all resize-none font-semibold">{{ old('purpose') }}</textarea>
+                    </div>
+
+                    {{-- NEW: Supporting Document Upload Section --}}
+                    <div>
+                        <label for="supporting_document" class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1">Supporting Document (Any Government Issued-ID)</label>
+                        <div class="relative">
+                            <input type="file" id="supporting_document" name="supporting_document" 
+                                   class="block w-full text-sm text-slate-500 file:mr-6 file:py-4 file:px-8 file:rounded-2xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-brgyGreen/10 file:text-brgyGreen hover:file:bg-brgyGreen/20 transition-all bg-slate-50 border-2 {{ $errors->has('supporting_document') ? 'border-red-200' : 'border-slate-50' }} rounded-2xl cursor-pointer">
+                        </div>
+                        <p class="mt-3 ml-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider italic">Accepted: JPG, PNG, or PDF (Max 2MB)</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -105,7 +118,7 @@
                             <div class="w-10 h-10 rounded-full bg-brgyGreen border-4 border-white flex items-center justify-center text-[10px] text-white font-bold italic">419</div>
                             <div class="w-10 h-10 rounded-full bg-brgyGold border-4 border-white flex items-center justify-center text-[10px] text-brgyGreen font-bold italic">✓</div>
                         </div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Standard 48-Hour Processing</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2"></span>
                     </div>
                     <a href="/" class="text-[10px] font-black text-brgyGreen uppercase tracking-widest hover:text-brgyGold transition-colors">
                         ← Back to Home

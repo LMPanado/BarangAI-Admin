@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barangay 419 | Resident Portal</title>
+    <title>Barangay 419 | Official Information Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/csp@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -28,7 +28,6 @@
     <style>
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
         .hero-gradient { background: linear-gradient(135deg, #2d5a27 0%, #1e3d1a 100%); }
-        /* Prevent flicker before Alpine loads */
         [x-cloak] { display: none !important; }
     </style>
 </head>
@@ -36,50 +35,48 @@
 
     <nav class="fixed top-0 w-full glass shadow-[0_2px_20px_rgba(0,0,0,0.02)] z-50 border-b border-slate-100">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-brgyGreen rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-brgyGreen/20">419</div>
-                <span class="font-extrabold tracking-tight text-brgyGreen text-lg uppercase">Barangay 419</span>
-            </div>
+            {{-- Left Side: Brand --}}
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="relative">
+                    <img src="{{ asset('images/brgy_logo.png') }}" 
+                         alt="Barangay 419 Logo" 
+                         class="w-12 h-12 object-contain rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-extrabold tracking-tight text-brgyGreen text-lg uppercase leading-none">Barangay 419</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Official Information Portal</span>
+                </div>
+            </a>
             
-            <div class="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-600 uppercase tracking-widest">
-                <a href="/" class="hover:text-brgyGreen transition">Home</a>
-                <a href="/#services" class="hover:text-brgyGreen transition">Services</a>
-                <a href="/#officials" class="hover:text-brgyGreen transition">Officials</a>
-                <a href="/#schedule" class="hover:text-brgyGreen transition">Schedule</a>
+            {{-- Right Side: Navigation --}}
+            <div class="hidden md:flex items-center gap-8 text-[11px] font-black text-slate-400 uppercase tracking-widest h-full">
+                <a href="/" class="h-20 flex items-center border-b-2 transition {{ request()->is('/') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen' }}">Home</a>
                 
-                @auth
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open" @click.away="open = false" class="flex items-center gap-2 group focus:outline-none">
-                            <span class="text-slate-700 group-hover:text-brgyGreen transition uppercase tracking-widest">{{ Auth::user()->name }}</span>
-                            <svg class="w-4 h-4 text-slate-400 group-hover:text-brgyGreen transition-transform duration-300" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
+                {{-- Dropdown Services --}}
+                <div class="relative h-20 flex items-center" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                    <button class="flex items-center gap-1 transition hover:text-brgyGreen uppercase tracking-widest cursor-default">
+                        Services
+                        <svg class="w-3 h-3 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
 
-                        <div x-show="open" 
-                             x-cloak
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 scale-95 translate-y-2"
-                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                             x-transition:leave="transition ease-in duration-75"
-                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                             x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-                             class="absolute right-0 mt-4 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50">
-                            
-                            <a href="{{ route('client.requests') }}" class="block px-5 py-3 text-[10px] font-black text-slate-400 hover:text-brgyGreen hover:bg-slate-50 transition uppercase tracking-widest">My Requests</a>
-                            <a href="{{ route('client.profile') }}" class="block px-5 py-3 text-[10px] font-black text-slate-400 hover:text-brgyGreen hover:bg-slate-50 transition uppercase tracking-widest border-b border-slate-50">Profile Settings</a>
-                            
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-5 py-3 text-[10px] font-black text-red-500 hover:bg-red-50 transition uppercase tracking-widest">
-                                    Logout Account
-                                </button>
-                            </form>
-                        </div>
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="absolute top-full left-0 w-64 bg-white shadow-2xl border border-slate-100 rounded-2xl py-3 z-50"
+                         x-cloak>
+                        <a href="{{ route('services.show', 'barangay-id') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Barangay I.D.</a>
+                        <a href="{{ route('services.show', 'business-permit') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Business Permit</a>
+                        <a href="{{ route('services.show', 'cedula') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Cedula</a>
+                        <a href="{{ route('services.show', 'barangay-clearance') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Barangay Clearance</a>
                     </div>
-                @else
-                    <a href="{{ route('login') }}" class="bg-brgyGreen text-white px-6 py-2.5 rounded-xl hover:bg-darkGreen transition shadow-lg shadow-brgyGreen/20">Login</a>
-                @endauth
+                </div>
+
+                <a href="/#officials" class="h-20 flex items-center border-b-2 border-transparent hover:text-brgyGreen transition">Officials</a>
+                <a href="/#schedule" class="h-20 flex items-center border-b-2 border-transparent hover:text-brgyGreen transition">Announcements</a>
+                <a href="{{ route('about') }}" class="h-20 flex items-center border-b-2 transition {{ request()->routeIs('about') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen' }}">About</a>
+                
+                {{-- Admin Login link has been removed from here --}}
             </div>
         </div>
     </nav>
@@ -89,8 +86,49 @@
     </main>
 
     <footer class="bg-darkGreen text-white pt-24 pb-12 rounded-t-[3rem] mt-20">
-        <div class="max-w-7xl mx-auto px-6 text-center text-[10px] font-bold text-white/30 uppercase tracking-[0.3em]">
-            <p>&copy; 2026 Barangay 419, Zone 43. Built for the People.</p>
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-14 h-14 object-contain rounded-full border border-white/10">
+                        <span class="font-extrabold tracking-tight text-white text-xl uppercase">Barangay 419</span>
+                    </div>
+                    <p class="text-white/40 text-xs leading-relaxed font-medium">
+                        Serving the residents of Zone 43, District IV with integrity and digital innovation.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Quick Links</h4>
+                    <ul class="space-y-4 text-xs font-bold uppercase tracking-widest text-white/60">
+                        <li><a href="/" class="hover:text-brgyGold transition">Home</a></li>
+                        <li><a href="{{ route('about') }}" class="hover:text-brgyGold transition">About Us</a></li>
+                        <li><a href="/#schedule" class="hover:text-brgyGold transition">Announcements</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Community Info</h4>
+                    <ul class="space-y-4 text-xs font-bold uppercase tracking-widest text-white/60">
+                        <li><a href="/#services" class="hover:text-brgyGold transition">Barangay Services</a></li>
+                        <li><a href="/#officials" class="hover:text-brgyGold transition">Barangay Officials</a></li>
+                        <li><a href="#" class="hover:text-brgyGold transition">Emergency Hotlines</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Office Location</h4>
+                    <p class="text-xs font-bold text-white/60 leading-relaxed uppercase tracking-wider">
+                        123 Barangay Hall St.<br>
+                        Zone 43, District IV<br>
+                        Sampaloc, Manila
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-12 border-t border-white/5 text-center text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">
+                <p>&copy; 2026 Barangay 419, Zone 43. All Rights Reserved.</p>
+            </div>
         </div>
     </footer>
 </body>

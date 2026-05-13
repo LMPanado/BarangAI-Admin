@@ -12,6 +12,7 @@ class Schedule extends Model
         'schedule_time',
         'schedule_time_to',
         'description',
-        'location'
+        'location',
+        'image' 
     ];
 }

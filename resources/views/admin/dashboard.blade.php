@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
 @section('content')
+{{-- Load Chart.js CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div class="space-y-8 animate-fade-in">
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
@@ -24,7 +27,6 @@
             </div>
             <div class="flex items-baseline mt-4">
                 <p class="text-3xl font-extrabold text-gray-900 tracking-tight">{{ $totalPopulation }}</p>
-                <span class="ml-2 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">Live</span>
             </div>
         </div>
 
@@ -59,8 +61,24 @@
         </div>
     </div>
 
+    {{-- START OF NEW GRAPH SECTION --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider mb-6">Population by Gender</h3>
+            <div class="h-[250px]">
+                <canvas id="genderChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider mb-6">Voting Eligibility</h3>
+            <div class="h-[250px]">
+                <canvas id="voterChart"></canvas>
+            </div>
+        </div>
+    </div>
+    {{-- END OF NEW GRAPH SECTION --}}
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="bg-white px-8 py-5 border-b border-gray-50 flex items-center justify-between">
                 <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider">Case Management Summary</h3>
@@ -126,6 +144,48 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Gender Chart Configuration
+    new Chart(document.getElementById('genderChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                data: [{{ $maleCount }}, {{ $femaleCount }}],
+                backgroundColor: ['#3b82f6', '#ec4899'],
+                hoverOffset: 4,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Voter Chart Configuration
+    new Chart(document.getElementById('voterChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Voters', 'Non-Voters'],
+            datasets: [{
+                data: [{{ $voterCount }}, {{ $totalPopulation - $voterCount }}],
+                backgroundColor: ['#f59e0b', '#e2e8f0'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } }
+            }
+        }
+    });
+</script>
 
 <style>
     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
