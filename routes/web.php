@@ -58,8 +58,8 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::delete('/{schedule}', [ScheduleController::class, 'destroy'])->name('destroy');
         });
 
-        // Requests: Visible to 1 and 3 (Role 2 Blocked)
-        Route::middleware(['role:1,3'])->prefix('documents')->name('admin.documents.')->group(function () {
+        // Requests: Visible to 1 and 3 
+        Route::middleware(['role:1,2,3'])->prefix('documents')->name('admin.documents.')->group(function () {
             Route::get('/', [DocumentRequestController::class, 'index'])->name('index');
             Route::get('/issuance/{id}', [DocumentRequestController::class, 'issuance'])->name('issuance');
             Route::patch('/{id}/status', [DocumentRequestController::class, 'updateStatus'])->name('updateStatus');

@@ -77,8 +77,8 @@
             </a>
             @endforeach
 
-            {{-- Requests: Only for Role 1 and 3 --}}
-            @if(Auth::user()->role == 1 || Auth::user()->role == 3)
+            {{-- Requests: Only for Role 1, 2, and 3 --}}
+            @if(Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3)
             <a href="{{ route('admin.documents.index') }}" 
                class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
                {{ request()->routeIs('admin.documents.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">

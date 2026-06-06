@@ -113,6 +113,7 @@
                         <li><a href="/#services" class="hover:text-brgyGold transition">Barangay Services</a></li>
                         <li><a href="/#officials" class="hover:text-brgyGold transition">Barangay Officials</a></li>
                         <li><a href="#" class="hover:text-brgyGold transition">Emergency Hotlines</a></li>
+                        <li><a href="{{ route('admin.login') }}" class="hover:text-brgyGold transition">Admin Login</a></li>
                     </ul>
                 </div>
 

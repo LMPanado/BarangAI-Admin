@@ -36,8 +36,8 @@
             @endif
         </form>
 
-        {{-- NEW ENTRY BUTTON: Only visible to Role 1 --}}
-        @if(auth()->user()->isAdmin())
+        {{-- NEW ENTRY BUTTON: Only visible to Role 2 --}}
+        @if(auth()->user()->isCaptain())
         <div class="flex gap-3 px-2 pb-2 lg:pb-0">
             <a href="{{ route('admin.residents.create') }}" 
                class="bg-brgyGreen text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 active:scale-95">
