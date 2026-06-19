@@ -28,7 +28,7 @@
             </p>
 
             <div class="flex flex-wrap justify-center gap-5">
-                <a href="#schedule" class="px-10 py-4 border-2 border-white/30 text-white hover:bg-white/10 rounded-2xl transition-all uppercase text-xs tracking-widest font-bold backdrop-blur-sm">
+                <a href="#announcements" class="px-10 py-4 border-2 border-white/30 text-white hover:bg-white/10 rounded-2xl transition-all uppercase text-xs tracking-widest font-bold backdrop-blur-sm">
                     View Announcements
                 </a>
             </div>
@@ -108,6 +108,59 @@
                 </div>
                 @endforeach
             </div>
+        </div>
+    </section>
+
+    {{-- Barangay Announcements Section --}}
+    <section id="announcements" class="py-32 max-w-7xl mx-auto px-6 border-b border-slate-100">
+        <div class="mb-16">
+            <span class="text-brgyGreen font-bold tracking-[0.3em] uppercase text-xs block mb-3">Community Feed</span>
+            <h2 class="text-4xl font-extrabold text-slate-900 tracking-tight">Barangay Announcements</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            @forelse($announcements as $announcement)
+                <div class="bg-white rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-slate-100 hover:shadow-2xl transition-all group overflow-hidden relative flex flex-col justify-between">
+                    @if($announcement->is_pinned)
+                        <div class="absolute top-4 right-4 bg-brgyGold text-white text-[9px] uppercase tracking-widest px-3 py-1 rounded-xl font-extrabold shadow-md z-10">
+                            📌 Pinned
+                        </div>
+                    @endif
+                    
+                    <div>
+                        @if($announcement->image_url)
+                            <div class="h-48 w-full overflow-hidden border-b border-slate-50">
+                                <img src="{{ $announcement->image_url }}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500" alt="Announcement Image">
+                            </div>
+                        @endif
+
+                        <div class="p-8 pb-0">
+                            <div class="flex items-center gap-2 text-slate-400 font-bold uppercase text-[9px] tracking-widest mb-3">
+                                <span class="px-2 py-0.5 bg-brgyGreen/10 text-brgyGreen rounded-md font-black">
+                                    {{ $announcement->category }}
+                                </span>
+                                <span>•</span>
+                                <span>{{ $announcement->created_at->diffForHumans() }}</span>
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-xl group-hover:text-brgyGreen transition-colors mb-3 leading-snug">
+                                {{ $announcement->title }}
+                            </h3>
+                            <p class="text-slate-500 text-sm leading-relaxed line-clamp-4">
+                                {{ $announcement->content }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-8 pt-6">
+                        <div class="pt-4 border-t border-slate-50 flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Official Bulletin</span>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full bg-white p-16 rounded-[2.5rem] text-center border border-slate-100">
+                    <p class="text-slate-400 font-medium italic">No announcements posted at the moment.</p>
+                </div>
+            @endforelse
         </div>
     </section>
 

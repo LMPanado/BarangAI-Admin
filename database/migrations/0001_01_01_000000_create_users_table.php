@@ -1,4 +1,4 @@
-<?php
+  <?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,17 +13,20 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            
+            // Split name fields
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('middle_name')->nullable(); // Optional field
+            
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             
             /**
-             * ADDED ROLE COLUMN:
              * 0: Resident, 1: Admin, 2: Captain, 3: Official
              */
             $table->integer('role')->default(0); 
-
             $table->boolean('is_admin')->default(false); 
             
             $table->rememberToken();

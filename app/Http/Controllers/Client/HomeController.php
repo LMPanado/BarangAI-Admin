@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use App\Models\DocumentRequest;
 use App\Models\Resident; 
+use App\Models\Announcement; // Imported the new Announcement model here
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,8 +14,17 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // 1. Fetch announcements out of Supabase (Pinned posts always stay at the top, then newest)
+        $announcements = Announcement::orderBy('is_pinned', 'desc')
+                                      ->latest()
+                                      ->take(5)
+                                      ->get();
+
+        // 2. Fetch the original events calendar list (kept completely intact)
         $events = Schedule::orderBy('schedule_date', 'asc')->take(6)->get();
-        return view('client.index', compact('events'));
+
+        // 3. Return the view, cleanly compacting both datasets
+        return view('client.index', compact('announcements', 'events'));
     }
 
     public function profile()

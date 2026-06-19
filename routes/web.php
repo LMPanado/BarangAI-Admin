@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\DocumentRequestController;
 use App\Http\Controllers\Admin\RoleController; 
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\AnnouncementController; // Imported for the announcements module
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AuthController; 
@@ -58,7 +59,14 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::delete('/{schedule}', [ScheduleController::class, 'destroy'])->name('destroy');
         });
 
-        // Requests: Visible to 1 and 3 
+        // Announcements: Visible to 1, 2, and 3
+        Route::prefix('announcements')->name('admin.announcements.')->group(function () {
+            Route::get('/', [AnnouncementController::class, 'index'])->name('index');
+            Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
+            Route::post('/', [AnnouncementController::class, 'store'])->name('store');
+        });
+
+        // Requests: Visible to 1, 2, and 3 
         Route::middleware(['role:1,2,3'])->prefix('documents')->name('admin.documents.')->group(function () {
             Route::get('/', [DocumentRequestController::class, 'index'])->name('index');
             Route::get('/issuance/{id}', [DocumentRequestController::class, 'issuance'])->name('issuance');
