@@ -38,4 +38,12 @@ class AnnouncementController extends Controller
 
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement posted successfully!');
     }
+
+    public function destroy($id)
+    {
+        $announcement = Announcement::findOrFail($id);
+        $announcement->delete();
+
+        return redirect()->route('admin.announcements.index')->with('success', 'Announcement deleted successfully!');
+    }
 }
