@@ -77,6 +77,18 @@
             </a>
             @endforeach
 
+            {{-- Announcements: Only for Role 1, 2, and 3 --}}
+            @if(Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3)
+            <a href="{{ route('admin.announcements.index') }}" 
+               class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
+               {{ request()->routeIs('admin.announcements.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.announcements.*') ? 'bg-white text-darkGreen' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                </div>
+                <span class="uppercase tracking-widest">Announcements</span>
+            </a>
+            @endif
+
             {{-- Requests: Only for Role 1, 2, and 3 --}}
             @if(Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3)
             <a href="{{ route('admin.documents.index') }}" 
