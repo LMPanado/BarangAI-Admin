@@ -1,62 +1,153 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="p-6 max-w-2xl mx-auto">
-    <div class="mb-6">
-        <a href="{{ route('admin.announcements.index') }}" class="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-widest flex items-center gap-1">
-            ← Back to List
-        </a>
-        <h1 class="text-2xl font-black text-gray-800 uppercase tracking-wider mt-2">New Announcement</h1>
+<div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
+
+    {{-- Page Header --}}
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">New Announcement</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium italic">
+                Post an official bulletin for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span> residents.
+            </p>
+        </div>
+        <nav class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-[0.15em] bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
+            <a href="{{ route('admin.announcements.index') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Announcements</a>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+            <span class="text-brgyGreen">Create</span>
+        </nav>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <form action="{{ route('admin.announcements.store') }}" method="POST" class="space-y-4">
-            @csrf
+    <form action="{{ route('admin.announcements.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
 
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Announcement Title</label>
-                <input type="text" name="title" required value="{{ old('title') }}"
-                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brgyGreen @error('title') border-red-500 @enderror" 
-                       placeholder="e.g., Mandatory Community Health Caravan">
-                @error('title') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            {{-- Main Fields --}}
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 space-y-6">
+
+                    @if($errors->any())
+                        <div class="p-4 bg-red-50 text-red-600 text-[10px] font-black rounded-2xl border border-red-100 flex items-center gap-3">
+                            <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            <ul class="list-none uppercase tracking-wide">
+                                @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    {{-- Title --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 ml-1">Announcement Title</label>
+                        <input type="text" name="title" required value="{{ old('title') }}"
+                               placeholder="e.g., Mandatory Community Health Caravan"
+                               class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300">
+                    </div>
+
+                    {{-- Category --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 ml-1">Category</label>
+                        <select name="category" required
+                                class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all">
+                            <option value="General" {{ old('category') == 'General' ? 'selected' : '' }}>General News</option>
+                            <option value="Health"  {{ old('category') == 'Health'  ? 'selected' : '' }}>Health Advisory</option>
+                            <option value="Security"{{ old('category') == 'Security'? 'selected' : '' }}>Security Notice</option>
+                            <option value="Advisory"{{ old('category') == 'Advisory'? 'selected' : '' }}>Emergency Bulletin</option>
+                        </select>
+                    </div>
+
+                    {{-- Content --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 ml-1">Detailed Content</label>
+                        <textarea name="content" required rows="7"
+                                  placeholder="Type out all information regarding the official community notice..."
+                                  class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300 resize-none">{{ old('content') }}</textarea>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Category</label>
-                <select name="category" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brgyGreen">
-                    <option value="General">General News</option>
-                    <option value="Health">Health Advisory</option>
-                    <option value="Security">Security Notice</option>
-                    <option value="Advisory">Emergency Bulletin</option>
-                </select>
-            </div>
+            {{-- Sidebar --}}
+            <div class="space-y-6">
 
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Image URL (Optional)</label>
-                <input type="url" name="image_url" value="{{ old('image_url') }}"
-                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brgyGreen" 
-                       placeholder="Paste public Supabase media bucket asset path link here">
-            </div>
+                {{-- Image Upload --}}
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Promo Image</label>
+                    <div class="relative group h-44">
+                        <label for="imageUpload" class="flex flex-col items-center justify-center w-full h-full border-2 border-dashed border-gray-200 rounded-[2rem] cursor-pointer bg-gray-50 group-hover:bg-gray-100 group-hover:border-brgyGreen/30 transition-all overflow-hidden">
+                            <div class="flex flex-col items-center justify-center py-4">
+                                <div class="p-2.5 bg-white rounded-xl shadow-sm mb-2 group-hover:scale-110 transition-transform">
+                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <p id="upload-label-text" class="text-[9px] font-black text-gray-400 uppercase tracking-widest group-hover:text-brgyGreen transition-colors">Upload Image</p>
+                                <p class="text-[9px] text-gray-300 mt-1">JPG, PNG, GIF, WEBP · Max 4MB</p>
+                            </div>
+                            <input id="imageUpload" name="image" type="file" class="hidden" accept="image/*" onchange="previewImage(this)">
+                        </label>
 
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Detailed Content</label>
-                <textarea name="content" required rows="6"
-                          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brgyGreen @error('content') border-red-500 @enderror" 
-                          placeholder="Type out all information regarding the official community notice..."></textarea>
-                @error('content') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
-            </div>
+                        <div id="image-preview" class="hidden absolute inset-0 rounded-[2rem] overflow-hidden bg-white border-2 border-brgyGreen group/prev">
+                            <img src="" id="preview-src" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/prev:opacity-100 transition-opacity flex items-center justify-center">
+                                <button type="button" onclick="removeImage(event)"
+                                        class="bg-red-500 text-white rounded-2xl px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-2 group-hover/prev:translate-y-0 transition-all">
+                                    Remove Image
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="flex items-center gap-2 py-2">
-                <input type="checkbox" name="is_pinned" id="is_pinned" value="1" class="rounded border-gray-300 text-brgyGreen focus:ring-brgyGreen">
-                <label honeymoon for="is_pinned" class="text-xs font-bold uppercase tracking-widest text-gray-600 cursor-pointer select-none">
-                    Pin announcement to the top of the feed
-                </label>
-            </div>
+                {{-- Options --}}
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Options</label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" name="is_pinned" id="is_pinned" value="1"
+                               class="w-4 h-4 rounded border-gray-300 text-brgyGreen focus:ring-brgyGreen">
+                        <span class="text-xs font-black uppercase tracking-widest text-gray-600 group-hover:text-brgyGreen transition-colors">Pin to top of feed</span>
+                    </label>
+                </div>
 
-            <button type="submit" class="w-full py-3 bg-brgyGreen text-white text-xs font-bold rounded-xl uppercase tracking-widest hover:bg-darkGreen transition-all duration-300 shadow-md">
-                Publish Announcement
-            </button>
-        </form>
-    </div>
+                {{-- Actions --}}
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 space-y-3">
+                    <button type="submit"
+                            class="w-full bg-brgyGreen text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        Publish Announcement
+                    </button>
+                    <a href="{{ route('admin.announcements.index') }}"
+                       class="w-full block text-center py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border-2 border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600 transition-all">
+                        Cancel
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </form>
 </div>
+
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('image-preview');
+        const previewSrc = document.getElementById('preview-src');
+        const label = document.getElementById('upload-label-text');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewSrc.src = e.target.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+            label.textContent = input.files[0].name;
+        }
+    }
+
+    function removeImage(e) {
+        e.preventDefault();
+        document.getElementById('image-preview').classList.add('hidden');
+        document.getElementById('preview-src').src = '';
+        document.getElementById('imageUpload').value = '';
+        document.getElementById('upload-label-text').textContent = 'Upload Image';
+    }
+</script>
 @endsection

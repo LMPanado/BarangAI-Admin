@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
@@ -22,17 +23,22 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title'    => 'required|string|max:255',
+            'content'  => 'required|string',
             'category' => 'required|string',
-            'image_url' => 'nullable|url',
+            'image'    => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('announcements', 'public');
+        }
+
         Announcement::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'category' => $request->category,
-            'image_url' => $request->image_url,
+            'title'     => $request->title,
+            'content'   => $request->content,
+            'category'  => $request->category,
+            'image_url' => $imagePath,
             'is_pinned' => $request->has('is_pinned'),
         ]);
 
@@ -50,18 +56,35 @@ class AnnouncementController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title'    => 'required|string|max:255',
+            'content'  => 'required|string',
             'category' => 'required|string',
-            'image_url' => 'nullable|url',
+            'image'    => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
         ]);
 
         $announcement = Announcement::findOrFail($id);
+
+        $imagePath = $announcement->image_url;
+
+        if ($request->remove_image == '1' && !$request->hasFile('image')) {
+            if ($announcement->image_url) {
+                Storage::disk('public')->delete($announcement->image_url);
+            }
+            $imagePath = null;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($announcement->image_url) {
+                Storage::disk('public')->delete($announcement->image_url);
+            }
+            $imagePath = $request->file('image')->store('announcements', 'public');
+        }
+
         $announcement->update([
-            'title' => $request->title,
-            'content' => $request->content,
-            'category' => $request->category,
-            'image_url' => $request->image_url,
+            'title'     => $request->title,
+            'content'   => $request->content,
+            'category'  => $request->category,
+            'image_url' => $imagePath,
             'is_pinned' => $request->has('is_pinned'),
         ]);
 
@@ -73,6 +96,9 @@ class AnnouncementController extends Controller
     public function destroy($id)
     {
         $announcement = Announcement::findOrFail($id);
+        if ($announcement->image_url) {
+            Storage::disk('public')->delete($announcement->image_url);
+        }
         $announcement->delete();
 
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement deleted successfully!');
