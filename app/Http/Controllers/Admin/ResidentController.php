@@ -8,9 +8,28 @@ use Illuminate\Http\Request;
 
 class ResidentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $residents = Resident::latest()->paginate(10);
+        $query = Resident::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'ilike', "%{$search}%")
+                  ->orWhere('last_name', 'ilike', "%{$search}%")
+                  ->orWhere('email', 'ilike', "%{$search}%")
+                  ->orWhereRaw("CAST(id AS TEXT) LIKE ?", ["%{$search}%"]);
+            });
+        }
+
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'az'     => $query->orderBy('last_name')->orderBy('first_name'),
+            'id'     => $query->orderBy('id'),
+            default  => $query->latest(),
+        };
+
+        $residents = $query->paginate(10)->withQueryString();
         return view('admin.residents.index', compact('residents'));
     }
 
