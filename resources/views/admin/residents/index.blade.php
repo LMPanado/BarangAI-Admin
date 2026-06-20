@@ -18,28 +18,40 @@
     </div>
 
     {{-- Search & Action Bar --}}
-    <div class="flex flex-col lg:flex-row gap-6 justify-between items-stretch lg:items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-        <form action="{{ route('admin.residents.index') }}" method="GET" class="relative flex-1 group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+    <div class="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+        <form action="{{ route('admin.residents.index') }}" method="GET" class="relative flex-1 group flex items-center">
+            <div class="absolute left-0 pl-4 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-gray-300 group-focus-within:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
             </div>
-            <input type="text" name="search" value="{{ request('search') }}" 
-                   placeholder="Search by name, ID, or email..." 
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Search by name, ID, or email..."
                    class="pl-12 pr-4 py-4 text-xs font-bold border-none rounded-xl focus:ring-0 w-full transition-all bg-transparent placeholder:text-gray-300 uppercase tracking-widest">
-            
+            <input type="hidden" name="sort" value="{{ request('sort', 'latest') }}">
             @if(request('search'))
-                <a href="{{ route('admin.residents.index') }}" class="absolute inset-y-0 right-4 flex items-center text-gray-300 hover:text-red-400">
+                <a href="{{ route('admin.residents.index', ['sort' => request('sort', 'latest')]) }}" class="absolute right-4 flex items-center text-gray-300 hover:text-red-400">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
                 </a>
             @endif
         </form>
 
-        {{-- NEW ENTRY BUTTON: Only visible to Role 2 --}}
+        {{-- Sort Buttons --}}
+        <div class="flex items-center gap-1 px-2">
+            @php $currentSort = request('sort', 'latest'); $search = request('search'); @endphp
+            @foreach([['latest', 'Latest'], ['az', 'A–Z'], ['id', 'ID #']] as [$val, $label])
+                <a href="{{ route('admin.residents.index', ['sort' => $val, 'search' => $search]) }}"
+                   class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
+                          {{ $currentSort === $val ? 'bg-brgyGreen text-white shadow-sm' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-700' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
+
+        {{-- NEW ENTRY BUTTON: Only visible to Captain --}}
         @if(auth()->user()->isCaptain())
         <div class="flex gap-3 px-2 pb-2 lg:pb-0">
-            <a href="{{ route('admin.residents.create') }}" 
+            <a href="{{ route('admin.residents.create') }}"
                class="bg-brgyGreen text-white px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                 New Entry
