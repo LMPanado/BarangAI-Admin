@@ -129,7 +129,7 @@
                     <div>
                         @if($announcement->image_url)
                             <div class="h-48 w-full overflow-hidden border-b border-slate-50">
-                                <img src="{{ $announcement->image_url }}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500" alt="Announcement Image">
+                                <img src="{{ Storage::url($announcement->image_url) }}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500" alt="Announcement Image">
                             </div>
                         @endif
 
