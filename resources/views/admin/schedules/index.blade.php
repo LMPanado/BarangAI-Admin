@@ -82,7 +82,7 @@
                         $isToday = $currentCellDate->isToday();
                     @endphp
                     
-                    <div onclick="openModal('{{ $dateString }}')" 
+                    <div onclick="window.location='{{ route('admin.schedules.create', ['date' => $dateString]) }}'"
                          class="h-40 p-4 border-b border-r border-slate-50 hover:bg-slate-50/50 cursor-pointer transition-all group overflow-hidden relative">
                         
                         <div class="flex justify-between items-center mb-3">
@@ -101,7 +101,7 @@
 
                         <div class="space-y-2 overflow-y-auto max-h-[85px] scrollbar-hide">
                             @foreach($dayEvents as $event)
-                                <div onclick="event.stopPropagation(); openModal('{{ $dateString }}', {{ json_encode($event) }})"
+                                <div onclick="event.stopPropagation(); window.location='{{ route('admin.schedules.edit', $event->id) }}'"
                                      class="bg-white border border-slate-100 p-2 rounded-xl shadow-sm hover:border-[#2d5a27] hover:shadow-md transition-all relative pr-7 event-card">
                                     
                                     <button onclick="event.stopPropagation(); confirmDelete('{{ $event->id }}')" 
@@ -139,7 +139,7 @@
                 
                 <div class="space-y-8">
                     @forelse($upcomingActivities as $upcoming)
-                        <div onclick="openModal('{{ $upcoming->schedule_date }}', {{ json_encode($upcoming) }})" 
+                        <div onclick="window.location='{{ route('admin.schedules.edit', $upcoming->id) }}'"
                              class="flex items-start space-x-4 group relative pr-8 cursor-pointer">
                             <div class="bg-slate-50 group-hover:bg-[#2d5a27] transition-all p-3 rounded-2xl text-center min-w-[55px]">
                                 <div class="text-sm font-black text-slate-800 group-hover:text-white leading-none">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('d') }}</div>
@@ -173,17 +173,17 @@
                 </div>
             </div>
 
-            <div style="background-color: #2d5a27;" class="p-8 rounded-[2.5rem] shadow-lg shadow-green-900/20 text-white relative overflow-hidden group">
-                <div class="relative z-10">
-                    <h4 class="text-sm font-black uppercase tracking-widest mb-2">New Schedule?</h4>
-                    <p class="text-white/70 text-[10px] font-medium leading-relaxed mb-4">Click any date on the calendar to add a new event or operation.</p>
+            <a href="{{ route('admin.schedules.create') }}"
+               style="background-color: #2d5a27;"
+               class="p-8 rounded-[2.5rem] shadow-lg shadow-green-900/20 text-white relative overflow-hidden group flex items-center gap-4 hover:opacity-90 transition-all">
+                <div class="relative z-10 flex-1">
+                    <h4 class="text-sm font-black uppercase tracking-widest mb-1">New Schedule</h4>
+                    <p class="text-white/70 text-[10px] font-medium leading-relaxed">Click a date on the calendar or use this button.</p>
                 </div>
-                <div class="absolute -right-4 -bottom-4 text-white/10 group-hover:scale-110 transition-transform duration-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                <div class="p-3 bg-white/20 rounded-2xl shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </div>
@@ -194,99 +194,11 @@
     @method('DELETE')
 </form>
 
-@include('admin.schedules.partials.modal')
-
 <script>
-    function previewImage(input) {
-        const preview = document.getElementById('image-preview');
-        const previewSrc = document.getElementById('preview-src');
-        const badge = document.getElementById('file-size-badge');
-        const removeFlag = document.getElementById('remove_image_input');
-
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-
-            if (file.size > 2 * 1024 * 1024) {
-                alert('File too large! ' + fileSizeMB + 'MB exceeds the 2MB limit.');
-                input.value = '';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewSrc.src = e.target.result;
-                preview.classList.remove('hidden');
-                badge.innerText = fileSizeMB + ' MB';
-                badge.classList.remove('hidden');
-                removeFlag.value = '0';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function removeImage(event) {
-        event.preventDefault();
-        document.getElementById('pubmat').value = '';
-        document.getElementById('image-preview').classList.add('hidden');
-        document.getElementById('file-size-badge').classList.add('hidden');
-        document.getElementById('remove_image_input').value = '1';
-    }
-
-    function openModal(date, eventData = null) {
-        const modal = document.getElementById('scheduleModal');
-        const form = document.getElementById('scheduleForm');
-        const titleInput = document.getElementById('modal_title');
-        const locationInput = document.getElementById('modal_location');
-        const dateInput = document.getElementById('modal_date');
-        const timeFrom = document.getElementById('modal_time_from');
-        const timeTo = document.getElementById('modal_time_to');
-        const methodField = document.getElementById('methodField');
-        const modalTitle = document.getElementById('modalTitle');
-        const preview = document.getElementById('image-preview');
-        const previewSrc = document.getElementById('preview-src');
-        const removeFlag = document.getElementById('remove_image_input');
-
-        form.reset();
-        removeFlag.value = '0';
-        preview.classList.add('hidden');
-        document.getElementById('file-size-badge').classList.add('hidden');
-        
-        dateInput.value = date;
-
-        if (eventData) {
-            modalTitle.innerText = "Edit Event";
-            methodField.value = "PUT";
-            form.action = `/admin/schedules/${eventData.id}`;
-            titleInput.value = eventData.title;
-            locationInput.value = eventData.location || '';
-            timeFrom.value = eventData.schedule_time;
-            timeTo.value = eventData.schedule_time_to;
-
-            if (eventData.image) {
-                previewSrc.src = `/storage/${eventData.image}`;
-                preview.classList.remove('hidden');
-            }
-        } else {
-            modalTitle.innerText = "Add New Event";
-            methodField.value = "POST";
-            form.action = "{{ route('admin.schedules.store') }}";
-        }
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex', 'animate-in', 'fade-in', 'duration-300');
-    }
-    
-    function closeModal() {
-        const modal = document.getElementById('scheduleModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-
     function confirmDelete(eventId) {
         if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
             const form = document.getElementById('delete-event-form');
-            form.action = `/admin/schedules/${eventId}`; 
+            form.action = `/admin/schedules/${eventId}`;
             form.submit();
         }
     }
