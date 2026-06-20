@@ -39,6 +39,11 @@ class ScheduleController extends Controller
         ));
     }
 
+    public function edit(Schedule $schedule)
+    {
+        return view('Admin.schedules.edit', compact('schedule'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

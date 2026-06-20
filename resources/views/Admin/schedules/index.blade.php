@@ -101,7 +101,7 @@
 
                         <div class="space-y-2 overflow-y-auto max-h-[85px] scrollbar-hide">
                             @foreach($dayEvents as $event)
-                                <div onclick="event.stopPropagation(); openModal('{{ $dateString }}', {{ json_encode($event) }})"
+                                <div onclick="event.stopPropagation(); window.location='{{ route('admin.schedules.edit', $event->id) }}'"
                                      class="bg-white border border-slate-100 p-2 rounded-xl shadow-sm hover:border-[#2d5a27] hover:shadow-md transition-all relative pr-7 event-card">
                                     
                                     <button onclick="event.stopPropagation(); confirmDelete('{{ $event->id }}')" 
@@ -139,7 +139,7 @@
                 
                 <div class="space-y-8">
                     @forelse($upcomingActivities as $upcoming)
-                        <div onclick="openModal('{{ $upcoming->schedule_date }}', {{ json_encode($upcoming) }})" 
+                        <div onclick="window.location='{{ route('admin.schedules.edit', $upcoming->id) }}'"
                              class="flex items-start space-x-4 group relative pr-8 cursor-pointer">
                             <div class="bg-slate-50 group-hover:bg-[#2d5a27] transition-all p-3 rounded-2xl text-center min-w-[55px]">
                                 <div class="text-sm font-black text-slate-800 group-hover:text-white leading-none">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('d') }}</div>
