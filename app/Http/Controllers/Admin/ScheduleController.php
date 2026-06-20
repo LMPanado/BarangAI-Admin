@@ -39,9 +39,15 @@ class ScheduleController extends Controller
         ));
     }
 
+    public function create(Request $request)
+    {
+        $date = $request->get('date', now()->format('Y-m-d'));
+        return view('admin.schedules.create', compact('date'));
+    }
+
     public function edit(Schedule $schedule)
     {
-        return view('Admin.schedules.edit', compact('schedule'));
+        return view('admin.schedules.edit', compact('schedule'));
     }
 
     public function store(Request $request)
