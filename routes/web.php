@@ -64,8 +64,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::get('/', [AnnouncementController::class, 'index'])->name('index');
             Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
             Route::post('/', [AnnouncementController::class, 'store'])->name('store');
-            Route::get('/admin/announcements/{id}/edit', [App\Http\Controllers\Admin\AnnouncementController::class, 'edit'])->name('admin.announcements.edit');
-            Route::put('/admin/announcements/{id}', [App\Http\Controllers\Admin\AnnouncementController::class, 'update'])->name('admin.announcements.update');
+            Route::get('/{id}/edit', [AnnouncementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AnnouncementController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AnnouncementController::class, 'destroy'])->name('destroy');
         });
 
         // Requests: Visible to 1, 2, and 3 
