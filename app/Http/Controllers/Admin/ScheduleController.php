@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -65,7 +66,9 @@ class ScheduleController extends Controller
             $validated['image'] = $request->file('image')->store('events', 'public');
         }
 
-        Schedule::create($validated);
+        $schedule = Schedule::create($validated);
+
+        AuditLogger::log('created', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
 
         return redirect()->route('admin.schedules.index')->with('success', 'Event created successfully!');
     }
@@ -99,11 +102,14 @@ class ScheduleController extends Controller
 
         $schedule->update($validated);
 
+        AuditLogger::log('updated', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
+
         return redirect()->route('admin.schedules.index')->with('success', 'Event updated successfully!');
     }
 
     public function destroy(Schedule $schedule)
     {
+        AuditLogger::log('deleted', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
         if ($schedule->image) {
             Storage::disk('public')->delete($schedule->image);
         }

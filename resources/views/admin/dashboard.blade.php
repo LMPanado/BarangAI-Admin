@@ -78,6 +78,58 @@
     </div>
     {{-- END OF NEW GRAPH SECTION --}}
 
+    {{-- Audit Log Feed (role 1 only) --}}
+    @if(auth()->user()->role === 1 && $recentLogs->isNotEmpty())
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-8 py-5 border-b border-gray-50 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-gray-50 rounded-xl">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                </div>
+                <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider">Recent Activity</h3>
+            </div>
+            <a href="{{ route('admin.audit-logs.index') }}"
+               class="text-[10px] font-black uppercase tracking-widest text-brgyGreen hover:underline">
+                View All →
+            </a>
+        </div>
+        <div class="divide-y divide-gray-50">
+            @php
+                $actionColors = [
+                    'created'        => ['bg'=>'bg-green-100',  'text'=>'text-green-700'],
+                    'updated'        => ['bg'=>'bg-blue-100',   'text'=>'text-blue-700'],
+                    'deleted'        => ['bg'=>'bg-red-100',    'text'=>'text-red-700'],
+                    'status_changed' => ['bg'=>'bg-amber-100',  'text'=>'text-amber-700'],
+                    'role_changed'   => ['bg'=>'bg-purple-100', 'text'=>'text-purple-700'],
+                    'login'          => ['bg'=>'bg-teal-100',   'text'=>'text-teal-700'],
+                    'logout'         => ['bg'=>'bg-gray-100',   'text'=>'text-gray-600'],
+                ];
+            @endphp
+            @foreach($recentLogs as $log)
+            @php $c = $actionColors[$log->action] ?? ['bg'=>'bg-gray-100','text'=>'text-gray-600']; @endphp
+            <div class="px-8 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors">
+                <div class="shrink-0 w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center">
+                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $log->subjectIcon() }}"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-gray-800 truncate">
+                        <span class="{{ $c['text'] }} font-black">{{ $log->user ? $log->user->first_name . ' ' . $log->user->last_name : 'Unknown' }}</span>
+                        <span class="font-medium text-gray-500"> {{ str_replace('_', ' ', $log->action) }} </span>
+                        <span class="text-gray-700">{{ $log->subject_label }}</span>
+                    </p>
+                    <p class="text-[10px] text-gray-400 font-medium mt-0.5">{{ $log->created_at->diffForHumans() }}</p>
+                </div>
+                <span class="shrink-0 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $c['bg'] }} {{ $c['text'] }}">
+                    {{ str_replace('_', ' ', $log->action) }}
+                </span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="bg-white px-8 py-5 border-b border-gray-50 flex items-center justify-between">

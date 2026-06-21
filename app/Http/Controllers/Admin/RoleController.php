@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -41,6 +42,11 @@ class RoleController extends Controller
             'role' => $request->role,
             'is_admin' => in_array($request->role, [2, 3])
         ]);
+
+        AuditLogger::log('role_changed', 'User',
+            ($user->last_name ?? $user->name) . ' → ' . $this->getRoleLabel($request->role),
+            $user->id
+        );
 
         return back()->with('success', "Role for {$user->name} has been updated to " . $this->getRoleLabel($request->role));
     }

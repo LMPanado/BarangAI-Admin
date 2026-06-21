@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,13 +35,15 @@ class AnnouncementController extends Controller
             $imagePath = $request->file('image')->store('announcements', 'public');
         }
 
-        Announcement::create([
+        $announcement = Announcement::create([
             'title'     => $request->title,
             'content'   => $request->content,
             'category'  => $request->category,
             'image_url' => $imagePath,
             'is_pinned' => $request->has('is_pinned'),
         ]);
+
+        AuditLogger::log('created', 'Announcement', $announcement->title, $announcement->id);
 
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement posted successfully!');
     }
@@ -88,6 +91,8 @@ class AnnouncementController extends Controller
             'is_pinned' => $request->has('is_pinned'),
         ]);
 
+        AuditLogger::log('updated', 'Announcement', $announcement->title, $announcement->id);
+
         return redirect()->route('admin.announcements.index')->with('success', 'Announcement updated successfully!');
     }
 
@@ -96,6 +101,7 @@ class AnnouncementController extends Controller
     public function destroy($id)
     {
         $announcement = Announcement::findOrFail($id);
+        AuditLogger::log('deleted', 'Announcement', $announcement->title, $announcement->id);
         if ($announcement->image_url) {
             Storage::disk('public')->delete($announcement->image_url);
         }

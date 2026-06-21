@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Resident; 
+use App\Models\Resident;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 
 class ResidentController extends Controller
@@ -57,7 +58,9 @@ class ResidentController extends Controller
             'address'      => 'required|string',
         ]);
 
-        Resident::create($validated);
+        $resident = Resident::create($validated);
+
+        AuditLogger::log('created', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
 
         return redirect()->route('admin.residents.index')->with('success', 'Added resident successfully!');
     }
@@ -88,11 +91,14 @@ class ResidentController extends Controller
 
         $resident->update($validated);
 
+        AuditLogger::log('updated', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
+
         return redirect()->route('admin.residents.index')->with('success', 'Resident updated successfully!');
     }
 
     public function destroy(Resident $resident)
     {
+        AuditLogger::log('deleted', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
         $resident->delete();
         return redirect()->route('admin.residents.index')->with('success', 'Resident deleted successfully!');
     }

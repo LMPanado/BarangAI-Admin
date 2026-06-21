@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,6 +35,7 @@ class AuthController extends Controller
             // Role check: 1=Admin, 2=Captain, 3=Official
             if (in_array((int)$user->role, [1, 2, 3])) {
                 $request->session()->regenerate();
+                AuditLogger::log('login', 'User', $user->last_name . ', ' . $user->first_name, $user->id);
                 return redirect()->intended(route('dashboard'));
             }
 
@@ -50,6 +52,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        if ($user) {
+            AuditLogger::log('logout', 'User', $user->last_name . ', ' . $user->first_name, $user->id);
+        }
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

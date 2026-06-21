@@ -104,13 +104,21 @@
             @if(Auth::user()->role == 1)
             <div class="pt-4 pb-2">
                 <p class="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">System</p>
-                <a href="{{ route('admin.roles.index') }}" 
+                <a href="{{ route('admin.roles.index') }}"
                    class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl
                    {{ request()->routeIs('admin.roles.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
                     <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.roles.*') ? 'bg-white text-darkGreen' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen' }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </div>
                     <span class="uppercase tracking-widest">Manage Roles</span>
+                </a>
+                <a href="{{ route('admin.audit-logs.index') }}"
+                   class="group flex items-center px-4 py-3 mt-1 text-[10px] font-bold transition-all duration-300 rounded-xl
+                   {{ request()->routeIs('admin.audit-logs.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                    <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.audit-logs.*') ? 'bg-white text-darkGreen' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    </div>
+                    <span class="uppercase tracking-widest">Audit Logs</span>
                 </a>
             </div>
             @endif

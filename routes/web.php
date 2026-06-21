@@ -1,11 +1,13 @@
 <?php
 
-use App\Models\Resident; 
+use App\Models\AuditLog;
+use App\Models\Resident;
 use App\Models\DocumentRequest;
 use App\Http\Controllers\Admin\ResidentController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\DocumentRequestController;
-use App\Http\Controllers\Admin\RoleController; 
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AnnouncementController; // Imported for the announcements module
 use App\Http\Controllers\Client\HomeController;
@@ -31,13 +33,17 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         
         Route::get('/dashboard', function () {
             $requests = DocumentRequest::all();
+            $recentLogs = auth()->user()->role === 1
+                ? AuditLog::with('user')->latest('created_at')->limit(10)->get()
+                : collect();
             return view('admin.dashboard', [
-                'requests'        => $requests, 
+                'requests'        => $requests,
                 'totalPopulation' => Resident::count(),
                 'maleCount'       => Resident::where('gender', 'Male')->count(),
                 'femaleCount'     => Resident::where('gender', 'Female')->count(),
                 'voterCount'      => Resident::where('is_voter', true)->count(),
-                'pendingRequests' => $requests->where('status', 'pending')->count(), 
+                'pendingRequests' => $requests->where('status', 'pending')->count(),
+                'recentLogs'      => $recentLogs,
             ]);
         })->name('dashboard');
 
@@ -90,6 +96,8 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
                 Route::get('/', [RoleController::class, 'index'])->name('index');
                 Route::patch('/{user}/update', [RoleController::class, 'update'])->name('update');
             });
+
+            Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
         });
     });
 });

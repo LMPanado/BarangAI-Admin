@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Resident;
 use App\Models\DocumentRequest;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 
 class DocumentRequestController extends Controller
@@ -57,14 +58,22 @@ class DocumentRequestController extends Controller
         $docRequest = DocumentRequest::findOrFail($id);
         $docRequest->update(['status' => $request->status]);
 
+        $residentName = optional($docRequest->resident)->last_name . ', ' . optional($docRequest->resident)->first_name;
+        AuditLogger::log('status_changed', 'DocumentRequest',
+            $docRequest->document_type . ' for ' . $residentName . ' → ' . $request->status,
+            $docRequest->id
+        );
+
         return redirect()->back()->with('success', 'Status updated!');
     }
     public function destroy($id)
-{
-    $docRequest = DocumentRequest::findOrFail($id);
-    $docRequest->delete();
+    {
+        $docRequest = DocumentRequest::with('resident')->findOrFail($id);
+        $residentName = optional($docRequest->resident)->last_name . ', ' . optional($docRequest->resident)->first_name;
+        AuditLogger::log('deleted', 'DocumentRequest', $docRequest->document_type . ' for ' . $residentName, $docRequest->id);
+        $docRequest->delete();
 
-    return redirect()->route('admin.documents.index')
-        ->with('success', 'Document request deleted successfully.');
-}
+        return redirect()->route('admin.documents.index')
+            ->with('success', 'Document request deleted successfully.');
+    }
 }
