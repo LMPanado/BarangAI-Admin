@@ -84,17 +84,23 @@
                     @forelse($requests as $request)
                     <tr class="hover:bg-slate-50/50 transition-all group">
                         <td class="px-8 py-6">
-                            <div class="font-bold text-slate-800 text-base leading-tight group-hover:text-brgyGreen transition-colors italic">
+                            <div class="font-bold text-slate-800 text-base leading-tight group-hover:text-brgyGreen transition-colors">
                                 @if($request->resident)
                                     {{ $request->resident->first_name }} {{ $request->resident->last_name }}
+                                @elseif($request->full_name)
+                                    {{ $request->full_name }}
                                 @else
-                                    <span class="text-red-400 italic font-medium text-xs">Resident Deleted</span>
+                                    <span class="text-gray-400 italic font-medium text-xs">Unknown</span>
                                 @endif
                             </div>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="w-1 h-1 bg-brgyGold rounded-full"></span>
                                 <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 font-mono">
-                                    ID: #{{ str_pad($request->resident_id, 5, '0', STR_PAD_LEFT) }}
+                                    @if($request->reference_no)
+                                        {{ $request->reference_no }}
+                                    @else
+                                        ID: #{{ str_pad($request->id, 5, '0', STR_PAD_LEFT) }}
+                                    @endif
                                 </p>
                             </div>
                         </td>
@@ -112,7 +118,7 @@
                             <div class="flex items-center gap-2">
                                 <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 <span class="text-xs font-bold text-slate-600">
-                                    {{ \Carbon\Carbon::parse($request->pickup_date)->format('M d, Y') }}
+                                    {{ $request->pickup_date ? \Carbon\Carbon::parse($request->pickup_date)->format('M d, Y') : '—' }}
                                 </span>
                             </div>
                         </td>
