@@ -1,185 +1,165 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-8 p-2 pb-12">
-    
-    {{-- Page Header --}}
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-2">
+<div class="space-y-8 pb-12 max-w-[1600px] mx-auto">
+
+    {{-- Header --}}
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <div class="flex items-center gap-3 mb-2">
-                <div class="w-2 h-8 bg-brgyGold rounded-full"></div>
-                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Incident Analytics</h1>
-            </div>
-            <p class="text-slate-500 text-sm font-medium ml-5">
-                Monthly trends and blotter records for <span class="text-brgyGreen font-bold">Barangay 419</span>.
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Complaints</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium italic">
+                Resident-submitted complaints for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span>.
             </p>
         </div>
-        
-        <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
-            <button onclick="window.print()" class="px-6 py-3.5 bg-white border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
-                <svg class="h-4 w-4 text-brgyGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                </svg>
-                Print Report
-            </button>
-        </div>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Dashboard</a>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Reports</span>
+        </nav>
     </div>
 
-    {{-- Analytics Graph --}}
-    <div class="bg-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 relative overflow-hidden">
-        <div class="flex justify-between items-center mb-8">
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Yearly Incident Trend</h3>
-            <div class="w-12 h-1 bg-slate-50 rounded-full"></div>
-        </div>
-        <div class="h-[350px] w-full">
-            <canvas id="incidentChart"></canvas>
-        </div>
-    </div>
-
-    {{-- Incident List Container --}}
-    <div class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden">
-        <div class="p-8 border-b border-slate-50 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Recent Incident Logs</h3>
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
-                <input type="text" placeholder="FILTER RECORDS..." class="pl-10 pr-6 py-3 text-[10px] font-black uppercase tracking-widest border-2 border-slate-100 rounded-xl focus:border-brgyGreen focus:ring-0 outline-none w-64 transition-all bg-white shadow-sm placeholder:text-slate-300">
+    {{-- Summary Cards --}}
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        @php
+            $cards = [
+                ['label' => 'Total',    'value' => $totalComplaints,            'bg' => 'bg-gray-50',    'text' => 'text-gray-800'],
+                ['label' => 'Open',     'value' => $openComplaints,             'bg' => 'bg-amber-50',   'text' => 'text-amber-700'],
+                ['label' => 'Closed',   'value' => $closedComplaints,           'bg' => 'bg-green-50',   'text' => 'text-green-700'],
+                ['label' => 'Critical', 'value' => $bySeverity['critical'],     'bg' => 'bg-red-50',     'text' => 'text-red-700'],
+                ['label' => 'Medium',   'value' => $bySeverity['medium'],       'bg' => 'bg-orange-50',  'text' => 'text-orange-700'],
+            ];
+        @endphp
+        @foreach($cards as $card)
+        <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-5 text-center">
+            <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{{ $card['label'] }}</p>
+            <div class="inline-flex items-center justify-center px-4 py-1.5 {{ $card['bg'] }} rounded-xl">
+                <p class="text-2xl font-extrabold {{ $card['text'] }}">{{ $card['value'] }}</p>
             </div>
         </div>
+        @endforeach
+    </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+    {{-- Filters --}}
+    <form method="GET" action="{{ route('admin.reports.index') }}"
+          class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Search by email or message..."
+                   class="sm:col-span-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300">
+
+            <select name="severity"
+                    class="bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
+                <option value="">All Severity Levels</option>
+                <option value="critical" {{ request('severity') === 'critical' ? 'selected' : '' }}>Critical</option>
+                <option value="medium"   {{ request('severity') === 'medium'   ? 'selected' : '' }}>Medium</option>
+                <option value="low"      {{ request('severity') === 'low'      ? 'selected' : '' }}>Low</option>
+            </select>
+
+            <select name="status"
+                    class="bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
+                <option value="">All Statuses</option>
+                <option value="open"   {{ request('status') === 'open'   ? 'selected' : '' }}>Open</option>
+                <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+            </select>
+        </div>
+        <div class="flex items-center gap-3 mt-4">
+            <button type="submit"
+                    class="bg-brgyGreen text-white px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all">
+                Filter
+            </button>
+            @if(request()->hasAny(['search','severity','status']))
+                <a href="{{ route('admin.reports.index') }}"
+                   class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl border-2 border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600 transition-all">
+                    Clear
+                </a>
+            @endif
+            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                {{ $complaints->total() }} {{ Str::plural('complaint', $complaints->total()) }}
+            </span>
+        </div>
+    </form>
+
+    {{-- Complaints Table --}}
+    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+        @if($complaints->isEmpty())
+            <div class="py-24 text-center">
+                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No complaints found</p>
+            </div>
+        @else
+            <table class="w-full">
                 <thead>
-                    <tr class="bg-slate-50/80 border-b border-slate-100 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em]">
-                        <th class="px-8 py-6">Incident Details</th>
-                        <th class="px-8 py-6">Parties Involved</th>
-                        <th class="px-8 py-6">Schedule</th>
-                        <th class="px-8 py-6">Location & Status</th>
-                        <th class="px-8 py-6 text-right">Action</th>
+                    <tr class="border-b border-gray-50 bg-gray-50/50">
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Date</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Resident</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Message</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">AI Summary</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Severity</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody class="divide-y divide-gray-50">
+                    @foreach($complaints as $complaint)
                     @php
-                        $placeholders = [
-                            ['type' => 'Physical Altercation', 'comp' => 'Juan Dela Cruz', 'resp' => 'Pedro Penduko', 'victim' => 'Serafin Gomez', 'status' => 'Pending', 'color' => 'amber'],
-                            ['type' => 'Theft / Robbery', 'comp' => 'Maria Clara', 'resp' => 'Unknown', 'victim' => 'Maria Clara', 'status' => 'Resolved', 'color' => 'emerald'],
-                            ['type' => 'Noise Complaint', 'comp' => 'Ricardo Dalisay', 'resp' => 'Neighbors', 'victim' => 'Community', 'status' => 'Mediation', 'color' => 'blue']
-                        ];
+                        $severityStyle = match($complaint->severity) {
+                            'critical' => 'bg-red-50 text-red-700',
+                            'medium'   => 'bg-orange-50 text-orange-700',
+                            'low'      => 'bg-gray-100 text-gray-600',
+                            default    => 'bg-gray-50 text-gray-400',
+                        };
+                        $statusStyle = match($complaint->status) {
+                            'open'   => 'bg-amber-50 text-amber-700',
+                            'closed' => 'bg-green-50 text-green-700',
+                            default  => 'bg-gray-50 text-gray-400',
+                        };
                     @endphp
-
-                    @foreach($placeholders as $row)
-                    <tr class="hover:bg-slate-50/50 transition-all group">
-                        <td class="px-8 py-6">
-                            <div class="font-bold text-slate-800 text-base leading-tight group-hover:text-brgyGreen transition-colors italic mb-1">
-                                {{ $row['type'] }}
-                            </div>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="w-1 h-1 bg-brgyGold rounded-full"></span>
-                                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 font-mono">
-                                    CASE ID: #2026-00{{ $loop->iteration }}
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="px-6 py-5 whitespace-nowrap">
+                            <p class="text-xs font-bold text-gray-700">{{ $complaint->created_at->format('M d, Y') }}</p>
+                            <p class="text-[10px] text-gray-400 mt-0.5">{{ $complaint->created_at->format('h:i A') }}</p>
+                        </td>
+                        <td class="px-6 py-5">
+                            <p class="text-xs font-bold text-gray-800">{{ $complaint->user_email }}</p>
+                        </td>
+                        <td class="px-6 py-5 max-w-xs">
+                            <p class="text-xs text-gray-600 line-clamp-2" title="{{ $complaint->message }}">
+                                {{ $complaint->message }}
+                            </p>
+                        </td>
+                        <td class="px-6 py-5 max-w-xs">
+                            @if($complaint->ai_summary)
+                                <p class="text-[10px] text-gray-500 italic line-clamp-2" title="{{ $complaint->ai_summary }}">
+                                    {{ $complaint->ai_summary }}
                                 </p>
-                            </div>
+                            @else
+                                <span class="text-[10px] text-gray-300 font-bold">—</span>
+                            @endif
                         </td>
-                        <td class="px-8 py-6">
-                            <div class="space-y-1.5">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[8px] font-black text-brgyGreen uppercase bg-brgyGreen/5 px-1.5 py-0.5 rounded">Comp</span>
-                                    <p class="text-[11px] font-bold text-slate-600 uppercase">{{ $row['comp'] }}</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[8px] font-black text-rose-400 uppercase bg-rose-50 px-1.5 py-0.5 rounded">Resp</span>
-                                    <p class="text-[11px] font-bold text-slate-600 uppercase">{{ $row['resp'] }}</p>
-                                </div>
-                                <p class="text-[9px] font-black text-slate-400 uppercase italic mt-1 ml-1">Victim: {{ $row['victim'] }}</p>
-                            </div>
+                        <td class="px-6 py-5">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $severityStyle }}">
+                                {{ $complaint->severity ?? 'unset' }}
+                            </span>
                         </td>
-                        <td class="px-8 py-6">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                <span class="text-xs font-bold text-slate-600 uppercase">Feb 27, 2026</span>
-                            </div>
-                            <p class="text-[9px] font-black text-slate-400 tracking-widest uppercase mt-1 ml-5">08:45 PM</p>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex flex-col gap-3">
-                                <div class="flex items-center gap-2 text-slate-500">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                                    <span class="text-[10px] font-black uppercase tracking-widest">Brgy. 419, Zone 43</span>
-                                </div>
-                                <span class="w-fit px-4 py-1.5 bg-{{ $row['color'] }}-50 text-{{ $row['color'] }}-600 border border-{{ $row['color'] }}-100 rounded-xl text-[9px] font-black uppercase tracking-widest">
-                                    {{ $row['status'] }}
-                                </span>
-                            </div>
-                        </td>
-                        <td class="px-8 py-6">
-                             <div class="flex items-center justify-end">
-                                <button class="p-2.5 bg-slate-50 text-slate-400 hover:bg-brgyGreen hover:text-white rounded-xl transition-all duration-300 shadow-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                </button>
-                             </div>
+                        <td class="px-6 py-5">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $statusStyle }}">
+                                {{ $complaint->status ?? 'open' }}
+                            </span>
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
+
+            @if($complaints->hasPages())
+                <div class="px-6 py-4 border-t border-gray-50">
+                    {{ $complaints->links() }}
+                </div>
+            @endif
+        @endif
     </div>
 </div>
-
-{{-- Load Chart.js --}}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('incidentChart').getContext('2d');
-    
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(45, 90, 39, 0.15)');
-    gradient.addColorStop(1, 'rgba(45, 90, 39, 0)');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($chartData['labels']) !!},
-            datasets: [{
-                label: 'Reported Incidents',
-                data: {!! json_encode($chartData['data']) !!},
-                borderColor: '#2d5a27',
-                borderWidth: 5,
-                pointBackgroundColor: '#f1c40f',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 4,
-                pointRadius: 6,
-                tension: 0.4,
-                fill: true,
-                backgroundColor: gradient,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#1e3d1a',
-                    titleFont: { size: 10, weight: 'bold', family: 'Inter' },
-                    bodyFont: { size: 13, weight: '900', family: 'Inter' },
-                    padding: 15,
-                    cornerRadius: 15,
-                    displayColors: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
-                    ticks: { font: { size: 10, weight: '900' }, color: '#94a3b8' }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { font: { size: 10, weight: '900' }, color: '#94a3b8' }
-                }
-            }
-        }
-    });
-</script>
 @endsection

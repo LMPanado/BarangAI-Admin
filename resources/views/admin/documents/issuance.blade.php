@@ -70,7 +70,7 @@
         margin: 0 !important;
     }
 }
-[contenteditable]:focus { outline: 2px dashed #2d5a27; outline-offset: 2px; background: #f0fdf4; }
+[contenteditable]:focus { outline: 2px dashed #1d4ed8; outline-offset: 2px; background: #eff6ff; }
 </style>
 
 <div class="space-y-6">

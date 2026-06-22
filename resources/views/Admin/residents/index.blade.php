@@ -3,14 +3,14 @@
 @section('content')
 <div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
     {{-- Page Header --}}
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-8 gap-4">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Resident Records</h1>
             <p class="text-sm text-gray-500 mt-1 font-medium italic">
                 Centralized database for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span> resident information.
             </p>
         </div>
-        <nav class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-[0.15em] bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
             <a href="#" class="text-gray-400 hover:text-brgyGreen transition-colors">Home</a>
             <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
             <span class="text-brgyGreen">Residents</span>

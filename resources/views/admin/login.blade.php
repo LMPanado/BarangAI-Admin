@@ -28,17 +28,17 @@
 
         .input-field:focus {
             background: white;
-            border-color: #1e3d1a;
+            border-color: #1e3a8a;
             box-shadow: 0 0 0 4px rgba(30, 61, 26, 0.05);
         }
 
         .btn-primary {
-            background-color: #1e3d1a;
+            background-color: #1e3a8a;
             transition: all 0.2s ease;
         }
 
         .btn-primary:hover {
-            background-color: #2d5a27;
+            background-color: #1d4ed8;
             transform: translateY(-1px);
         }
     </style>

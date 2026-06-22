@@ -18,25 +18,17 @@
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
                     },
-                    colors: { 
-                        brgyGreen: '#2d5a27', 
-                        brgyGold: '#f1c40f',
-                        darkGreen: '#1e3d1a'
-                    } 
+                    colors: {
+                        brgyGreen: '#1d4ed8',
+                        brgyGold: '#dc2626',
+                        darkGreen: '#1e3a8a'
+                    }
                 } 
             }
         }
     </script>
     <style>
-        @if(Auth::user()->role == 1)
-            .sidebar-gradient { background: linear-gradient(180deg, #2d5a27 0%, #1e3d1a 100%); }
-        @elseif(Auth::user()->role == 2)
-            .sidebar-gradient { background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%); }
-        @elseif(Auth::user()->role == 3)
-            .sidebar-gradient { background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%); }
-        @else
-            .sidebar-gradient { background: linear-gradient(180deg, #2d5a27 0%, #1e3d1a 100%); }
-        @endif
+        .sidebar-gradient { background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%); }
     </style>
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">

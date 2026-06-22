@@ -4,16 +4,19 @@
 <div class="space-y-8 p-2">
     
     {{-- Page Header --}}
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-2">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <div class="flex items-center gap-3 mb-2">
-                <div class="w-2 h-8 bg-brgyGold rounded-full"></div>
-                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Document Requests</h1>
-            </div>
-            <p class="text-slate-500 text-sm font-medium ml-5">
-                Review and process certificates for the residents of <span class="text-brgyGreen font-bold">Barangay 419</span>.
-            </p>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Document Requests</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Review and process certificates for the residents of <span class="text-brgyGreen font-bold">Barangay 419</span>.</p>
         </div>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <span class="text-gray-400">Home</span>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Requests</span>
+        </nav>
+    </div>
+
+        <div>
         
         <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
             {{-- Search Bar --}}
@@ -81,17 +84,23 @@
                     @forelse($requests as $request)
                     <tr class="hover:bg-slate-50/50 transition-all group">
                         <td class="px-8 py-6">
-                            <div class="font-bold text-slate-800 text-base leading-tight group-hover:text-brgyGreen transition-colors italic">
+                            <div class="font-bold text-slate-800 text-base leading-tight group-hover:text-brgyGreen transition-colors">
                                 @if($request->resident)
                                     {{ $request->resident->first_name }} {{ $request->resident->last_name }}
+                                @elseif($request->full_name)
+                                    {{ $request->full_name }}
                                 @else
-                                    <span class="text-red-400 italic font-medium text-xs">Resident Deleted</span>
+                                    <span class="text-gray-400 italic font-medium text-xs">Unknown</span>
                                 @endif
                             </div>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="w-1 h-1 bg-brgyGold rounded-full"></span>
                                 <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 font-mono">
-                                    ID: #{{ str_pad($request->resident_id, 5, '0', STR_PAD_LEFT) }}
+                                    @if($request->reference_no)
+                                        {{ $request->reference_no }}
+                                    @else
+                                        ID: #{{ str_pad($request->id, 5, '0', STR_PAD_LEFT) }}
+                                    @endif
                                 </p>
                             </div>
                         </td>
@@ -109,7 +118,7 @@
                             <div class="flex items-center gap-2">
                                 <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 <span class="text-xs font-bold text-slate-600">
-                                    {{ \Carbon\Carbon::parse($request->pickup_date)->format('M d, Y') }}
+                                    {{ $request->pickup_date ? \Carbon\Carbon::parse($request->pickup_date)->format('M d, Y') : '—' }}
                                 </span>
                             </div>
                         </td>

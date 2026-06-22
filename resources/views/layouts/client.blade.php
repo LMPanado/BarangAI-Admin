@@ -14,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        brgyGreen: '#2d5a27',
-                        brgyGold: '#f1c40f',
-                        darkGreen: '#1e3d1a',
+                        brgyGreen: '#1d4ed8',
+                        brgyGold: '#dc2626',
+                        darkGreen: '#1e3a8a',
                     },
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
@@ -27,7 +27,7 @@
     </script>
     <style>
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
-        .hero-gradient { background: linear-gradient(135deg, #2d5a27 0%, #1e3d1a 100%); }
+        .hero-gradient { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); }
         [x-cloak] { display: none !important; }
     </style>
 </head>

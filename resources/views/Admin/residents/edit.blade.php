@@ -3,20 +3,18 @@
 @section('content')
 <div class="space-y-8 p-4 font-sans">
     {{-- Page Header --}}
-    <div class="flex justify-between items-center border-b border-slate-100 pb-8">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Edit Resident Record</h1>
-            <p class="text-slate-500 text-sm mt-1 font-medium">
-                Updating profile for: 
-                <span style="color: #2d5a27;" class="font-bold">#{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span>
-            </p>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Edit Resident Record</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Updating profile for: <span class="text-brgyGreen font-bold">#{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span></p>
         </div>
-        <a href="{{ route('admin.residents.index') }}" class="text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-[0.2em] transition-all flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to List
-        </a>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <span class="text-gray-400">Home</span>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <a href="{{ route('admin.residents.index') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Residents</a>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Edit</span>
+        </nav>
     </div>
 
     {{-- Main Form Card --}}
@@ -36,32 +34,32 @@
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Last Name</label>
                         <input type="text" name="last_name" value="{{ old('last_name', $resident->last_name) }}" 
-                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all" required>
+                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all" required>
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">First Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name', $resident->first_name) }}" 
-                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all" required>
+                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all" required>
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Middle Name</label>
                         <input type="text" name="middle_name" value="{{ old('middle_name', $resident->middle_name) }}" 
-                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all">
+                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Gender</label>
-                            <select name="gender" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all appearance-none">
+                            <select name="gender" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all appearance-none">
                                 <option value="Male" {{ old('gender', $resident->gender) == 'Male' ? 'selected' : '' }}>Male</option>
                                 <option value="Female" {{ old('gender', $resident->gender) == 'Female' ? 'selected' : '' }}>Female</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Civil Status</label>
-                            <select name="civil_status" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all appearance-none">
+                            <select name="civil_status" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all appearance-none">
                                 <option value="Single" {{ old('civil_status', $resident->civil_status) == 'Single' ? 'selected' : '' }}>Single</option>
                                 <option value="Married" {{ old('civil_status', $resident->civil_status) == 'Married' ? 'selected' : '' }}>Married</option>
                                 <option value="Widowed" {{ old('civil_status', $resident->civil_status) == 'Widowed' ? 'selected' : '' }}>Widowed</option>
@@ -77,7 +75,7 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Birth Date</label>
                             <input type="date" name="birth_date" id="birth_date" value="{{ old('birth_date', $resident->birth_date) }}" 
-                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all" required>
+                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all" required>
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Age</label>
@@ -89,19 +87,19 @@
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Place of Birth</label>
                         <input type="text" name="place_birth" value="{{ old('place_birth', $resident->place_birth) }}" 
-                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all">
+                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all">
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Email Address</label>
                         <input type="email" name="email" value="{{ old('email', $resident->email) }}" 
-                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all" required>
+                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all" required>
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Phone Number</label>
                         <input type="text" name="phone" value="{{ old('phone', $resident->phone) }}" 
-                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all">
+                               class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all">
                     </div>
                 </div>
 
@@ -111,18 +109,18 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Height (CM)</label>
                             <input type="number" name="height_cm" value="{{ old('height_cm', $resident->height_cm) }}" 
-                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all">
+                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Weight (KG)</label>
                             <input type="number" name="weight_kg" value="{{ old('weight_kg', $resident->weight_kg) }}" 
-                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all">
+                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Voter Status</label>
-                        <select name="is_voter" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-extrabold text-[#2d5a27] focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all appearance-none">
+                        <select name="is_voter" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-extrabold text-[#1d4ed8] focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all appearance-none">
                             <option value="0" {{ old('is_voter', $resident->is_voter) == 0 ? 'selected' : '' }}>NOT REGISTERED</option>
                             <option value="1" {{ old('is_voter', $resident->is_voter) == 1 ? 'selected' : '' }}>REGISTERED VOTER</option>
                         </select>
@@ -130,7 +128,7 @@
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Resident Address</label>
-                        <textarea name="address" rows="4" class="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] px-6 py-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#2d5a27] focus:ring-0 outline-none transition-all resize-none" required>{{ old('address', $resident->address) }}</textarea>
+                        <textarea name="address" rows="4" class="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] px-6 py-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all resize-none" required>{{ old('address', $resident->address) }}</textarea>
                     </div>
                 </div>
             </div>
@@ -141,7 +139,7 @@
                     Discard Changes
                 </a>
                 <button type="submit" 
-                        style="background-color: #2d5a27;" 
+                        style="background-color: #1d4ed8;" 
                         class="w-full sm:w-auto text-white text-[11px] font-black uppercase tracking-[0.2em] px-12 py-5 rounded-2xl shadow-xl shadow-green-900/20 hover:scale-[1.02] transition-all active:scale-95">
                     Save Changes
                 </button>

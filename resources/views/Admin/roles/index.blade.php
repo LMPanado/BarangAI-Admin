@@ -4,16 +4,19 @@
 <div class="space-y-8 p-2">
     
     {{-- Page Header --}}
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 pb-2">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <div class="flex items-center gap-3 mb-2">
-                <div class="w-2 h-8 bg-brgyGold rounded-full"></div>
-                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Manage User Roles</h1>
-            </div>
-            <p class="text-slate-500 text-sm font-medium ml-5">
-                Manage staff permissions and resident roles for <span class="text-brgyGreen font-bold">Barangay 419</span>.
-            </p>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Manage User Roles</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Manage staff permissions and resident roles for <span class="text-brgyGreen font-bold">Barangay 419</span>.</p>
         </div>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <span class="text-gray-400">Home</span>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Roles</span>
+        </nav>
+    </div>
+
+        <div>
         
         <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
             {{-- Search Bar --}}

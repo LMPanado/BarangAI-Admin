@@ -4,7 +4,7 @@
 
 {{-- Success Toast Notification --}}
 @if(session('success'))
-<div id="toast" style="background-color: #2d5a27;" class="fixed top-5 right-5 z-[100] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-right-10 duration-500">
+<div id="toast" style="background-color: #1d4ed8;" class="fixed top-5 right-5 z-[100] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-right-10 duration-500">
     <div class="bg-white/20 p-1.5 rounded-lg">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
     </div>
@@ -35,7 +35,7 @@
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             <div class="flex bg-white p-1 rounded-2xl border-2 border-slate-100 shadow-sm">
                 <a href="{{ route('admin.schedules.index', ['month' => $prevDate->month, 'year' => $prevDate->year]) }}" 
-                   class="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-[#2d5a27]">
+                   class="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-[#1d4ed8]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -44,7 +44,7 @@
                     <span class="text-xs font-black uppercase tracking-widest text-slate-700">{{ $selectedDate->format('F Y') }}</span>
                 </div>
                 <a href="{{ route('admin.schedules.index', ['month' => $nextDate->month, 'year' => $nextDate->year]) }}" 
-                   class="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-[#2d5a27]">
+                   class="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-[#1d4ed8]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
                     </svg>
@@ -95,12 +95,12 @@
                         <div class="flex justify-between items-center mb-3">
                             {{-- Integrated logic for current date indication color --}}
                             @if($isToday)
-                                <span style="background-color: #2d5a27;" 
+                                <span style="background-color: #1d4ed8;" 
                                       class="text-sm font-black text-white w-9 h-9 flex items-center justify-center rounded-xl shadow-lg shadow-green-900/20">
                                     {{ $day }}
                                 </span>
                             @else
-                                <span class="text-sm font-black text-slate-500 group-hover:text-[#2d5a27] transition-colors ml-2">
+                                <span class="text-sm font-black text-slate-500 group-hover:text-[#1d4ed8] transition-colors ml-2">
                                     {{ $day }}
                                 </span>
                             @endif
@@ -109,7 +109,7 @@
                         <div class="space-y-2 overflow-y-auto max-h-[85px] scrollbar-hide">
                             @foreach($dayEvents as $event)
                                 <div onclick="event.stopPropagation(); window.location='{{ route('admin.schedules.edit', $event->id) }}'"
-                                     class="bg-white border border-slate-100 p-2 rounded-xl shadow-sm hover:border-[#2d5a27] hover:shadow-md transition-all relative pr-7 event-card">
+                                     class="bg-white border border-slate-100 p-2 rounded-xl shadow-sm hover:border-[#1d4ed8] hover:shadow-md transition-all relative pr-7 event-card">
                                     
                                     <button onclick="event.stopPropagation(); confirmDelete('{{ $event->id }}')" 
                                             class="absolute top-1.5 right-1.5 p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors z-10">
@@ -119,7 +119,7 @@
                                     </button>
 
                                     <div class="flex items-center gap-1 mb-0.5">
-                                        <div style="color: #2d5a27;" class="text-[8px] font-black uppercase tracking-tighter">
+                                        <div style="color: #1d4ed8;" class="text-[8px] font-black uppercase tracking-tighter">
                                             {{ \Carbon\Carbon::parse($event->schedule_time)->format('g:i A') }}
                                         </div>
                                         @if($event->image)
@@ -148,12 +148,12 @@
                     @forelse($upcomingActivities as $upcoming)
                         <div onclick="window.location='{{ route('admin.schedules.edit', $upcoming->id) }}'"
                              class="flex items-start space-x-4 group relative pr-8 cursor-pointer">
-                            <div class="bg-slate-50 group-hover:bg-[#2d5a27] transition-all p-3 rounded-2xl text-center min-w-[55px]">
+                            <div class="bg-slate-50 group-hover:bg-[#1d4ed8] transition-all p-3 rounded-2xl text-center min-w-[55px]">
                                 <div class="text-sm font-black text-slate-800 group-hover:text-white leading-none">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('d') }}</div>
                                 <div class="text-[9px] font-black text-slate-400 group-hover:text-white/80 uppercase mt-1">{{ \Carbon\Carbon::parse($upcoming->schedule_date)->format('M') }}</div>
                             </div>
                             <div class="overflow-hidden flex-1">
-                                <p class="text-[11px] font-black text-slate-800 truncate uppercase tracking-tight group-hover:text-[#2d5a27] transition-colors">{{ $upcoming->title }}</p>
+                                <p class="text-[11px] font-black text-slate-800 truncate uppercase tracking-tight group-hover:text-[#1d4ed8] transition-colors">{{ $upcoming->title }}</p>
                                 <p class="text-[10px] text-slate-400 font-bold mt-0.5">
                                     {{ \Carbon\Carbon::parse($upcoming->schedule_time)->format('g:i A') }}
                                 </p>
@@ -181,7 +181,7 @@
             </div>
 
             <a href="{{ route('admin.schedules.create') }}"
-               style="background-color: #2d5a27;"
+               style="background-color: #1d4ed8;"
                class="p-8 rounded-[2.5rem] shadow-lg shadow-green-900/20 text-white relative overflow-hidden group flex items-center gap-4 hover:opacity-90 transition-all">
                 <div class="relative z-10 flex-1">
                     <h4 class="text-sm font-black uppercase tracking-widest mb-1">New Schedule</h4>

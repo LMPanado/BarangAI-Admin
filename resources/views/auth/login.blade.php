@@ -28,17 +28,17 @@
 
         .input-field:focus {
             background: white;
-            border-color: #1e3d1a;
+            border-color: #1e3a8a;
             box-shadow: 0 0 0 4px rgba(30, 61, 26, 0.05);
         }
 
         .btn-primary {
-            background-color: #1e3d1a;
+            background-color: #1e3a8a;
             transition: all 0.2s ease;
         }
 
         .btn-primary:hover {
-            background-color: #2d5a27;
+            background-color: #1d4ed8;
             transform: translateY(-1px);
         }
     </style>
@@ -85,7 +85,7 @@
                 <div class="space-y-2">
                     <div class="flex justify-between items-center ml-1">
                         <label for="password" class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Password</label>
-                        <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-[#1e3d1a] transition-colors uppercase tracking-widest">Forgot Password?</a>
+                        <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-[#1e3a8a] transition-colors uppercase tracking-widest">Forgot Password?</a>
                     </div>
                     <input id="password" 
                            class="input-field block w-full rounded-xl py-3.5 px-5 outline-none text-sm"
@@ -105,7 +105,7 @@
         </div>
 
         {{-- Simple Back Link --}}
-        <a href="/" class="mt-8 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-[#1e3d1a] transition-colors">
+        <a href="/" class="mt-8 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-[#1e3a8a] transition-colors">
             ← Back to Home
         </a>
     </div>

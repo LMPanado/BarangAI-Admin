@@ -11,9 +11,9 @@
             theme: {
                 extend: {
                     colors: {
-                        brgyGreen: '#2d5a27',
-                        brgyGold: '#f1c40f',
-                        darkGreen: '#1e3d1a'
+                        brgyGreen: '#1d4ed8',
+                        brgyGold: '#dc2626',
+                        darkGreen: '#1e3a8a'
                     },
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
@@ -23,7 +23,7 @@
         }
     </script>
     <style>
-        .hero-gradient { background: linear-gradient(135deg, #2d5a27 0%, #1e3d1a 100%); }
+        .hero-gradient { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); }
     </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen flex items-center justify-center p-4 py-16">

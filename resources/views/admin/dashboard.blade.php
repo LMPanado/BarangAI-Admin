@@ -253,6 +253,6 @@
     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #2d5a27; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #1d4ed8; }
 </style>
 @endsection
