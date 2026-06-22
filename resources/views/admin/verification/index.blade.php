@@ -116,14 +116,20 @@
                 {{-- ID Photos --}}
                 <div class="px-6 py-5 grid grid-cols-2 gap-4 border-b border-gray-50">
                     {{-- Valid ID --}}
+                    @php
+                        $validIdUrl  = route('admin.verification.image', [$user->id, 'valid_id']);
+                        $selfieUrl   = route('admin.verification.image', [$user->id, 'selfie']);
+                        $residentName = addslashes(trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')));
+                    @endphp
                     <div>
                         <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Valid ID</p>
                         @if($user->valid_id_image)
-                            <button onclick="openLightbox('{{ addslashes($user->valid_id_image) }}', 'Valid ID — {{ addslashes(trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))) }}')"
+                            <button onclick="openLightbox('{{ $validIdUrl }}', 'Valid ID — {{ $residentName }}')"
                                     class="w-full group relative overflow-hidden rounded-2xl border-2 border-gray-100 hover:border-brgyGreen/30 transition-all">
-                                <img src="{{ $user->valid_id_image }}"
+                                <img src="{{ $validIdUrl }}"
                                      alt="Valid ID"
-                                     class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                     class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-32 rounded-2xl bg-gray-50 flex items-center justify-center\'><p class=\'text-[9px] font-black text-gray-300 uppercase tracking-widest\'>Failed to load</p></div>'">
                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                                     <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -144,11 +150,12 @@
                     <div>
                         <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Selfie Photo</p>
                         @if($user->selfie_image)
-                            <button onclick="openLightbox('{{ addslashes($user->selfie_image) }}', 'Selfie — {{ addslashes(trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))) }}')"
+                            <button onclick="openLightbox('{{ $selfieUrl }}', 'Selfie — {{ $residentName }}')"
                                     class="w-full group relative overflow-hidden rounded-2xl border-2 border-gray-100 hover:border-brgyGreen/30 transition-all">
-                                <img src="{{ $user->selfie_image }}"
+                                <img src="{{ $selfieUrl }}"
                                      alt="Selfie"
-                                     class="w-full h-32 object-cover object-top group-hover:scale-105 transition-transform duration-300">
+                                     class="w-full h-32 object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-32 rounded-2xl bg-gray-50 flex items-center justify-center\'><p class=\'text-[9px] font-black text-gray-300 uppercase tracking-widest\'>Failed to load</p></div>'">
                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                                     <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>

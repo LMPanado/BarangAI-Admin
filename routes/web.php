@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\DocumentRequestController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\AccountVerificationController;
+use App\Http\Controllers\Admin\VerificationImageController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AnnouncementController; // Imported for the announcements module
@@ -100,6 +101,11 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         // Feedback: Visible to 1, 2, and 3
         Route::get('/feedback', [ReportController::class, 'feedback'])->name('admin.feedback.index');
         Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->name('admin.feedback.reply');
+
+        // Verification image proxy (private Supabase bucket — streams via service key)
+        Route::get('/verification/image/{userId}/{type}', [VerificationImageController::class, 'show'])
+            ->name('admin.verification.image')
+            ->where('type', 'selfie|valid_id');
 
         // Account Verification: Role 3 (Barangay Official) only
         Route::middleware('role:3')->group(function () {
