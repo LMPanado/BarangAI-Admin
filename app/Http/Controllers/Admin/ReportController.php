@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -76,5 +77,30 @@ class ReportController extends Controller
         return view('admin.feedback.index', compact(
             'feedbacks', 'sentimentCounts', 'total'
         ));
+    }
+
+    public function replyFeedback(Request $request, $id)
+    {
+        $request->validate(['reply' => 'required|string|max:1000']);
+
+        $feedback = Feedback::findOrFail($id);
+        $user     = Auth::user();
+
+        $feedback->update([
+            'admin_reply' => $request->reply,
+            'replied_at'  => now(),
+            'replied_by'  => $user->first_name . ' ' . $user->last_name,
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success'    => true,
+                'reply'      => $feedback->admin_reply,
+                'replied_by' => $feedback->replied_by,
+                'replied_at' => $feedback->replied_at->format('M d, Y · h:i A'),
+            ]);
+        }
+
+        return back()->with('success', 'Reply sent successfully.');
     }
 }

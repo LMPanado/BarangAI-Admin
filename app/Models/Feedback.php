@@ -11,10 +11,12 @@ class Feedback extends Model
     protected $fillable = [
         'user_email', 'message', 'category', 'sentiment',
         'sentiment_score', 'ai_summary', 'supabase_uid',
+        'admin_reply', 'replied_at', 'replied_by',
     ];
 
     protected $casts = [
-        'created_at' => 'datetime',
+        'created_at'  => 'datetime',
+        'replied_at'  => 'datetime',
         'sentiment_score' => 'float',
     ];
 

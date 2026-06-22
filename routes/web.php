@@ -98,6 +98,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
         // Feedback: Visible to 1, 2, and 3
         Route::get('/feedback', [ReportController::class, 'feedback'])->name('admin.feedback.index');
+        Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->name('admin.feedback.reply');
 
         Route::middleware(['role:1'])->group(function () {
             Route::prefix('roles')->name('admin.roles.')->group(function () {
