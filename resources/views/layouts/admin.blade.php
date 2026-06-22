@@ -194,17 +194,79 @@
         </header>
 
         <main class="flex-grow overflow-y-auto p-12">
-            @if(session('success'))
-                <div class="mb-10 p-6 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black rounded-3xl shadow-sm flex items-center uppercase tracking-widest">
-                    <div class="w-8 h-8 bg-emerald-500 text-white rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-emerald-500/30">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                    {{ session('success') }}
-                </div>
-            @endif
-
             @yield('content')
         </main>
     </div>
+
+    {{-- Global Toast --}}
+    @if(session('success'))
+    <div id="global-toast"
+         class="fixed top-6 right-6 z-[200] flex items-center gap-3 bg-white border border-gray-100 shadow-2xl shadow-black/10 px-5 py-4 rounded-2xl transition-all duration-500">
+        <div class="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <p class="text-xs font-black text-gray-700 uppercase tracking-widest">{{ session('success') }}</p>
+        <button onclick="document.getElementById('global-toast').remove()" class="ml-2 text-gray-300 hover:text-gray-500 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    <script>setTimeout(() => { const t = document.getElementById('global-toast'); if(t) t.style.opacity = '0'; setTimeout(() => t && t.remove(), 500); }, 4000);</script>
+    @endif
+
+    {{-- Global Delete Confirm Modal --}}
+    <div id="delete-modal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center">
+            <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </div>
+            <h3 class="text-base font-extrabold text-gray-800 mb-2">Confirm Deletion</h3>
+            <p id="delete-modal-message" class="text-sm text-gray-400 font-medium mb-8">This action cannot be undone.</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()"
+                        class="flex-1 py-3 border-2 border-gray-100 text-gray-500 text-xs font-black uppercase tracking-widest rounded-2xl hover:border-gray-200 hover:text-gray-700 transition-all">
+                    Cancel
+                </button>
+                <button id="delete-confirm-btn"
+                        class="flex-1 py-3 bg-red-500 text-white text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let _deleteForm = null;
+
+    function confirmDelete(formId, message) {
+        _deleteForm = document.getElementById(formId);
+        document.getElementById('delete-modal-message').textContent = message || 'This action cannot be undone.';
+        const modal = document.getElementById('delete-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('delete-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        _deleteForm = null;
+    }
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', function () {
+        if (_deleteForm) _deleteForm.submit();
+    });
+
+    document.getElementById('delete-modal').addEventListener('click', function (e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+    </script>
 </body>
 </html>
