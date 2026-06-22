@@ -132,30 +132,40 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-white px-8 py-5 border-b border-gray-50 flex items-center justify-between">
-                <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider">Case Management Summary</h3>
-                <span class="p-2 bg-gray-50 text-gray-400 rounded-full hover:bg-green-50 hover:text-barangayGreen transition-colors cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                </span>
+            <div class="bg-white px-8 py-5 border-b border-gray-50">
+                <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider">Population by Age Group</h3>
             </div>
-            <div class="p-8">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                    <div class="text-center p-5 bg-gray-50/50 rounded-2xl border border-transparent hover:border-green-100 transition-all">
-                        <p class="text-3xl font-extrabold text-gray-800">5</p>
-                        <p class="text-[10px] font-bold text-green-600 uppercase mt-1">Settled</p>
+            <div class="p-8 space-y-5">
+                @php $maxAge = max(array_values($ageGroups)) ?: 1; @endphp
+                @foreach($ageGroups as $label => $count)
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-gray-600">{{ $label }}</span>
+                        <span class="text-xs font-extrabold text-brgyGreen">{{ $count }}</span>
                     </div>
-                    <div class="text-center p-5 bg-gray-50/50 rounded-2xl border border-transparent">
-                        <p class="text-3xl font-extrabold text-gray-800">3</p>
-                        <p class="text-[10px] font-bold text-amber-600 uppercase mt-1 tracking-tighter">Unscheduled</p>
+                    <div class="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-brgyGreen rounded-full transition-all duration-500"
+                             style="width: {{ $maxAge > 0 ? round($count / $maxAge * 100) : 0 }}%"></div>
                     </div>
-                    <div class="text-center p-5 bg-red-50 rounded-2xl border border-red-100">
-                        <p class="text-3xl font-extrabold text-red-600">12</p>
-                        <p class="text-[10px] font-bold text-red-500 uppercase mt-1">Unsettled</p>
-                    </div>
-                    <div class="text-center p-5 bg-gray-50/50 rounded-2xl border border-transparent">
-                        <p class="text-3xl font-extrabold text-gray-800">8</p>
-                        <p class="text-[10px] font-bold text-blue-600 uppercase mt-1">Scheduled</p>
-                    </div>
+                </div>
+                @endforeach
+
+                <div class="pt-4 border-t border-gray-50 grid grid-cols-3 gap-4">
+                    <a href="{{ route('admin.documents.index') }}"
+                       class="flex flex-col items-center p-4 bg-amber-50 rounded-2xl hover:bg-amber-100 transition-colors group">
+                        <p class="text-2xl font-extrabold text-amber-700">{{ $pendingRequests }}</p>
+                        <p class="text-[9px] font-black text-amber-600 uppercase tracking-widest mt-1 text-center">Pending Requests</p>
+                    </a>
+                    <a href="{{ route('admin.schedules.index') }}"
+                       class="flex flex-col items-center p-4 bg-blue-50 rounded-2xl hover:bg-blue-100 transition-colors group">
+                        <p class="text-2xl font-extrabold text-blue-700">{{ \App\Models\Schedule::where('schedule_date', '>=', now()->toDateString())->count() }}</p>
+                        <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest mt-1 text-center">Upcoming Events</p>
+                    </a>
+                    <a href="{{ route('admin.reports.index') }}"
+                       class="flex flex-col items-center p-4 bg-red-50 rounded-2xl hover:bg-red-100 transition-colors group">
+                        <p class="text-2xl font-extrabold text-red-700">{{ \App\Models\Complaint::where('status', 'open')->count() }}</p>
+                        <p class="text-[9px] font-black text-red-600 uppercase tracking-widest mt-1 text-center">Open Complaints</p>
+                    </a>
                 </div>
             </div>
         </div>

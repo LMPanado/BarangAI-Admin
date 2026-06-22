@@ -32,18 +32,26 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
     Route::middleware(['auth', 'role:1,2,3'])->prefix('admin')->group(function () {
         
         Route::get('/dashboard', function () {
-            $requests = DocumentRequest::all();
-            $recentLogs = auth()->user()->role === 1
+            $requests        = DocumentRequest::all();
+            $totalPopulation = Resident::count();
+            $recentLogs      = auth()->user()->role === 1
                 ? AuditLog::with('user')->latest('created_at')->limit(10)->get()
                 : collect();
+            $ageGroups = [
+                'Children (0–12)'  => Resident::whereBetween('age', [0, 12])->count(),
+                'Teens (13–17)'    => Resident::whereBetween('age', [13, 17])->count(),
+                'Adults (18–59)'   => Resident::whereBetween('age', [18, 59])->count(),
+                'Seniors (60+)'    => Resident::where('age', '>=', 60)->count(),
+            ];
             return view('admin.dashboard', [
                 'requests'        => $requests,
-                'totalPopulation' => Resident::count(),
+                'totalPopulation' => $totalPopulation,
                 'maleCount'       => Resident::where('gender', 'Male')->count(),
                 'femaleCount'     => Resident::where('gender', 'Female')->count(),
                 'voterCount'      => Resident::where('is_voter', true)->count(),
                 'pendingRequests' => $requests->where('status', 'pending')->count(),
                 'recentLogs'      => $recentLogs,
+                'ageGroups'       => $ageGroups,
             ]);
         })->name('dashboard');
 
