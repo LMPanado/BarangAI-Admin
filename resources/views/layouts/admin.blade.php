@@ -106,8 +106,7 @@
             @if(Auth::user()->role == 3)
             @php
                 $verificationPending = \App\Models\User::where('role', 0)
-                    ->where('verification_status', 'unverified')
-                    ->whereNotNull('valid_id_image')
+                    ->where('verification_status', 'pending')
                     ->count();
             @endphp
             <a href="{{ route('admin.verification.index') }}"

@@ -12,8 +12,7 @@ class AccountVerificationController extends Controller
     public function index(Request $request)
     {
         $query = User::where('role', User::ROLE_RESIDENT)
-            ->where('verification_status', 'unverified')
-            ->whereNotNull('valid_id_image')
+            ->where('verification_status', 'pending')
             ->orderByDesc('verification_submitted_at');
 
         if ($request->filled('search')) {
@@ -28,8 +27,7 @@ class AccountVerificationController extends Controller
         $pendingUsers = $query->paginate(10)->withQueryString();
 
         $pendingCount = User::where('role', User::ROLE_RESIDENT)
-            ->where('verification_status', 'unverified')
-            ->whereNotNull('valid_id_image')
+            ->where('verification_status', 'pending')
             ->count();
 
         return view('admin.verification.index', compact('pendingUsers', 'pendingCount'));
