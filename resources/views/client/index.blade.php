@@ -7,10 +7,6 @@
 ═══════════════════════════════════════════ --}}
 <header class="relative min-h-screen flex items-center overflow-hidden" style="background: linear-gradient(135deg, #0f2d6b 0%, #1d4ed8 60%, #2563eb 100%);">
 
-    {{-- Decorative rings --}}
-    <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[700px] h-[700px] rounded-full border border-white/5"></div>
-    <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4  w-[550px] h-[550px] rounded-full border border-white/5"></div>
-    <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/6  w-[400px] h-[400px] rounded-full border border-white/8"></div>
     <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-white/3 rounded-full blur-[160px] -translate-x-1/2 -translate-y-1/2"></div>
 
     @if(session('success'))
@@ -55,21 +51,13 @@
             </div>
         </div>
 
-        {{-- Floating logo card --}}
-        <div class="absolute right-16 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-6">
+        {{-- Floating logo --}}
+        <div class="absolute right-16 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center">
             <div class="relative">
                 <div class="absolute inset-0 bg-white/10 rounded-full blur-3xl scale-150"></div>
                 <img src="{{ asset('images/brgy_logo.png') }}"
                      alt="Barangay 419"
-                     class="relative w-52 h-52 object-contain drop-shadow-[0_0_60px_rgba(255,255,255,0.15)]">
-            </div>
-            <div class="flex gap-3">
-                @foreach([['419','Barangay'],['IV','District'],['43','Zone']] as $stat)
-                <div class="bg-white/8 border border-white/10 backdrop-blur-md rounded-2xl p-4 text-center min-w-[70px]">
-                    <p class="text-white font-extrabold text-xl leading-none">{{ $stat[0] }}</p>
-                    <p class="text-white/40 text-[9px] font-black uppercase tracking-widest mt-1">{{ $stat[1] }}</p>
-                </div>
-                @endforeach
+                     class="relative w-72 h-72 object-contain drop-shadow-[0_0_80px_rgba(255,255,255,0.2)]">
             </div>
         </div>
     </div>
@@ -233,14 +221,14 @@
         <article class="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2">
                 @if($announcement->image_url)
-                <div class="h-72 md:h-auto overflow-hidden">
+                <div class="h-52 md:h-auto overflow-hidden">
                     <img src="{{ Storage::url($announcement->image_url) }}"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                          alt="{{ $announcement->title }}">
                 </div>
                 @endif
-                <div class="p-10 flex flex-col justify-center {{ !$announcement->image_url ? 'md:col-span-2' : '' }}">
-                    <div class="flex items-center gap-3 mb-5">
+                <div class="p-8 flex flex-col justify-center {{ !$announcement->image_url ? 'md:col-span-2' : '' }}">
+                    <div class="flex items-center gap-3 mb-4">
                         @if($announcement->is_pinned)
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-brgyGreen text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
                             <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
@@ -250,11 +238,11 @@
                         <span class="px-3 py-1 bg-brgyGreen/10 text-brgyGreen rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $announcement->category }}</span>
                         <span class="text-slate-300 text-xs font-bold">{{ $announcement->created_at->format('M d, Y') }}</span>
                     </div>
-                    <h3 class="font-extrabold text-slate-900 text-2xl md:text-3xl leading-tight mb-4 group-hover:text-brgyGreen transition-colors">
+                    <h3 class="font-extrabold text-slate-900 text-xl leading-snug mb-3 group-hover:text-brgyGreen transition-colors">
                         {{ $announcement->title }}
                     </h3>
-                    <p class="text-slate-500 text-sm leading-relaxed line-clamp-4">{{ $announcement->content }}</p>
-                    <div class="mt-6 pt-5 border-t border-slate-50 flex items-center justify-between">
+                    <p class="text-slate-500 text-sm leading-relaxed line-clamp-3">{{ $announcement->content }}</p>
+                    <div class="mt-5 pt-4 border-t border-slate-50 flex items-center justify-between">
                         <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Official Bulletin</span>
                         <span class="text-brgyGreen text-xs font-black">{{ $announcement->created_at->diffForHumans() }}</span>
                     </div>

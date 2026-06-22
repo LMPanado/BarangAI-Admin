@@ -50,7 +50,7 @@
 
                 <div class="relative h-20 flex items-center" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
                     <button class="h-20 flex items-center gap-1 px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">
-                        Services
+                        SERVICES
                         <svg class="w-3 h-3 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="open"
