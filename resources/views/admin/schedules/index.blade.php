@@ -19,11 +19,18 @@
 <div class="space-y-8 p-4 font-sans">
     
     {{-- Page Header --}}
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-8">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight text-left">Event Scheduler</h1>
-            <p class="text-slate-500 text-sm mt-1 font-medium">Real-time operations for <span style="color: #2d5a27;" class="font-bold">Barangay 419</span>.</p>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Event Scheduler</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Real-time operations for <span class="text-brgyGreen font-bold">Barangay 419</span>.</p>
         </div>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <span class="text-gray-400">Home</span>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Schedules</span>
+        </nav>
+    </div>
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
         
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             <div class="flex bg-white p-1 rounded-2xl border-2 border-slate-100 shadow-sm">
@@ -135,7 +142,7 @@
         {{-- Sidebar --}}
         <div class="space-y-6">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-100">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8 border-b border-slate-50 pb-4">Upcoming Activities</h3>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8 border-b border-slate-50 pb-4">Upcoming Events</h3>
                 
                 <div class="space-y-8">
                     @forelse($upcomingActivities as $upcoming)

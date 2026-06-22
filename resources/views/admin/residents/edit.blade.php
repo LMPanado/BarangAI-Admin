@@ -3,20 +3,18 @@
 @section('content')
 <div class="space-y-8 p-4 font-sans">
     {{-- Page Header --}}
-    <div class="flex justify-between items-center border-b border-slate-100 pb-8">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Edit Resident Record</h1>
-            <p class="text-slate-500 text-sm mt-1 font-medium">
-                Updating profile for: 
-                <span style="color: #2d5a27;" class="font-bold">#{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span>
-            </p>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Edit Resident Record</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium">Updating profile for: <span class="text-brgyGreen font-bold">#{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span></p>
         </div>
-        <a href="{{ route('admin.residents.index') }}" class="text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-[0.2em] transition-all flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to List
-        </a>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <span class="text-gray-400">Home</span>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <a href="{{ route('admin.residents.index') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Residents</a>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Edit</span>
+        </nav>
     </div>
 
     {{-- Main Form Card --}}

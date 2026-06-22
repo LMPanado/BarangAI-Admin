@@ -6,20 +6,22 @@
     {{-- Page Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">New Announcement</h1>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Edit Announcement</h1>
             <p class="text-sm text-gray-500 mt-1 font-medium italic">
-                Post an official bulletin for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span> residents.
+                Update bulletin for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span> residents.
             </p>
         </div>
         <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
             <a href="{{ route('admin.announcements.index') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Announcements</a>
             <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-            <span class="text-brgyGreen">Create</span>
+            <span class="text-brgyGreen">Edit</span>
         </nav>
     </div>
 
-    <form action="{{ route('admin.announcements.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.announcements.update', $announcement->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
+        <input type="hidden" name="remove_image" id="remove_image_input" value="0">
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -39,8 +41,7 @@
                     {{-- Title --}}
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 ml-1">Announcement Title</label>
-                        <input type="text" name="title" required value="{{ old('title') }}"
-                               placeholder="e.g., Mandatory Community Health Caravan"
+                        <input type="text" name="title" required value="{{ old('title', $announcement->title) }}"
                                class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300">
                     </div>
 
@@ -49,10 +50,10 @@
                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 ml-1">Category</label>
                         <select name="category" required
                                 class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all">
-                            <option value="General" {{ old('category') == 'General' ? 'selected' : '' }}>General News</option>
-                            <option value="Health"  {{ old('category') == 'Health'  ? 'selected' : '' }}>Health Advisory</option>
-                            <option value="Security"{{ old('category') == 'Security'? 'selected' : '' }}>Security Notice</option>
-                            <option value="Advisory"{{ old('category') == 'Advisory'? 'selected' : '' }}>Emergency Bulletin</option>
+                            <option value="General"  {{ old('category', $announcement->category) == 'General'  ? 'selected' : '' }}>General News</option>
+                            <option value="Health"   {{ old('category', $announcement->category) == 'Health'   ? 'selected' : '' }}>Health Advisory</option>
+                            <option value="Security" {{ old('category', $announcement->category) == 'Security' ? 'selected' : '' }}>Security Notice</option>
+                            <option value="Advisory" {{ old('category', $announcement->category) == 'Advisory' ? 'selected' : '' }}>Emergency Bulletin</option>
                         </select>
                     </div>
 
@@ -60,8 +61,7 @@
                     <div>
                         <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 ml-1">Detailed Content</label>
                         <textarea name="content" required rows="7"
-                                  placeholder="Type out all information regarding the official community notice..."
-                                  class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300 resize-none">{{ old('content') }}</textarea>
+                                  class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300 resize-none">{{ old('content', $announcement->content) }}</textarea>
                     </div>
                 </div>
             </div>
@@ -80,14 +80,17 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
-                                <p id="upload-label-text" class="text-[9px] font-black text-gray-400 uppercase tracking-widest group-hover:text-brgyGreen transition-colors">Upload Image</p>
+                                <p id="upload-label-text" class="text-[9px] font-black text-gray-400 uppercase tracking-widest group-hover:text-brgyGreen transition-colors">
+                                    {{ $announcement->image_url ? 'Replace Image' : 'Upload Image' }}
+                                </p>
                                 <p class="text-[9px] text-gray-300 mt-1">JPG, PNG, GIF, WEBP · Max 4MB</p>
                             </div>
                             <input id="imageUpload" name="image" type="file" class="hidden" accept="image/*" onchange="previewImage(this)">
                         </label>
 
-                        <div id="image-preview" class="hidden absolute inset-0 rounded-[2rem] overflow-hidden bg-white border-2 border-brgyGreen group/prev">
-                            <img src="" id="preview-src" class="w-full h-full object-cover">
+                        {{-- Preview (existing or newly selected) --}}
+                        <div id="image-preview" class="{{ $announcement->image_url ? '' : 'hidden' }} absolute inset-0 rounded-[2rem] overflow-hidden bg-white border-2 border-brgyGreen group/prev">
+                            <img src="{{ $announcement->image_url ? Storage::url($announcement->image_url) : '' }}" id="preview-src" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/prev:opacity-100 transition-opacity flex items-center justify-center">
                                 <button type="button" onclick="removeImage(event)"
                                         class="bg-red-500 text-white rounded-2xl px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-2 group-hover/prev:translate-y-0 transition-all">
@@ -103,6 +106,7 @@
                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Options</label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                         <input type="checkbox" name="is_pinned" id="is_pinned" value="1"
+                               {{ $announcement->is_pinned ? 'checked' : '' }}
                                class="w-4 h-4 rounded border-gray-300 text-brgyGreen focus:ring-brgyGreen">
                         <span class="text-xs font-black uppercase tracking-widest text-gray-600 group-hover:text-brgyGreen transition-colors">Pin to top of feed</span>
                     </label>
@@ -113,7 +117,7 @@
                     <button type="submit"
                             class="w-full bg-brgyGreen text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                        Publish Announcement
+                        Save Changes
                     </button>
                     <a href="{{ route('admin.announcements.index') }}"
                        class="w-full block text-center py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border-2 border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600 transition-all">
@@ -139,6 +143,7 @@
             };
             reader.readAsDataURL(input.files[0]);
             label.textContent = input.files[0].name;
+            document.getElementById('remove_image_input').value = '0';
         }
     }
 
@@ -148,6 +153,7 @@
         document.getElementById('preview-src').src = '';
         document.getElementById('imageUpload').value = '';
         document.getElementById('upload-label-text').textContent = 'Upload Image';
+        document.getElementById('remove_image_input').value = '1';
     }
 </script>
 @endsection
