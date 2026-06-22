@@ -12,7 +12,7 @@
                 extend: {
                     colors: {
                         brgyGreen: '#1d4ed8',
-                        brgyGold: '#dc2626',
+                        brgyGold: '#1d4ed8',
                         darkGreen: '#1e3a8a'
                     },
                     fontFamily: {

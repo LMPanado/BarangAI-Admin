@@ -15,7 +15,7 @@
                 extend: {
                     colors: {
                         brgyGreen: '#1d4ed8',
-                        brgyGold: '#dc2626',
+                        brgyGold: '#ffffff',
                         darkGreen: '#1e3a8a',
                     },
                     fontFamily: {
@@ -33,50 +33,42 @@
 </head>
 <body class="bg-[#f8fafc] text-slate-800 font-sans">
 
-    <nav class="fixed top-0 w-full glass shadow-[0_2px_20px_rgba(0,0,0,0.02)] z-50 border-b border-slate-100">
+    <nav class="fixed top-0 w-full glass shadow-[0_2px_20px_rgba(0,0,0,0.04)] z-50 border-b border-slate-100/80">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            {{-- Left Side: Brand --}}
             <a href="/" class="flex items-center gap-3 group">
-                <div class="relative">
-                    <img src="{{ asset('images/brgy_logo.png') }}" 
-                         alt="Barangay 419 Logo" 
-                         class="w-12 h-12 object-contain rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                </div>
+                <img src="{{ asset('images/brgy_logo.png') }}"
+                     alt="Barangay 419 Logo"
+                     class="w-11 h-11 object-contain rounded-full group-hover:scale-110 transition-transform duration-300">
                 <div class="flex flex-col">
-                    <span class="font-extrabold tracking-tight text-brgyGreen text-lg uppercase leading-none">Barangay 419</span>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Official Information Portal</span>
+                    <span class="font-extrabold tracking-tight text-brgyGreen text-base uppercase leading-none">Barangay 419</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-0.5">Sampaloc, Manila</span>
                 </div>
             </a>
-            
-            {{-- Right Side: Navigation --}}
-            <div class="hidden md:flex items-center gap-8 text-[11px] font-black text-slate-400 uppercase tracking-widest h-full">
-                <a href="/" class="h-20 flex items-center border-b-2 transition {{ request()->is('/') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen' }}">Home</a>
-                
-                {{-- Dropdown Services --}}
-                <div class="relative h-20 flex items-center" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                    <button class="flex items-center gap-1 transition hover:text-brgyGreen uppercase tracking-widest cursor-default">
-                        Services
-                        <svg class="w-3 h-3 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
 
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-2"
+            <div class="hidden md:flex items-center gap-1 text-[11px] font-black text-slate-500 uppercase tracking-widest h-full">
+                <a href="/" class="h-20 flex items-center px-4 border-b-2 transition {{ request()->is('/') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen hover:border-brgyGreen/30' }}">Home</a>
+
+                <div class="relative h-20 flex items-center" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                    <button class="h-20 flex items-center gap-1 px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">
+                        Services
+                        <svg class="w-3 h-3 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-1"
                          x-transition:enter-end="opacity-100 translate-y-0"
-                         class="absolute top-full left-0 w-64 bg-white shadow-2xl border border-slate-100 rounded-2xl py-3 z-50"
+                         class="absolute top-full left-0 w-56 bg-white shadow-xl border border-slate-100 rounded-2xl py-2 z-50"
                          x-cloak>
-                        <a href="{{ route('services.show', 'barangay-id') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Barangay I.D.</a>
-                        <a href="{{ route('services.show', 'business-permit') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Business Permit</a>
-                        <a href="{{ route('services.show', 'cedula') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Cedula</a>
-                        <a href="{{ route('services.show', 'barangay-clearance') }}" class="block px-5 py-3 hover:bg-slate-50 hover:text-brgyGreen transition">Barangay Clearance</a>
+                        <a href="{{ route('services.show', 'barangay-id') }}"       class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay I.D.</a>
+                        <a href="{{ route('services.show', 'business-permit') }}"   class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Business Permit</a>
+                        <a href="{{ route('services.show', 'cedula') }}"            class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Cedula</a>
+                        <a href="{{ route('services.show', 'barangay-clearance') }}" class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay Clearance</a>
                     </div>
                 </div>
 
-                <a href="/#officials" class="h-20 flex items-center border-b-2 border-transparent hover:text-brgyGreen transition">Officials</a>
-                <a href="/#schedule" class="h-20 flex items-center border-b-2 border-transparent hover:text-brgyGreen transition">Announcements</a>
-                <a href="{{ route('about') }}" class="h-20 flex items-center border-b-2 transition {{ request()->routeIs('about') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen' }}">About</a>
-                
-                {{-- Admin Login link has been removed from here --}}
+                <a href="/#officials"   class="h-20 flex items-center px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">Officials</a>
+                <a href="/#announcements" class="h-20 flex items-center px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">Announcements</a>
+                <a href="{{ route('about') }}" class="h-20 flex items-center px-4 border-b-2 transition {{ request()->routeIs('about') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen hover:border-brgyGreen/30' }}">About</a>
             </div>
         </div>
     </nav>
@@ -85,50 +77,50 @@
         @yield('content')
     </main>
 
-    <footer class="bg-darkGreen text-white pt-24 pb-12 rounded-t-[3rem] mt-20">
+    <footer class="bg-darkGreen text-white pt-20 pb-10 rounded-t-[2.5rem] mt-10">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                <div class="space-y-6">
-                    <div class="flex items-center gap-4">
-                        <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-14 h-14 object-contain rounded-full border border-white/10">
-                        <span class="font-extrabold tracking-tight text-white text-xl uppercase">Barangay 419</span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
+                <div class="space-y-5 md:col-span-1">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-12 h-12 object-contain rounded-full border border-white/10">
+                        <div>
+                            <p class="font-extrabold text-white text-base uppercase leading-none">Barangay 419</p>
+                            <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-0.5">Zone 43, District IV</p>
+                        </div>
                     </div>
-                    <p class="text-white/40 text-xs leading-relaxed font-medium">
-                        Serving the residents of Zone 43, District IV with integrity and digital innovation.
+                    <p class="text-white/40 text-xs leading-relaxed font-medium max-w-xs">
+                        Serving the residents of Sampaloc, Manila with integrity and digital innovation.
                     </p>
                 </div>
 
                 <div>
-                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Quick Links</h4>
-                    <ul class="space-y-4 text-xs font-bold uppercase tracking-widest text-white/60">
-                        <li><a href="/" class="hover:text-brgyGold transition">Home</a></li>
-                        <li><a href="{{ route('about') }}" class="hover:text-brgyGold transition">About Us</a></li>
-                        <li><a href="/#schedule" class="hover:text-brgyGold transition">Announcements</a></li>
+                    <h4 class="text-[9px] font-black uppercase tracking-[0.25em] text-white/25 mb-5">Navigation</h4>
+                    <ul class="space-y-3 text-xs font-bold uppercase tracking-widest">
+                        <li><a href="/" class="text-white/50 hover:text-white transition">Home</a></li>
+                        <li><a href="/#services" class="text-white/50 hover:text-white transition">Services</a></li>
+                        <li><a href="/#officials" class="text-white/50 hover:text-white transition">Officials</a></li>
+                        <li><a href="/#announcements" class="text-white/50 hover:text-white transition">Announcements</a></li>
+                        <li><a href="{{ route('about') }}" class="text-white/50 hover:text-white transition">About Us</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Community Info</h4>
-                    <ul class="space-y-4 text-xs font-bold uppercase tracking-widest text-white/60">
-                        <li><a href="/#services" class="hover:text-brgyGold transition">Barangay Services</a></li>
-                        <li><a href="/#officials" class="hover:text-brgyGold transition">Barangay Officials</a></li>
-                        <li><a href="#" class="hover:text-brgyGold transition">Emergency Hotlines</a></li>
-                        <li><a href="{{ route('admin.login') }}" class="hover:text-brgyGold transition">Admin Login</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-6">Office Location</h4>
-                    <p class="text-xs font-bold text-white/60 leading-relaxed uppercase tracking-wider">
-                        123 Barangay Hall St.<br>
+                    <h4 class="text-[9px] font-black uppercase tracking-[0.25em] text-white/25 mb-5">Office</h4>
+                    <p class="text-xs font-medium text-white/50 leading-relaxed mb-5">
                         Zone 43, District IV<br>
                         Sampaloc, Manila
                     </p>
+                    <a href="{{ route('admin.login') }}"
+                       class="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-white/70 hover:text-white">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        Admin Login
+                    </a>
                 </div>
             </div>
 
-            <div class="pt-12 border-t border-white/5 text-center text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">
-                <p>&copy; 2026 Barangay 419, Zone 43. All Rights Reserved.</p>
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-3">
+                <p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.25em]">&copy; 2026 Barangay 419, Zone 43. All Rights Reserved.</p>
+                <p class="text-[10px] font-bold text-white/15 uppercase tracking-widest">BarangAI System</p>
             </div>
         </div>
     </footer>

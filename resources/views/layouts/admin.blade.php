@@ -20,7 +20,7 @@
                     },
                     colors: {
                         brgyGreen: '#1d4ed8',
-                        brgyGold: '#dc2626',
+                        brgyGold: '#ffffff',
                         darkGreen: '#1e3a8a'
                     }
                 } 
