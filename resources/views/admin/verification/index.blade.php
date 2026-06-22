@@ -117,8 +117,9 @@
                 <div class="px-6 py-5 grid grid-cols-2 gap-4 border-b border-gray-50">
                     {{-- Valid ID --}}
                     @php
-                        $validIdUrl  = route('admin.verification.image', [$user->id, 'valid_id']);
-                        $selfieUrl   = route('admin.verification.image', [$user->id, 'selfie']);
+                        $storagBase   = 'https://ypcumosboftjylrnmyih.supabase.co/storage/v1/object/public/verification-docs/';
+                        $validIdUrl   = $user->valid_id_image ? $storagBase . $user->valid_id_image : null;
+                        $selfieUrl    = $user->selfie_image   ? $storagBase . $user->selfie_image   : null;
                         $residentName = addslashes(trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')));
                     @endphp
                     <div>
