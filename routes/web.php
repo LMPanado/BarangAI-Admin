@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ResidentController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\DocumentRequestController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\AccountVerificationController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AnnouncementController; // Imported for the announcements module
@@ -99,6 +100,11 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         // Feedback: Visible to 1, 2, and 3
         Route::get('/feedback', [ReportController::class, 'feedback'])->name('admin.feedback.index');
         Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->name('admin.feedback.reply');
+
+        // Account Verification: Visible to 1, 2, and 3
+        Route::get('/verification', [AccountVerificationController::class, 'index'])->name('admin.verification.index');
+        Route::post('/verification/{id}/verify', [AccountVerificationController::class, 'verify'])->name('admin.verification.verify');
+        Route::post('/verification/{id}/reject', [AccountVerificationController::class, 'reject'])->name('admin.verification.reject');
 
         Route::middleware(['role:1'])->group(function () {
             Route::prefix('roles')->name('admin.roles.')->group(function () {

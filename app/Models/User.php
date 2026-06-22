@@ -29,11 +29,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',     // Used for granular access (0, 1, 2, 3)
-        'is_admin', // Existing boolean for general admin/client split
+        'name', 'first_name', 'last_name', 'middle_name', 'suffix',
+        'email', 'password', 'phone', 'age', 'gender', 'civil_status',
+        'address', 'is_voter', 'birth_date', 'place_birth',
+        'height_cm', 'weight_kg', 'role', 'is_admin',
+        'verification_status', 'selfie_image', 'valid_id_image',
+        'verification_submitted_at',
     ];
 
     /**
