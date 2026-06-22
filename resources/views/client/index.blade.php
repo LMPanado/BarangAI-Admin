@@ -215,31 +215,31 @@
         </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($announcements as $announcement)
-        <article class="group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-brgyGreen/20 transition-all duration-300 flex flex-col">
+        <article class="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 flex flex-col">
             @if($announcement->image_url)
-            <div class="h-36 overflow-hidden">
+            <div class="h-52 overflow-hidden">
                 <img src="{{ Storage::url($announcement->image_url) }}"
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                      alt="{{ $announcement->title }}">
             </div>
             @endif
-            <div class="p-5 flex flex-col flex-1">
-                <div class="flex items-center gap-2 mb-2">
+            <div class="p-7 flex flex-col flex-1">
+                <div class="flex items-center gap-2 mb-3">
                     @if($announcement->is_pinned)
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-brgyGreen text-white text-[8px] font-black uppercase tracking-widest rounded-md">
-                        <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brgyGreen text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
                         Pinned
                     </span>
                     @endif
-                    <span class="px-2 py-0.5 bg-brgyGreen/10 text-brgyGreen rounded-md text-[8px] font-black uppercase tracking-widest">{{ $announcement->category }}</span>
+                    <span class="px-2.5 py-1 bg-brgyGreen/10 text-brgyGreen rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $announcement->category }}</span>
                 </div>
-                <h3 class="font-extrabold text-slate-800 text-sm leading-snug mb-1.5 group-hover:text-brgyGreen transition-colors">{{ $announcement->title }}</h3>
-                <p class="text-slate-400 text-xs leading-relaxed line-clamp-2 flex-1">{{ $announcement->content }}</p>
-                <div class="mt-4 pt-3 border-t border-slate-50 flex justify-between items-center">
-                    <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Official Bulletin</span>
-                    <span class="text-[8px] font-black text-slate-400">{{ $announcement->created_at->format('M d, Y') }}</span>
+                <h3 class="font-extrabold text-slate-800 text-base leading-snug mb-2 group-hover:text-brgyGreen transition-colors">{{ $announcement->title }}</h3>
+                <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 flex-1">{{ $announcement->content }}</p>
+                <div class="mt-5 pt-4 border-t border-slate-50 flex justify-between items-center">
+                    <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Official Bulletin</span>
+                    <span class="text-[9px] font-black text-slate-400">{{ $announcement->created_at->format('M d, Y') }}</span>
                 </div>
             </div>
         </article>
