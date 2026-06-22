@@ -102,8 +102,8 @@
             </a>
             @endif
 
-            {{-- Account Verification: Role 1, 2, and 3 --}}
-            @if(Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3)
+            {{-- Account Verification: Role 3 (Barangay Official) only --}}
+            @if(Auth::user()->role == 3)
             @php
                 $verificationPending = \App\Models\User::where('role', 0)
                     ->where('verification_status', 'unverified')

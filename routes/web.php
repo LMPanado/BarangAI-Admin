@@ -101,10 +101,12 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::get('/feedback', [ReportController::class, 'feedback'])->name('admin.feedback.index');
         Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->name('admin.feedback.reply');
 
-        // Account Verification: Visible to 1, 2, and 3
-        Route::get('/verification', [AccountVerificationController::class, 'index'])->name('admin.verification.index');
-        Route::post('/verification/{id}/verify', [AccountVerificationController::class, 'verify'])->name('admin.verification.verify');
-        Route::post('/verification/{id}/reject', [AccountVerificationController::class, 'reject'])->name('admin.verification.reject');
+        // Account Verification: Role 3 (Barangay Official) only
+        Route::middleware('role:3')->group(function () {
+            Route::get('/verification', [AccountVerificationController::class, 'index'])->name('admin.verification.index');
+            Route::post('/verification/{id}/verify', [AccountVerificationController::class, 'verify'])->name('admin.verification.verify');
+            Route::post('/verification/{id}/reject', [AccountVerificationController::class, 'reject'])->name('admin.verification.reject');
+        });
 
         Route::middleware(['role:1'])->group(function () {
             Route::prefix('roles')->name('admin.roles.')->group(function () {
