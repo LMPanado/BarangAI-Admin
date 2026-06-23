@@ -79,25 +79,9 @@
                     <tr class="hover:bg-brgyGreen/[0.02] transition-all group">
                         <td class="px-8 py-3">
                             <div class="flex items-center gap-4">
-                                @php
-                                    $selfie = $resident->user->selfie_image ?? null;
-                                    $avatarUrl = $selfie
-                                        ? (str_starts_with($selfie, 'http') ? $selfie : route('admin.verification.image', [$resident->user_id, 'selfie']))
-                                        : null;
-                                @endphp
-                                @if($avatarUrl)
-                                    <img src="{{ $avatarUrl }}"
-                                         alt="{{ $resident->first_name }}"
-                                         class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm group-hover:border-brgyGreen/20 transition-all"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="w-10 h-10 rounded-full bg-gray-100 items-center justify-center text-gray-400 font-bold text-xs border-2 border-white shadow-sm group-hover:border-brgyGreen/20 transition-all hidden">
-                                        {{ substr($resident->first_name, 0, 1) }}{{ substr($resident->last_name, 0, 1) }}
-                                    </div>
-                                @else
-                                    <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-bold text-xs border-2 border-white shadow-sm group-hover:border-brgyGreen/20 transition-all">
-                                        {{ substr($resident->first_name, 0, 1) }}{{ substr($resident->last_name, 0, 1) }}
-                                    </div>
-                                @endif
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-bold text-xs border-2 border-white shadow-sm group-hover:border-brgyGreen/20 transition-all">
+                                    {{ substr($resident->first_name, 0, 1) }}{{ substr($resident->last_name, 0, 1) }}
+                                </div>
                                 <div class="flex flex-col">
                                     <span class="text-[9px] font-black text-brgyGold mb-0.5 tracking-widest uppercase">ID-{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span>
                                     <span class="text-sm font-black text-gray-800 uppercase tracking-tight group-hover:text-brgyGreen transition-colors">
