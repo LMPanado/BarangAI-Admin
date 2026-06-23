@@ -29,7 +29,15 @@
     </script>
     <style>
         .sidebar-gradient { background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%); }
+
+        /* Turbo Drive progress bar */
+        .turbo-progress-bar {
+            height: 3px;
+            background: #60a5fa;
+            box-shadow: 0 0 8px #60a5fa;
+        }
     </style>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.12/dist/turbo.es2017.esm.js"></script>
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">
     
@@ -258,15 +266,17 @@
         _deleteForm = null;
     }
 
-    document.getElementById('delete-confirm-btn').addEventListener('click', function () {
-        if (_deleteForm) _deleteForm.submit();
-    });
-
-    document.getElementById('delete-modal').addEventListener('click', function (e) {
-        if (e.target === this) closeDeleteModal();
-    });
-
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+    // Attach modal listeners once; Turbo keeps the layout alive between navigations
+    if (!window._deleteModalBound) {
+        window._deleteModalBound = true;
+        document.getElementById('delete-confirm-btn').addEventListener('click', function () {
+            if (_deleteForm) _deleteForm.submit();
+        });
+        document.getElementById('delete-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeDeleteModal();
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+    }
     </script>
 </body>
 </html>
