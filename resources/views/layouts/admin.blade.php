@@ -46,9 +46,8 @@
     
     @php
         $role = Auth::user()->role;
-        if ($role == 1) { $sidebarClass = 'sidebar-black'; $activeIconColor = 'text-gray-900'; }
-        elseif ($role == 2) { $sidebarClass = 'sidebar-red'; $activeIconColor = 'text-red-800'; }
-        else { $sidebarClass = 'sidebar-gradient'; $activeIconColor = 'text-darkGreen'; }
+        $sidebarClass    = $role == 1 ? 'sidebar-black' : ($role == 2 ? 'sidebar-red' : 'sidebar-gradient');
+        $activeIconColor = $role == 1 ? 'text-gray-900' : ($role == 2 ? 'text-red-800' : 'text-darkGreen');
     @endphp
     <aside class="w-72 {{ $sidebarClass }} text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
         <div class="px-8 py-8">
