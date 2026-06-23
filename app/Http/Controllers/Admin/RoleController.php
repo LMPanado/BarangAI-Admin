@@ -15,16 +15,26 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $sort   = $request->input('sort', 'latest');
 
-        $users = User::when($search, function ($query, $search) {
-            return $query->where('name', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%");
-        })
-        // We exclude the logged-in Admin so they don't accidentally demote themselves
-        ->where('id', '!=', auth()->id())
-        ->paginate(10);
+        $query = User::where('id', '!=', auth()->id())
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($q2) use ($search) {
+                    $q2->where('first_name', 'ilike', "%{$search}%")
+                       ->orWhere('last_name',  'ilike', "%{$search}%")
+                       ->orWhere('email',       'ilike', "%{$search}%");
+                });
+            });
 
-        return view('admin.roles.index', compact('users'));
+        $query = match($sort) {
+            'az'    => $query->orderBy('last_name')->orderBy('first_name'),
+            'role'  => $query->orderBy('role', 'desc'),
+            default => $query->orderByDesc('created_at'),
+        };
+
+        $users = $query->paginate(10)->withQueryString();
+
+        return view('admin.roles.index', compact('users', 'sort'));
     }
 
     /**
@@ -48,7 +58,7 @@ class RoleController extends Controller
             $user->id
         );
 
-        return back()->with('success', "Role for {$user->name} has been updated to " . $this->getRoleLabel($request->role));
+        return back()->with('success', "Role for {$user->first_name} {$user->last_name} has been updated to " . $this->getRoleLabel($request->role));
     }
 
     private function getRoleLabel($role)
