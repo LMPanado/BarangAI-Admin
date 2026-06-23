@@ -31,7 +31,7 @@
     <style>
         .sidebar-gradient { background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%); }
         .sidebar-black { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
-        .sidebar-red   { background: linear-gradient(180deg, #cc0000 0%, #8b0000 100%); }
+        .sidebar-red   { background: linear-gradient(180deg, #991b1b 0%, #5c0a0a 100%); }
 
         /* Hexagonal chevron pattern overlay for sidebar */
         .sidebar-pattern::before {
