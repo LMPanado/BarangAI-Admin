@@ -69,8 +69,7 @@
                         <th class="px-8 py-4 font-black">Profile Information</th>
                         <th class="px-8 py-4 font-black">Contact Details</th>
                         <th class="px-8 py-4 font-black">Voter Status</th>
-                        {{-- THE ACTIONS HEADER IS COMPLETELY REMOVED FOR ROLES 2 & 3 --}}
-                        @if(auth()->user()->isAdmin())
+                        @if(auth()->user()->isAdmin() || auth()->user()->isCaptain())
                             <th class="px-8 py-4 text-right font-black">Actions</th>
                         @endif
                     </tr>
@@ -120,8 +119,7 @@
                             @endif
                         </td>
                         
-                        {{-- THE ACTIONS COLUMN DATA IS COMPLETELY REMOVED FOR ROLES 2 & 3 --}}
-                        @if(auth()->user()->isAdmin())
+                        @if(auth()->user()->isAdmin() || auth()->user()->isCaptain())
                         <td class="px-8 py-3 text-right">
                             <div class="flex justify-end gap-3 items-center">
                                 <a href="{{ route('admin.residents.edit', $resident->id) }}" 
@@ -130,13 +128,14 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </a>
 
-                                <form action="{{ route('admin.residents.destroy', $resident->id) }}" method="POST" onsubmit="return confirm('Confirm permanent deletion?')">
+                                <form id="del-res-{{ $resident->id }}" action="{{ route('admin.residents.destroy', $resident->id) }}" method="POST">
                                     @csrf @method('DELETE')
-                                    <button type="submit" 
-                                            title="Delete Resident"
-                                            class="p-2 bg-red-50 text-red-500 rounded-xl border border-red-100 shadow-sm hover:bg-red-500 hover:text-white hover:border-red-500 hover:-translate-y-0.5 transition-all group/btn">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
+                                </form>
+                                <button onclick="confirmDelete('del-res-{{ $resident->id }}', 'Delete resident: {{ addslashes($resident->first_name . ' ' . $resident->last_name) }}?')"
+                                        title="Delete Resident"
+                                        class="p-2 bg-red-50 text-red-500 rounded-xl border border-red-100 shadow-sm hover:bg-red-500 hover:text-white hover:border-red-500 hover:-translate-y-0.5 transition-all group/btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
                                 </form>
                             </div>
                         </td>
@@ -144,7 +143,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ auth()->user()->isAdmin() ? 4 : 3 }}" class="px-8 py-20 text-center">
+                        <td colspan="{{ (auth()->user()->isAdmin() || auth()->user()->isCaptain()) ? 4 : 3 }}" class="px-8 py-20 text-center">
                             <div class="flex flex-col items-center">
                                 <div class="p-4 bg-gray-50 rounded-full mb-4">
                                     <svg class="w-12 h-12 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
