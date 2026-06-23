@@ -29,7 +29,7 @@
         }
     </script>
     <style>
-        .sidebar-gradient { background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%); }
+        .sidebar-gradient { background: linear-gradient(180deg, #1e3a8a 0%, #0f1f5c 100%); }
         .sidebar-black { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
         .sidebar-red   { background: linear-gradient(180deg, #991b1b 0%, #5c0a0a 100%); }
 
