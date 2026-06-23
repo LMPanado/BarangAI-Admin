@@ -34,34 +34,44 @@
     </div>
 
     {{-- Stats Row --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5">
-            <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending Requests</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending</p>
                 <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'pending')->count() }}</h3>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5">
-            <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center text-violet-500 flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ready for Pickup</p>
-                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'ready')->count() }}</h3>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Processing</p>
+                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'processing')->count() }}</h3>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5">
-            <div class="w-14 h-14 bg-brgyGreen/10 rounded-2xl flex items-center justify-center text-brgyGreen">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Issued</p>
-                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'issued')->count() }}</h3>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ready for Pick-up</p>
+                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'ready_for_pickup')->count() }}</h3>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Completed</p>
+                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'completed')->count() }}</h3>
             </div>
         </div>
     </div>
@@ -126,16 +136,25 @@
                             <form action="{{ route('admin.documents.updateStatus', $request->id) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
-                                <select name="status" onchange="this.form.submit()" 
-                                    class="text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border-2 border-transparent cursor-pointer transition-all focus:ring-0
-                                    {{ $request->status == 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' : '' }}
-                                    {{ $request->status == 'ready' ? 'bg-blue-50 text-blue-600 border-blue-100' : '' }}
-                                    {{ $request->status == 'issued' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : '' }}
-                                    {{ $request->status == 'cancelled' ? 'bg-red-50 text-red-600 border-red-100' : '' }}">
-                                    <option value="pending" {{ $request->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="ready" {{ $request->status == 'ready' ? 'selected' : '' }}>Ready</option>
-                                    <option value="issued" {{ $request->status == 'issued' ? 'selected' : '' }}>Issued</option>
-                                    <option value="cancelled" {{ $request->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                @php
+                                    $selectColor = match($request->status) {
+                                        'pending'          => 'bg-amber-50 text-amber-600 border-amber-100',
+                                        'processing'       => 'bg-violet-50 text-violet-600 border-violet-100',
+                                        'ready_for_pickup' => 'bg-blue-50 text-blue-600 border-blue-100',
+                                        'completed'        => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'issued'           => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'cancelled'        => 'bg-red-50 text-red-600 border-red-100',
+                                        default            => 'bg-slate-50 text-slate-500 border-slate-100',
+                                    };
+                                @endphp
+                                <select name="status" onchange="this.form.submit()"
+                                    class="text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border-2 cursor-pointer transition-all focus:ring-0 {{ $selectColor }}">
+                                    <option value="pending"          {{ $request->status == 'pending'          ? 'selected' : '' }}>Pending</option>
+                                    <option value="processing"       {{ $request->status == 'processing'       ? 'selected' : '' }}>Processing</option>
+                                    <option value="ready_for_pickup" {{ $request->status == 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
+                                    <option value="completed"        {{ $request->status == 'completed'        ? 'selected' : '' }}>Completed</option>
+                                    <option value="issued"           {{ $request->status == 'issued'           ? 'selected' : '' }}>Issued</option>
+                                    <option value="cancelled"        {{ $request->status == 'cancelled'        ? 'selected' : '' }}>Cancelled</option>
                                 </select>
                             </form>
                         </td>
