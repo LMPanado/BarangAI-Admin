@@ -62,16 +62,37 @@
                 <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
             </select>
         </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div class="flex items-center gap-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest shrink-0">From</label>
+                <input type="date" name="date_from" value="{{ request('date_from') }}"
+                       class="flex-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
+            </div>
+            <div class="flex items-center gap-3">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest shrink-0">To</label>
+                <input type="date" name="date_to" value="{{ request('date_to') }}"
+                       class="flex-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
+            </div>
+        </div>
+
         <div class="flex items-center gap-3 mt-4">
             <button type="submit"
                     class="bg-brgyGreen text-white px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all">
                 Filter
             </button>
-            @if(request()->hasAny(['search','severity','status']))
+            @if(request()->hasAny(['search','severity','status','date_from','date_to']))
                 <a href="{{ route('admin.complaints.index') }}"
                    class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl border-2 border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600 transition-all">
                     Clear
                 </a>
+            @endif
+            @if(request('date_from') || request('date_to'))
+            <span class="text-[10px] font-bold text-gray-400">
+                {{ request('date_from') ? \Carbon\Carbon::parse(request('date_from'))->format('M d, Y') : '...' }}
+                &rarr;
+                {{ request('date_to') ? \Carbon\Carbon::parse(request('date_to'))->format('M d, Y') : '...' }}
+            </span>
             @endif
             <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">
                 {{ $complaints->total() }} {{ Str::plural('complaint', $complaints->total()) }}
