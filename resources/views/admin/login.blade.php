@@ -60,6 +60,20 @@
         {{-- Clean Card --}}
         <div class="w-full max-w-[400px] brgy-card p-8 sm:p-10 rounded-[2rem]">
             
+            @if (session('error'))
+                <div class="mb-6 flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-100">
+                    <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Access Denied</p>
+                        <p class="text-xs text-red-500 font-medium mt-0.5">This portal is for barangay admin accounts only. Residents must use the mobile app.</p>
+                    </div>
+                </div>
+            @endif
+
             @if (session('status'))
                 <div class="mb-6 p-3 rounded-xl bg-green-50 border border-green-100 text-xs font-bold text-green-700 text-center uppercase tracking-wider">
                     {{ session('status') }}
