@@ -31,7 +31,7 @@ class ResidentController extends Controller
             default  => $query->latest(),
         };
 
-        $residents = $query->paginate(10)->withQueryString();
+        $residents = $query->with('user')->paginate(10)->withQueryString();
         return view('admin.residents.index', compact('residents'));
     }
 
