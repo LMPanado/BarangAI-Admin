@@ -84,14 +84,15 @@
             
             @php
                 $navItems = [
-                    ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'],
-                    ['route' => 'admin.residents.index', 'label' => 'Residents', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'],
-                    ['route' => 'admin.schedules.index', 'label' => 'Schedules', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                    ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', 'roles' => [1,2,3]],
+                    ['route' => 'admin.residents.index', 'label' => 'Residents', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', 'roles' => [2,3]],
+                    ['route' => 'admin.schedules.index', 'label' => 'Schedules', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', 'roles' => [2,3]],
                 ];
             @endphp
 
             @foreach($navItems as $item)
-            <a href="{{ route($item['route']) }}" 
+            @if(in_array(Auth::user()->role, $item['roles']))
+            <a href="{{ route($item['route']) }}"
                class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl
                {{ request()->routeIs($item['route']) ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
                 <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs($item['route']) ? 'bg-white ' . $activeIconColor : $hoverIconClass }}">
@@ -99,10 +100,11 @@
                 </div>
                 <span class="uppercase tracking-widest">{{ $item['label'] }}</span>
             </a>
+            @endif
             @endforeach
 
-            {{-- Announcements: Only for Role 1, 2, and 3 --}}
-            @if(Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3)
+            {{-- Announcements: Only for Role 2 and 3 --}}
+            @if(Auth::user()->role == 2 || Auth::user()->role == 3)
             <a href="{{ route('admin.announcements.index') }}" 
                class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
                {{ request()->routeIs('admin.announcements.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
@@ -113,8 +115,8 @@
             </a>
             @endif
 
-            {{-- Requests: Only for Role 1, 2, and 3 --}}
-            @if(Auth::user()->role == 1 || Auth::user()->role == 2 || Auth::user()->role == 3)
+            {{-- Requests: Only for Role 2 and 3 --}}
+            @if(Auth::user()->role == 2 || Auth::user()->role == 3)
             <a href="{{ route('admin.documents.index') }}"
                class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
                {{ request()->routeIs('admin.documents.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
@@ -173,8 +175,8 @@
             <div class="pt-4">
                 <p class="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Analytics</p>
                 
-                {{-- Reports (Analytics): Only for Role 1 and 2 --}}
-                @if(Auth::user()->role == 1 || Auth::user()->role == 2)
+                {{-- Reports (Analytics): Only for Role 2 --}}
+                @if(Auth::user()->role == 2)
                 <a href="{{ route('admin.reports.index') }}" class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl
                     {{ request()->routeIs('admin.reports.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
                     <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.reports.*') ? 'bg-white ' . $activeIconColor : $hoverIconClass }}">
@@ -184,8 +186,8 @@
                 </a>
                 @endif
 
-                {{-- Complaints: Only for Role 1 and 2 --}}
-                @if(Auth::user()->role == 1 || Auth::user()->role == 2)
+                {{-- Complaints: Only for Role 2 --}}
+                @if(Auth::user()->role == 2)
                 <a href="{{ route('admin.complaints.index') }}" class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
                     {{ request()->routeIs('admin.complaints.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
                     <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.complaints.*') ? 'bg-white ' . $activeIconColor : $hoverIconClass }}">
