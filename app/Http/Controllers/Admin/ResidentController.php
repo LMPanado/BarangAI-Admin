@@ -138,7 +138,7 @@ class ResidentController extends Controller
 
         AuditLogger::log('updated', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
 
-        return redirect()->route('admin.residents.index')->with('success', 'Resident updated successfully!');
+        return redirect()->route('admin.residents.edit', $resident->id)->with('success', 'Resident updated successfully!');
     }
 
     public function destroy(Resident $resident)
