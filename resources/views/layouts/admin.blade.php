@@ -30,6 +30,7 @@
     </script>
     <style>
         .sidebar-gradient { background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%); }
+        .sidebar-black { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
 
         /* Turbo Drive progress bar */
         .turbo-progress-bar {
@@ -42,7 +43,7 @@
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">
     
-    <aside class="w-72 sidebar-gradient text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
+    <aside class="w-72 {{ Auth::user()->role == 1 ? 'sidebar-black' : 'sidebar-gradient' }} text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
         <div class="px-8 py-8">
             <div class="flex flex-col items-center text-center">
                 <div class="w-20 h-20 mb-3 transition-transform hover:scale-110 duration-300 ease-out">
