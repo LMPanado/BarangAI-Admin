@@ -23,6 +23,17 @@
             <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Personal Information Details</h2>
         </div>
 
+        @if($errors->any())
+        <div class="mx-8 mt-6 bg-red-50 border border-red-200 rounded-2xl px-6 py-4">
+            <p class="text-xs font-black text-red-600 uppercase tracking-widest mb-2">Please fix the following errors:</p>
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)
+                    <li class="text-xs text-red-500 font-semibold">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
         <form action="{{ route('admin.residents.update', $resident->id) }}" method="POST" class="p-8">
             @csrf
             @method('PUT')
