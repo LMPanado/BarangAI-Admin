@@ -53,8 +53,8 @@ class ResidentController extends Controller
             'civil_status' => 'nullable|string',
             'birth_date'   => 'nullable|date',
             'place_birth'  => 'nullable|string|max:255',
-            'height_cm'    => 'nullable|integer|min:0',
-            'weight_kg'    => 'nullable|integer|min:0',
+            'height_cm'    => 'nullable|numeric|min:0',
+            'weight_kg'    => 'nullable|numeric|min:0',
             'is_voter'     => 'required|boolean',
             'address'      => 'required|string',
         ]);
@@ -108,8 +108,8 @@ class ResidentController extends Controller
             'civil_status' => 'nullable|string',
             'birth_date'   => 'nullable|date',
             'place_birth'  => 'nullable|string|max:255',
-            'height_cm'    => 'nullable|integer|min:0',
-            'weight_kg'    => 'nullable|integer|min:0',
+            'height_cm'    => 'nullable|numeric|min:0',
+            'weight_kg'    => 'nullable|numeric|min:0',
             'is_voter'     => 'required|boolean',
             'address'      => 'required|string',
         ]);
