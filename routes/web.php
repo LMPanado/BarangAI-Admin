@@ -11,7 +11,8 @@ use App\Http\Controllers\Admin\AccountVerificationController;
 use App\Http\Controllers\Admin\VerificationImageController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\AnnouncementController; // Imported for the announcements module
+use App\Http\Controllers\Admin\ComplaintController;
+use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\AuthController; 
@@ -93,7 +94,12 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::delete('/{id}', [DocumentRequestController::class, 'destroy'])->middleware('role:1')->name('destroy');
         });
 
-        // Reports: Visible to 1 and 2 (Role 3 Blocked)
+        // Complaints: Visible to 1 and 2 (Role 3 Blocked)
+        Route::get('/complaints', [ComplaintController::class, 'index'])
+            ->middleware('role:1,2')
+            ->name('admin.complaints.index');
+
+        // Reports (Analytics): Visible to 1 and 2 (Role 3 Blocked)
         Route::get('/reports', [ReportController::class, 'index'])
             ->middleware('role:1,2')
             ->name('admin.reports.index');

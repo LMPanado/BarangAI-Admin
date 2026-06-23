@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Models\DocumentRequest;
 use App\Models\Feedback;
+use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,36 +14,53 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Complaint::latest('created_at');
+        $month = $request->get('month', now()->format('Y-m'));
+        [$year, $mon] = explode('-', $month);
 
-        if ($request->filled('severity')) {
-            $query->where('severity', $request->severity);
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('user_email', 'ilike', '%' . $request->search . '%')
-                  ->orWhere('message', 'ilike', '%' . $request->search . '%');
-            });
-        }
+        // Residents
+        $totalResidents  = Resident::count();
+        $maleCount       = Resident::where('gender', 'Male')->count();
+        $femaleCount     = Resident::where('gender', 'Female')->count();
+        $voterCount      = Resident::where('is_voter', true)->count();
+        $newResidents    = Resident::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
 
-        $complaints = $query->paginate(10)->withQueryString();
-
-        // Summary counts
-        $totalComplaints  = Complaint::count();
-        $openComplaints   = Complaint::where('status', 'open')->count();
-        $closedComplaints = Complaint::where('status', 'closed')->count();
-
-        $bySeverity = [
-            'critical' => Complaint::where('severity', 'critical')->count(),
-            'medium'   => Complaint::where('severity', 'medium')->count(),
-            'low'      => Complaint::where('severity', 'low')->count(),
+        $ageGroups = [
+            'Children (0–12)'  => Resident::whereBetween('age', [0, 12])->count(),
+            'Teens (13–17)'    => Resident::whereBetween('age', [13, 17])->count(),
+            'Adults (18–59)'   => Resident::whereBetween('age', [18, 59])->count(),
+            'Seniors (60+)'    => Resident::where('age', '>=', 60)->count(),
         ];
 
+        // Document Requests
+        $totalDocs        = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
+        $pendingDocs      = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'pending')->count();
+        $approvedDocs     = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'approved')->count();
+        $rejectedDocs     = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'rejected')->count();
+
+        $docsByType = DocumentRequest::whereYear('created_at', $year)
+            ->whereMonth('created_at', $mon)
+            ->selectRaw('document_type, count(*) as total')
+            ->groupBy('document_type')
+            ->orderByDesc('total')
+            ->get();
+
+        // Complaints
+        $totalComplaints    = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
+        $openComplaints     = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'open')->count();
+        $closedComplaints   = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'closed')->count();
+        $criticalComplaints = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('severity', 'critical')->count();
+
+        // Feedback
+        $totalFeedback   = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
+        $positiveFeedback = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('sentiment', 'positive')->count();
+        $negativeFeedback = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('sentiment', 'negative')->count();
+
         return view('admin.reports.index', compact(
-            'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity'
+            'month', 'year', 'mon',
+            'totalResidents', 'maleCount', 'femaleCount', 'voterCount', 'newResidents', 'ageGroups',
+            'totalDocs', 'pendingDocs', 'approvedDocs', 'rejectedDocs', 'docsByType',
+            'totalComplaints', 'openComplaints', 'closedComplaints', 'criticalComplaints',
+            'totalFeedback', 'positiveFeedback', 'negativeFeedback'
         ));
     }
 
