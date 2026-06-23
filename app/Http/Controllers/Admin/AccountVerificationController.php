@@ -39,8 +39,8 @@ class AccountVerificationController extends Controller
         $user = User::findOrFail($id);
         $user->update(['verification_status' => 'verified']);
 
-        // Auto-add to residents table if not already there
-        Resident::firstOrCreate(
+        // Auto-add to residents table; use updateOrCreate so re-verifying also syncs data
+        Resident::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'first_name'   => $user->first_name,

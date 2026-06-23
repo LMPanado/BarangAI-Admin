@@ -265,9 +265,9 @@ function verifyUser(id, action, url) {
         },
         body: JSON.stringify({}),
     })
-    .then(r => r.json())
+    .then(r => { if (!r.ok) return r.text().then(t => { throw new Error(t); }); return r.json(); })
     .then(data => {
-        if (!data.success) throw new Error();
+        if (!data.success) throw new Error('Server returned failure');
 
         const card = document.getElementById('verification-card-' + id);
         if (action === 'verify') {
