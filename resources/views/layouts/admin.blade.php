@@ -40,7 +40,7 @@
             inset: 0;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.15)' stroke-width='1'%3E%3Cpath d='M30 0 L60 15 L60 45 L30 60 L0 45 L0 15 Z'/%3E%3Cpath d='M30 10 L50 20 L50 40 L30 50 L10 40 L10 20 Z'/%3E%3Cpath d='M15 7 L30 0 M45 7 L60 15 M60 30 L45 37 M30 60 L15 53 M0 30 L15 23'/%3E%3C/g%3E%3C/svg%3E");
             background-size: 60px 60px;
-            opacity: 0.18;
+            opacity: 0.32;
             pointer-events: none;
             z-index: 0;
         }
