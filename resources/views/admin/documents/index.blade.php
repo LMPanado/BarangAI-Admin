@@ -142,7 +142,6 @@
                                         'processing'       => 'bg-violet-50 text-violet-600 border-violet-100',
                                         'ready_for_pickup' => 'bg-blue-50 text-blue-600 border-blue-100',
                                         'completed'        => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                        'issued'           => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                         'cancelled'        => 'bg-red-50 text-red-600 border-red-100',
                                         default            => 'bg-slate-50 text-slate-500 border-slate-100',
                                     };
@@ -153,7 +152,6 @@
                                     <option value="processing"       {{ $request->status == 'processing'       ? 'selected' : '' }}>Processing</option>
                                     <option value="ready_for_pickup" {{ $request->status == 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
                                     <option value="completed"        {{ $request->status == 'completed'        ? 'selected' : '' }}>Completed</option>
-                                    <option value="issued"           {{ $request->status == 'issued'           ? 'selected' : '' }}>Issued</option>
                                     <option value="cancelled"        {{ $request->status == 'cancelled'        ? 'selected' : '' }}>Cancelled</option>
                                 </select>
                             </form>
