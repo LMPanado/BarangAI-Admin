@@ -195,22 +195,31 @@
                         3 => 'Barangay Official',
                         default => 'Staff',
                     };
-                    $roleBadgeColor = match((int) Auth::user()->role) {
-                        1 => 'bg-violet-50 text-violet-600 border-violet-100',
-                        2 => 'bg-blue-50 text-blue-700 border-blue-100',
-                        3 => 'bg-sky-50 text-sky-600 border-sky-100',
-                        default => 'bg-slate-50 text-slate-500 border-slate-100',
+                    [$dotColor, $badgeBg, $badgeText] = match((int) Auth::user()->role) {
+                        1 => ['bg-violet-500', 'bg-violet-50 border-violet-100', 'text-violet-600'],
+                        2 => ['bg-blue-500',   'bg-blue-50 border-blue-100',     'text-blue-700'],
+                        3 => ['bg-sky-500',    'bg-sky-50 border-sky-100',       'text-sky-600'],
+                        default => ['bg-slate-400', 'bg-slate-50 border-slate-100', 'text-slate-500'],
                     };
                     $firstName = Auth::user()->first_name ?? Auth::user()->name ?? 'Admin';
                     $lastName  = Auth::user()->last_name ?? '';
+                    $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
                 @endphp
-                <div class="hidden md:flex flex-col items-end gap-1">
-                    <p class="text-sm font-extrabold text-slate-800 leading-none">
-                        {{ $firstName }} {{ $lastName }}
-                    </p>
-                    <span class="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border {{ $roleBadgeColor }}">
-                        {{ $roleLabel }}
-                    </span>
+                <div class="hidden md:flex items-center gap-3 bg-white border border-slate-100 shadow-sm rounded-2xl px-4 py-2.5">
+                    {{-- Initials avatar --}}
+                    <div class="w-9 h-9 rounded-xl {{ $badgeBg }} border {{ $badgeText }} flex items-center justify-center font-black text-xs flex-shrink-0">
+                        {{ $initials }}
+                    </div>
+                    {{-- Name + role --}}
+                    <div class="flex flex-col gap-0.5">
+                        <p class="text-xs font-extrabold text-slate-800 leading-none whitespace-nowrap">
+                            {{ $firstName }} {{ $lastName }}
+                        </p>
+                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest {{ $badgeText }} leading-none">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $dotColor }}"></span>
+                            {{ $roleLabel }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </header>
