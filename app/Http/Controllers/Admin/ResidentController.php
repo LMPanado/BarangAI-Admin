@@ -68,6 +68,30 @@ class ResidentController extends Controller
 
     public function edit(Resident $resident)
     {
+        // If linked to a user account, pull latest data from users table
+        // so the form always reflects the most recent mobile app changes
+        if ($resident->user_id) {
+            $user = User::find($resident->user_id);
+            if ($user) {
+                $resident->fill([
+                    'first_name'   => $user->first_name,
+                    'middle_name'  => $user->middle_name,
+                    'last_name'    => $user->last_name,
+                    'email'        => $user->email,
+                    'phone'        => $user->phone,
+                    'age'          => $user->age,
+                    'gender'       => $user->gender,
+                    'civil_status' => $user->civil_status,
+                    'address'      => $user->address,
+                    'is_voter'     => $user->is_voter ?? false,
+                    'birth_date'   => $user->birth_date,
+                    'place_birth'  => $user->place_birth,
+                    'height_cm'    => $user->height_cm,
+                    'weight_kg'    => $user->weight_kg,
+                ]);
+            }
+        }
+
         return view('admin.residents.edit', compact('resident'));
     }
 
