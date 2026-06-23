@@ -185,9 +185,27 @@
             ['name'=>'Alaine Joy T. Ambito',      'role'=>'SK Chairperson',              'initials'=>'AA'],
             ['name'=>'Rustico B. Cuevas Jr.',     'role'=>'Executive Officer (BSG)',      'initials'=>'RC'],
         ]; @endphp
+        @php $topRow = array_slice($officials, 0, 8); $bottomRow = array_slice($officials, 8); @endphp
+
+        {{-- Top 8 (2 rows of 4) --}}
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            @foreach($officials as $off)
+            @foreach($topRow as $off)
             <div class="flex flex-col items-center gap-3 p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
+                <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+                    <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
+                </div>
+                <div>
+                    <p class="text-white font-bold text-xs leading-snug">{{ $off['name'] }}</p>
+                    <p class="text-white/35 text-[9px] font-black uppercase tracking-widest mt-1">{{ $off['role'] }}</p>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        {{-- Bottom 3 centered --}}
+        <div class="flex justify-center gap-4 max-w-4xl mx-auto mt-4">
+            @foreach($bottomRow as $off)
+            <div class="flex flex-col items-center gap-3 p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center w-[calc(25%-0.75rem)]">
                 <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
                     <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
                 </div>
