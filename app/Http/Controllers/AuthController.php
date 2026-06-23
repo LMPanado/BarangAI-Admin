@@ -29,7 +29,14 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        try {
+            $authenticated = Auth::attempt($credentials);
+        } catch (\RuntimeException $e) {
+            // Resident accounts from the mobile app may use a non-Bcrypt hash
+            return back()->with('error', 'This portal is for barangay admin accounts only. Residents must use the mobile app.');
+        }
+
+        if ($authenticated) {
             $user = Auth::user();
 
             // Role check: 1=Admin, 2=Captain, 3=Official
@@ -41,7 +48,7 @@ class AuthController extends Controller
 
             // If the user role is not staff (e.g., a Resident)
             Auth::logout();
-            return back()->with('error', 'Residents are not allowed to access the admin portal.');
+            return back()->with('error', 'This portal is for barangay admin accounts only. Residents must use the mobile app.');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials.']);
