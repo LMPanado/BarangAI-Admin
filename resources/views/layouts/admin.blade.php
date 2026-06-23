@@ -48,7 +48,7 @@
         $role = Auth::user()->role;
         $sidebarClass    = $role == 1 ? 'sidebar-black' : ($role == 2 ? 'sidebar-red' : 'sidebar-gradient');
         $activeIconColor = $role == 1 ? 'text-gray-900' : ($role == 2 ? 'text-red-800' : 'text-darkGreen');
-        $hoverIconClass  = $role == 2 ? 'bg-white/5 text-white/40 group-hover:bg-white group-hover:text-red-700' : $hoverIconClass;
+        $hoverIconClass  = $role == 2 ? 'bg-white/5 text-white/40 group-hover:bg-white group-hover:text-red-700' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen';
     @endphp
     <aside class="w-72 {{ $sidebarClass }} text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
         <div class="px-8 py-8">
