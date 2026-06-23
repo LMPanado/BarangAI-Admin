@@ -167,20 +167,23 @@
         {{-- Divider --}}
         <div class="flex items-center gap-4 max-w-xs mx-auto mb-14">
             <div class="flex-1 h-px bg-white/10"></div>
-            <p class="text-white/25 text-[9px] font-black uppercase tracking-widest">Kagawads</p>
+            <p class="text-white/25 text-[9px] font-black uppercase tracking-widest">Council Members</p>
             <div class="flex-1 h-px bg-white/10"></div>
         </div>
 
-        {{-- Kagawads --}}
+        {{-- Council Members --}}
         @php $officials = [
-            ['name'=>'John Carlo C. Solomon',    'role'=>'Kagawad',       'initials'=>'JS'],
-            ['name'=>'Reynaldo J. Dauz Jr.',     'role'=>'Kagawad',       'initials'=>'RD'],
-            ['name'=>'Jesus C. Anunciacion',     'role'=>'Kagawad',       'initials'=>'JA'],
-            ['name'=>'Claudine A. Dizon',        'role'=>'Kagawad',       'initials'=>'CD'],
-            ['name'=>'Ian M. Perez',             'role'=>'Kagawad',       'initials'=>'IP'],
-            ['name'=>'Ma. Teresita G. Quintana', 'role'=>'Kagawad',       'initials'=>'TQ'],
-            ['name'=>'Enerson R. Molina',        'role'=>'Kagawad',       'initials'=>'EM'],
-            ['name'=>'Alaine Joy T. Ambito',     'role'=>'SK Chairperson','initials'=>'AA'],
+            ['name'=>'Victoria S. Burlaos',      'role'=>'Secretary',                    'initials'=>'VB'],
+            ['name'=>'Romeo R. De Leon',          'role'=>'Treasurer',                    'initials'=>'RL'],
+            ['name'=>'John Carlo C. Solomon',     'role'=>'Kagawad (Appropriations)',     'initials'=>'JS'],
+            ['name'=>'Reynaldo J. Dauz Jr.',      'role'=>'Kagawad (Peace & Order)',      'initials'=>'RD'],
+            ['name'=>'Jesus C. Anunciacion',      'role'=>'Kagawad (Rules & Education)',  'initials'=>'JA'],
+            ['name'=>'Claudine A. Dizon',         'role'=>'Kagawad (Livelihood)',         'initials'=>'CD'],
+            ['name'=>'Ian M. Perez',              'role'=>'Kagawad (Health)',             'initials'=>'IP'],
+            ['name'=>'Ma. Teresita G. Quintana',  'role'=>'Kagawad (Environment)',        'initials'=>'TQ'],
+            ['name'=>'Enerson R. Molina',         'role'=>'Kagawad (Entrepreneurship)',   'initials'=>'EM'],
+            ['name'=>'Alaine Joy T. Ambito',      'role'=>'SK Chairperson',              'initials'=>'AA'],
+            ['name'=>'Rustico B. Cuevas Jr.',     'role'=>'Executive Officer (BSG)',      'initials'=>'RC'],
         ]; @endphp
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto">
             @foreach($officials as $off)
