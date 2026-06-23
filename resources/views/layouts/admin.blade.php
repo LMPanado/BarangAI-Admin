@@ -33,6 +33,20 @@
         .sidebar-black { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
         .sidebar-red   { background: linear-gradient(180deg, #cc0000 0%, #8b0000 100%); }
 
+        /* Hexagonal chevron pattern overlay for sidebar */
+        .sidebar-pattern::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.15)' stroke-width='1'%3E%3Cpath d='M30 0 L60 15 L60 45 L30 60 L0 45 L0 15 Z'/%3E%3Cpath d='M30 10 L50 20 L50 40 L30 50 L10 40 L10 20 Z'/%3E%3Cpath d='M15 7 L30 0 M45 7 L60 15 M60 30 L45 37 M30 60 L15 53 M0 30 L15 23'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 60px 60px;
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sidebar-pattern > * { position: relative; z-index: 1; }
+
         /* Turbo Drive progress bar */
         .turbo-progress-bar {
             height: 3px;
@@ -50,7 +64,7 @@
         $activeIconColor = $role == 1 ? 'text-gray-900' : ($role == 2 ? 'text-red-800' : 'text-darkGreen');
         $hoverIconClass  = $role == 2 ? 'bg-white/5 text-white/40 group-hover:bg-white group-hover:text-red-700' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen';
     @endphp
-    <aside class="w-72 {{ $sidebarClass }} text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
+    <aside class="w-72 {{ $sidebarClass }} sidebar-pattern text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
         <div class="px-8 py-8">
             <div class="flex flex-col items-center text-center">
                 <div class="w-20 h-20 mb-3 transition-transform hover:scale-110 duration-300 ease-out">
