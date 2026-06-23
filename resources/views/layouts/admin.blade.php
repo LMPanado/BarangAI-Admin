@@ -42,23 +42,53 @@
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">
     
-    <aside class="w-72 sidebar-gradient text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
-        <div class="px-8 py-8">
+    <aside class="w-72 sidebar-gradient text-white flex-shrink-0 flex flex-col shadow-[6px_0_32px_rgba(0,0,0,0.25)] z-30 relative overflow-hidden">
+
+        {{-- Decorative background elements --}}
+        <div class="pointer-events-none select-none absolute inset-0 overflow-hidden">
+            {{-- Large blurred circle top-right --}}
+            <div class="absolute -top-16 -right-16 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+            {{-- Small accent circle bottom-left --}}
+            <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
+            {{-- Subtle dot-grid pattern --}}
+            <svg class="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <circle cx="2" cy="2" r="1.5" fill="white"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#dots)"/>
+            </svg>
+            {{-- Top highlight line --}}
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            {{-- Right edge inner glow --}}
+            <div class="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+        </div>
+
+        <div class="relative px-8 py-8">
             <div class="flex flex-col items-center text-center">
-                <div class="w-20 h-20 mb-3 transition-transform hover:scale-110 duration-300 ease-out">
-                    <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-full h-full object-contain drop-shadow-2xl">
+                {{-- Logo with ring --}}
+                <div class="relative mb-4">
+                    <div class="absolute inset-0 rounded-full bg-white/10 blur-md scale-110"></div>
+                    <div class="relative w-20 h-20 rounded-full ring-2 ring-white/20 p-0.5 transition-transform hover:scale-105 duration-300 ease-out">
+                        <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-full h-full object-contain drop-shadow-2xl">
+                    </div>
                 </div>
                 <div>
                     <h1 class="text-white font-extrabold text-lg tracking-tight leading-none">Barangay 419</h1>
-                    <div class="inline-block px-3 py-1 bg-white/10 rounded-full mt-2 border border-white/20">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full mt-2 border border-white/20 backdrop-blur-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <p class="text-[8px] text-white font-black uppercase tracking-[0.2em]">Admin Portal</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <nav class="flex-grow px-6 space-y-1">
-            <p class="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Main Menu</p>
+        {{-- Divider --}}
+        <div class="mx-6 mb-4 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+
+        <nav class="relative flex-grow px-6 space-y-1">
+            <p class="px-4 text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-3">Main Menu</p>
             
             @php
                 $navItems = [
@@ -128,7 +158,11 @@
 
             @if(Auth::user()->role == 1)
             <div class="pt-4 pb-2">
-                <p class="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">System</p>
+                <div class="flex items-center gap-3 px-4 mb-3">
+                    <div class="h-px flex-1 bg-white/10"></div>
+                    <p class="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">System</p>
+                    <div class="h-px flex-1 bg-white/10"></div>
+                </div>
                 <a href="{{ route('admin.roles.index') }}"
                    class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl
                    {{ request()->routeIs('admin.roles.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
@@ -149,7 +183,11 @@
             @endif
 
             <div class="pt-4">
-                <p class="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Analytics</p>
+                <div class="flex items-center gap-3 px-4 mb-3">
+                    <div class="h-px flex-1 bg-white/10"></div>
+                    <p class="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">Analytics</p>
+                    <div class="h-px flex-1 bg-white/10"></div>
+                </div>
                 
                 {{-- Reports: Only for Role 1 and 2 --}}
                 @if(Auth::user()->role == 1 || Auth::user()->role == 2)
@@ -173,11 +211,12 @@
             </div>
         </nav>
 
-        <div class="p-6">
+        <div class="relative p-6 pt-4">
+            <div class="mx-0 mb-4 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="group w-full flex items-center justify-center px-4 py-4 text-[9px] bg-white/10 text-white hover:bg-red-500 hover:text-white rounded-xl transition-all duration-300 font-black tracking-[0.2em] border border-white/10">
-                    <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <button type="submit" class="group w-full flex items-center justify-center gap-2 px-4 py-3.5 text-[9px] bg-white/5 text-white/70 hover:bg-red-500 hover:text-white rounded-2xl transition-all duration-300 font-black tracking-[0.2em] border border-white/10 hover:border-red-400 hover:shadow-lg hover:shadow-red-500/20">
+                    <svg class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     LOGOUT
                 </button>
             </form>
