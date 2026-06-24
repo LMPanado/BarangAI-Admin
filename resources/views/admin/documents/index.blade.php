@@ -9,11 +9,23 @@
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Document Requests</h1>
             <p class="text-sm text-gray-400 font-medium mt-0.5">Barangay 419 — Certificates & Permits</p>
         </div>
-        <nav class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider">
-            <span class="text-gray-300">Home</span>
-            <svg class="w-3 h-3 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-            <span class="text-brgyGreen">Requests</span>
-        </nav>
+        <div class="flex items-center gap-4">
+            {{-- Last updated + refresh --}}
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Updated <span id="last-updated">just now</span></span>
+                <button onclick="location.reload()" title="Refresh"
+                        class="p-1.5 rounded-lg text-gray-300 hover:text-brgyGreen hover:bg-green-50 transition-all">
+                    <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider">
+                <span class="text-gray-300">Home</span>
+                <svg class="w-3 h-3 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                <span class="text-brgyGreen">Requests</span>
+            </nav>
+        </div>
     </div>
 
     {{-- Search + Sort + Stats --}}
@@ -161,4 +173,25 @@
     </div>
 
 </div>
+
+<script>
+    // Auto-refresh every 30 seconds — updates the page silently
+    const INTERVAL = 30;
+    let secondsLeft = INTERVAL;
+    const label = document.getElementById('last-updated');
+    const icon  = document.getElementById('refresh-icon');
+
+    // Countdown ticker
+    setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+            icon.classList.add('animate-spin');
+            location.reload();
+        } else if (secondsLeft <= 10) {
+            label.textContent = `in ${secondsLeft}s`;
+        } else {
+            label.textContent = 'just now';
+        }
+    }, 1000);
+</script>
 @endsection
