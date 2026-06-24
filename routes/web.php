@@ -35,26 +35,42 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
     Route::middleware(['auth', 'role:1,2,3'])->prefix('admin')->group(function () {
         
         Route::get('/dashboard', function () {
-            $requests        = DocumentRequest::all();
-            $totalPopulation = Resident::count();
-            $recentLogs      = auth()->user()->role === 1
+            // One query for all resident counts
+            $residentStats = Resident::selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE gender = 'Male') as male,
+                COUNT(*) FILTER (WHERE gender = 'Female') as female,
+                COUNT(*) FILTER (WHERE is_voter = true) as voters,
+                COUNT(*) FILTER (WHERE age BETWEEN 0 AND 12) as children,
+                COUNT(*) FILTER (WHERE age BETWEEN 13 AND 17) as teens,
+                COUNT(*) FILTER (WHERE age BETWEEN 18 AND 59) as adults,
+                COUNT(*) FILTER (WHERE age >= 60) as seniors
+            ")->first();
+
+            // One query for document request counts
+            $docStats = DocumentRequest::selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE status = 'pending') as pending
+            ")->first();
+
+            $recentLogs = auth()->user()->role === 1
                 ? AuditLog::with('user')->latest('created_at')->limit(10)->get()
                 : collect();
-            $ageGroups = [
-                'Children (0–12)'  => Resident::whereBetween('age', [0, 12])->count(),
-                'Teens (13–17)'    => Resident::whereBetween('age', [13, 17])->count(),
-                'Adults (18–59)'   => Resident::whereBetween('age', [18, 59])->count(),
-                'Seniors (60+)'    => Resident::where('age', '>=', 60)->count(),
-            ];
+
             return view('admin.dashboard', [
-                'requests'        => $requests,
-                'totalPopulation' => $totalPopulation,
-                'maleCount'       => Resident::where('gender', 'Male')->count(),
-                'femaleCount'     => Resident::where('gender', 'Female')->count(),
-                'voterCount'      => Resident::where('is_voter', true)->count(),
-                'pendingRequests' => $requests->where('status', 'pending')->count(),
+                'requests'        => collect(), // kept for view compatibility
+                'totalPopulation' => $residentStats->total,
+                'maleCount'       => $residentStats->male,
+                'femaleCount'     => $residentStats->female,
+                'voterCount'      => $residentStats->voters,
+                'pendingRequests' => $docStats->pending,
                 'recentLogs'      => $recentLogs,
-                'ageGroups'       => $ageGroups,
+                'ageGroups'       => [
+                    'Children (0–12)'  => $residentStats->children,
+                    'Teens (13–17)'    => $residentStats->teens,
+                    'Adults (18–59)'   => $residentStats->adults,
+                    'Seniors (60+)'    => $residentStats->seniors,
+                ],
             ]);
         })->name('dashboard');
 

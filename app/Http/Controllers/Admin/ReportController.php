@@ -17,25 +17,44 @@ class ReportController extends Controller
         $month = $request->get('month', now()->format('Y-m'));
         [$year, $mon] = explode('-', $month);
 
-        // Residents
-        $totalResidents  = Resident::count();
-        $maleCount       = Resident::where('gender', 'Male')->count();
-        $femaleCount     = Resident::where('gender', 'Female')->count();
-        $voterCount      = Resident::where('is_voter', true)->count();
-        $newResidents    = Resident::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
+        // One query for all resident stats
+        $residentStats = Resident::selectRaw("
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE gender = 'Male') as male,
+            COUNT(*) FILTER (WHERE gender = 'Female') as female,
+            COUNT(*) FILTER (WHERE is_voter = true) as voters,
+            COUNT(*) FILTER (WHERE EXTRACT(YEAR FROM created_at) = ? AND EXTRACT(MONTH FROM created_at) = ?) as new_this_month,
+            COUNT(*) FILTER (WHERE age BETWEEN 0 AND 12) as children,
+            COUNT(*) FILTER (WHERE age BETWEEN 13 AND 17) as teens,
+            COUNT(*) FILTER (WHERE age BETWEEN 18 AND 59) as adults,
+            COUNT(*) FILTER (WHERE age >= 60) as seniors
+        ", [$year, $mon])->first();
 
-        $ageGroups = [
-            'Children (0–12)'  => Resident::whereBetween('age', [0, 12])->count(),
-            'Teens (13–17)'    => Resident::whereBetween('age', [13, 17])->count(),
-            'Adults (18–59)'   => Resident::whereBetween('age', [18, 59])->count(),
-            'Seniors (60+)'    => Resident::where('age', '>=', 60)->count(),
+        $totalResidents = $residentStats->total;
+        $maleCount      = $residentStats->male;
+        $femaleCount    = $residentStats->female;
+        $voterCount     = $residentStats->voters;
+        $newResidents   = $residentStats->new_this_month;
+        $ageGroups      = [
+            'Children (0–12)'  => $residentStats->children,
+            'Teens (13–17)'    => $residentStats->teens,
+            'Adults (18–59)'   => $residentStats->adults,
+            'Seniors (60+)'    => $residentStats->seniors,
         ];
 
-        // Document Requests
-        $totalDocs        = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
-        $pendingDocs      = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'pending')->count();
-        $approvedDocs     = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'approved')->count();
-        $rejectedDocs     = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'rejected')->count();
+        // One query for document request stats for the selected month
+        $docStats = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+            ->selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE status = 'pending') as pending,
+                COUNT(*) FILTER (WHERE status = 'approved') as approved,
+                COUNT(*) FILTER (WHERE status = 'rejected') as rejected
+            ")->first();
+
+        $totalDocs    = $docStats->total;
+        $pendingDocs  = $docStats->pending;
+        $approvedDocs = $docStats->approved;
+        $rejectedDocs = $docStats->rejected;
 
         $docsByType = DocumentRequest::whereYear('created_at', $year)
             ->whereMonth('created_at', $mon)
@@ -44,16 +63,31 @@ class ReportController extends Controller
             ->orderByDesc('total')
             ->get();
 
-        // Complaints
-        $totalComplaints    = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
-        $openComplaints     = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'open')->count();
-        $closedComplaints   = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('status', 'closed')->count();
-        $criticalComplaints = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('severity', 'critical')->count();
+        // One query for complaint stats for the selected month
+        $complaintStats = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+            ->selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE status = 'open') as open,
+                COUNT(*) FILTER (WHERE status = 'closed') as closed,
+                COUNT(*) FILTER (WHERE severity = 'critical') as critical
+            ")->first();
 
-        // Feedback
-        $totalFeedback   = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)->count();
-        $positiveFeedback = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('sentiment', 'positive')->count();
-        $negativeFeedback = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)->where('sentiment', 'negative')->count();
+        $totalComplaints    = $complaintStats->total;
+        $openComplaints     = $complaintStats->open;
+        $closedComplaints   = $complaintStats->closed;
+        $criticalComplaints = $complaintStats->critical;
+
+        // One query for feedback stats for the selected month
+        $feedbackStats = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+            ->selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE sentiment = 'positive') as positive,
+                COUNT(*) FILTER (WHERE sentiment = 'negative') as negative
+            ")->first();
+
+        $totalFeedback    = $feedbackStats->total;
+        $positiveFeedback = $feedbackStats->positive;
+        $negativeFeedback = $feedbackStats->negative;
 
         return view('admin.reports.index', compact(
             'month', 'year', 'mon',
@@ -80,17 +114,20 @@ class ReportController extends Controller
 
         $feedbacks = $query->paginate(10)->withQueryString();
 
-        $total    = Feedback::count();
-        $positive = Feedback::where('sentiment', 'positive')->count();
-        $neutral  = Feedback::where('sentiment', 'neutral')->count();
-        $negative = Feedback::where('sentiment', 'negative')->count();
-        $unrated  = Feedback::whereNull('sentiment')->count();
+        $fs = Feedback::selectRaw("
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE sentiment = 'positive') as positive,
+            COUNT(*) FILTER (WHERE sentiment = 'neutral') as neutral,
+            COUNT(*) FILTER (WHERE sentiment = 'negative') as negative,
+            COUNT(*) FILTER (WHERE sentiment IS NULL) as unrated
+        ")->first();
 
+        $total = $fs->total;
         $sentimentCounts = [
-            'positive' => $positive,
-            'neutral'  => $neutral,
-            'negative' => $negative,
-            'unrated'  => $unrated,
+            'positive' => $fs->positive,
+            'neutral'  => $fs->neutral,
+            'negative' => $fs->negative,
+            'unrated'  => $fs->unrated,
         ];
 
         return view('admin.feedback.index', compact(

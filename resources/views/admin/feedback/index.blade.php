@@ -397,16 +397,4 @@ new Chart(document.getElementById('sentimentChart'), {
 });
 @endif
 </script>
-<script>
-    const INTERVAL = 30;
-    let secondsLeft = INTERVAL;
-    const label = document.getElementById('last-updated');
-    const icon  = document.getElementById('refresh-icon');
-    setInterval(() => {
-        secondsLeft--;
-        if (secondsLeft <= 0) { icon.classList.add('animate-spin'); location.reload(); }
-        else if (secondsLeft <= 10) { label.textContent = `in ${secondsLeft}s`; }
-        else { label.textContent = 'just now'; }
-    }, 1000);
-</script>
 @endsection

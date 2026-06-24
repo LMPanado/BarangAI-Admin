@@ -42,15 +42,20 @@ class ComplaintController extends Controller
 
         $complaints = $query->paginate(10)->withQueryString();
 
-        $totalComplaints  = Complaint::count();
-        $openComplaints   = Complaint::where('status', 'open')->count();
-        $closedComplaints = Complaint::where('status', 'closed')->count();
+        // One query for all summary counts
+        $stats = Complaint::selectRaw("
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE status = 'open') as open,
+            COUNT(*) FILTER (WHERE status = 'closed') as closed,
+            COUNT(*) FILTER (WHERE severity = 'critical') as critical,
+            COUNT(*) FILTER (WHERE severity = 'medium') as medium,
+            COUNT(*) FILTER (WHERE severity = 'low') as low
+        ")->first();
 
-        $bySeverity = [
-            'critical' => Complaint::where('severity', 'critical')->count(),
-            'medium'   => Complaint::where('severity', 'medium')->count(),
-            'low'      => Complaint::where('severity', 'low')->count(),
-        ];
+        $totalComplaints  = $stats->total;
+        $openComplaints   = $stats->open;
+        $closedComplaints = $stats->closed;
+        $bySeverity = ['critical' => $stats->critical, 'medium' => $stats->medium, 'low' => $stats->low];
 
         return view('admin.complaints.index', compact(
             'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort'
