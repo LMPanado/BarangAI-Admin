@@ -187,10 +187,25 @@
         ]; @endphp
         @php $topRow = array_slice($officials, 0, 8); $bottomRow = array_slice($officials, 8); @endphp
 
-        {{-- All officials in a responsive grid --}}
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
-            @foreach($officials as $off)
+        @php $topRow = array_slice($officials, 0, 8); $bottomRow = array_slice($officials, 8); @endphp
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
+            @foreach($topRow as $off)
             <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+                    <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
+                </div>
+                <div>
+                    <p class="text-white font-bold text-xs leading-snug">{{ $off['name'] }}</p>
+                    <p class="text-white/35 text-[9px] font-black uppercase tracking-widest mt-1">{{ $off['role'] }}</p>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <div class="flex justify-center gap-3 md:gap-4 max-w-4xl mx-auto mt-3 md:mt-4">
+            @foreach($bottomRow as $off)
+            <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center w-full sm:w-[calc(25%-0.75rem)]">
                 <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
                     <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
                 </div>
