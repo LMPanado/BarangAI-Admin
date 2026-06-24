@@ -39,6 +39,20 @@
         @endforeach
     </div>
 
+    {{-- Sort Toggle --}}
+    <div class="flex items-center gap-2">
+        <a href="{{ route('admin.complaints.index', array_merge(request()->except('sort'), ['sort' => 'severity'])) }}"
+           class="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
+                  {{ $sort === 'severity' ? 'bg-brgyGreen text-white shadow-sm' : 'bg-white border border-gray-100 text-gray-400 hover:text-gray-700' }}">
+            Severity
+        </a>
+        <a href="{{ route('admin.complaints.index', array_merge(request()->except('sort'), ['sort' => 'latest'])) }}"
+           class="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
+                  {{ $sort === 'latest' ? 'bg-brgyGreen text-white shadow-sm' : 'bg-white border border-gray-100 text-gray-400 hover:text-gray-700' }}">
+            Latest
+        </a>
+    </div>
+
     {{-- Filters --}}
     <form method="GET" action="{{ route('admin.complaints.index') }}"
           class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
@@ -75,6 +89,8 @@
                        class="flex-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
             </div>
         </div>
+
+        <input type="hidden" name="sort" value="{{ $sort }}">
 
         <div class="flex items-center gap-3 mt-4">
             <button type="submit"

@@ -10,7 +10,16 @@ class ComplaintController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Complaint::latest('created_at');
+        $sort = $request->get('sort', 'severity');
+
+        $query = Complaint::query();
+
+        if ($sort === 'latest') {
+            $query->latest('created_at');
+        } else {
+            $query->orderByRaw("CASE severity WHEN 'critical' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END")
+                  ->latest('created_at');
+        }
 
         if ($request->filled('severity')) {
             $query->where('severity', $request->severity);
@@ -44,7 +53,7 @@ class ComplaintController extends Controller
         ];
 
         return view('admin.complaints.index', compact(
-            'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity'
+            'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort'
         ));
     }
 }
