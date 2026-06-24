@@ -40,19 +40,6 @@
     </div>
 
     {{-- Sort Toggle --}}
-    <div class="flex items-center gap-2">
-        <a href="{{ route('admin.complaints.index', array_merge(request()->except('sort'), ['sort' => 'severity'])) }}"
-           class="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
-                  {{ $sort === 'severity' ? 'bg-brgyGreen text-white shadow-sm' : 'bg-white border border-gray-100 text-gray-400 hover:text-gray-700' }}">
-            Severity
-        </a>
-        <a href="{{ route('admin.complaints.index', array_merge(request()->except('sort'), ['sort' => 'latest'])) }}"
-           class="px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
-                  {{ $sort === 'latest' ? 'bg-brgyGreen text-white shadow-sm' : 'bg-white border border-gray-100 text-gray-400 hover:text-gray-700' }}">
-            Latest
-        </a>
-    </div>
-
     {{-- Filters --}}
     <form method="GET" action="{{ route('admin.complaints.index') }}"
           class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
@@ -110,9 +97,21 @@
                 {{ request('date_to') ? \Carbon\Carbon::parse(request('date_to'))->format('M d, Y') : '...' }}
             </span>
             @endif
-            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                {{ $complaints->total() }} {{ Str::plural('complaint', $complaints->total()) }}
-            </span>
+            <div class="ml-auto flex items-center gap-2">
+                <a href="{{ route('admin.complaints.index', array_merge(request()->except('sort'), ['sort' => 'severity'])) }}"
+                   class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all
+                          {{ $sort === 'severity' ? 'bg-brgyGreen text-white' : 'border border-gray-200 text-gray-400 hover:text-gray-600' }}">
+                    Severity
+                </a>
+                <a href="{{ route('admin.complaints.index', array_merge(request()->except('sort'), ['sort' => 'latest'])) }}"
+                   class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all
+                          {{ $sort === 'latest' ? 'bg-brgyGreen text-white' : 'border border-gray-200 text-gray-400 hover:text-gray-600' }}">
+                    Latest
+                </a>
+                <span class="pl-2 text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                    {{ $complaints->total() }} {{ Str::plural('complaint', $complaints->total()) }}
+                </span>
+            </div>
         </div>
     </form>
 
