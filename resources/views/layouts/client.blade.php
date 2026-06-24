@@ -63,7 +63,6 @@
                          x-cloak>
                         <a href="{{ route('services.show', 'barangay-id') }}"        class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay I.D.</a>
                         <a href="{{ route('services.show', 'business-permit') }}"    class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Business Permit</a>
-                        <a href="{{ route('services.show', 'cedula') }}"             class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Cedula</a>
                         <a href="{{ route('services.show', 'barangay-clearance') }}" class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay Clearance</a>
                     </div>
                 </div>
@@ -101,7 +100,6 @@
                     <div x-show="servicesOpen" x-cloak class="ml-4 mt-1 space-y-1 border-l-2 border-brgyGreen/10 pl-3">
                         <a href="{{ route('services.show', 'barangay-id') }}"        @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Barangay I.D.</a>
                         <a href="{{ route('services.show', 'business-permit') }}"    @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Business Permit</a>
-                        <a href="{{ route('services.show', 'cedula') }}"             @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Cedula</a>
                         <a href="{{ route('services.show', 'barangay-clearance') }}" @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Barangay Clearance</a>
                     </div>
                 </div>
