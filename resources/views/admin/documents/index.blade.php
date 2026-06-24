@@ -16,19 +16,56 @@
         </nav>
     </div>
 
-    {{-- Search + Stats --}}
-    <div class="flex items-center gap-4">
-        {{-- Search --}}
-        <form action="{{ route('admin.documents.index') }}" method="GET" class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-300 group-focus-within:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+    {{-- Search + Sort + Stats --}}
+    <div class="flex items-center gap-3">
+        {{-- Search + Filters (single form) --}}
+        <form action="{{ route('admin.documents.index') }}" method="GET" class="flex items-center gap-2">
+            {{-- Search --}}
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <svg class="h-3.5 w-3.5 text-gray-300 group-focus-within:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}"
+                       placeholder="Search resident or purpose..."
+                       class="pl-9 pr-4 py-2.5 text-xs font-bold border border-gray-200 rounded-xl focus:border-brgyGreen focus:ring-0 outline-none w-60 transition-all bg-white placeholder:text-gray-300 placeholder:font-medium">
             </div>
-            <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Search resident or purpose..."
-                   class="pl-10 pr-4 py-2.5 text-xs font-bold border border-gray-200 rounded-xl focus:border-brgyGreen focus:ring-0 outline-none w-64 transition-all bg-white placeholder:text-gray-300 placeholder:font-medium">
+
+            {{-- Status Filter --}}
+            <select name="status_filter"
+                    class="text-[10px] font-black uppercase tracking-widest px-3 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-500 focus:border-brgyGreen focus:ring-0 outline-none cursor-pointer">
+                <option value="">All Statuses</option>
+                <option value="pending"          {{ request('status_filter') === 'pending'          ? 'selected' : '' }}>Pending</option>
+                <option value="processing"       {{ request('status_filter') === 'processing'       ? 'selected' : '' }}>Processing</option>
+                <option value="ready_for_pickup" {{ request('status_filter') === 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
+                <option value="completed"        {{ request('status_filter') === 'completed'        ? 'selected' : '' }}>Completed</option>
+                <option value="cancelled"        {{ request('status_filter') === 'cancelled'        ? 'selected' : '' }}>Cancelled</option>
+            </select>
+
+            {{-- Sort --}}
+            <input type="hidden" name="sort" value="{{ $sort }}">
+            <button type="submit" class="px-4 py-2.5 bg-brgyGreen text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-md transition-all">
+                Filter
+            </button>
+            @if(request('search') || request('status_filter'))
+            <a href="{{ route('admin.documents.index', ['sort' => $sort]) }}"
+               class="px-3 py-2.5 border border-gray-200 text-gray-400 text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-gray-600 transition-all">
+                Clear
+            </a>
+            @endif
         </form>
+
+        {{-- Sort Buttons --}}
+        <div class="flex items-center gap-1.5">
+            @foreach([['latest','Latest'],['oldest','Oldest'],['status','By Status'],['document','By Document']] as [$val,$label])
+            <a href="{{ route('admin.documents.index', array_merge(request()->except('sort'), ['sort' => $val])) }}"
+               class="px-3 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
+                      {{ $sort === $val ? 'bg-brgyGreen text-white' : 'border border-gray-200 text-gray-400 hover:text-gray-600' }}">
+                {{ $label }}
+            </a>
+            @endforeach
+        </div>
 
         {{-- Stats --}}
         <div class="flex items-center gap-3 ml-auto">

@@ -32,16 +32,25 @@ class DocumentRequestController extends Controller
             });
         }
 
-        $allRequests = $query->latest()->get();
+        $sort = $request->get('sort', 'latest');
 
-        // Split into mobile (has reference_no OR source = mobile) and kiosk
+        match ($sort) {
+            'oldest'   => $query->oldest(),
+            'status'   => $query->orderByRaw("CASE status WHEN 'pending' THEN 1 WHEN 'processing' THEN 2 WHEN 'ready_for_pickup' THEN 3 WHEN 'completed' THEN 4 ELSE 5 END"),
+            'document' => $query->orderBy('document_type'),
+            default    => $query->latest(),
+        };
+
+        if ($request->filled('status_filter')) {
+            $query->where('status', $request->status_filter);
+        }
+
+        $allRequests    = $query->get();
         $mobileRequests = $allRequests->filter(fn($r) => $r->source === 'mobile' || ($r->source !== 'kiosk'));
         $kioskRequests  = $allRequests->filter(fn($r) => $r->source === 'kiosk');
+        $requests       = $allRequests;
 
-        // Keep $requests for backward-compat (stats row)
-        $requests = $allRequests;
-
-        return view('admin.documents.index', compact('requests', 'mobileRequests', 'kioskRequests'));
+        return view('admin.documents.index', compact('requests', 'mobileRequests', 'kioskRequests', 'sort'));
     }
 
     /**
