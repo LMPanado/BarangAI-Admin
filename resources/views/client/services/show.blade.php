@@ -50,53 +50,19 @@
 
             {{-- Right Column: Application Process --}}
             <div class="lg:col-span-2">
-                <div x-data="{ tab: 'new' }">
-                    <div class="flex gap-8 mb-10 border-b border-slate-100">
-                        <button @click="tab = 'new'" 
-                                :class="tab === 'new' ? 'text-brgyGreen border-brgyGreen' : 'text-slate-400 border-transparent hover:text-slate-600'" 
-                                class="pb-4 border-b-2 text-xs font-black uppercase tracking-[0.2em] transition-all">
-                            New Application
-                        </button>
-                        <button @click="tab = 'renewal'" 
-                                :class="tab === 'renewal' ? 'text-brgyGreen border-brgyGreen' : 'text-slate-400 border-transparent hover:text-slate-600'" 
-                                class="pb-4 border-b-2 text-xs font-black uppercase tracking-[0.2em] transition-all">
-                            Renewal Application
-                        </button>
-                    </div>
-
-                    {{-- Step Content --}}
-                    <div class="space-y-10">
-                        <div x-show="tab === 'new'" x-transition>
-                            <h4 class="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-8">Follow these steps for new request</h4>
-                            <div class="space-y-8">
-                                @foreach($service['steps_new'] as $index => $step)
-                                <div class="flex gap-6 group">
-                                    <div class="flex-none w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black text-sm group-hover:bg-brgyGreen transition-colors duration-300">
-                                        {{ sprintf('%02d', $index + 1) }}
-                                    </div>
-                                    <div class="pt-3">
-                                        <p class="text-slate-600 leading-relaxed font-medium">{{ $step }}</p>
-                                    </div>
-                                </div>
-                                @endforeach
+                <div>
+                    <h4 class="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-8">Follow these steps to apply</h4>
+                    <div class="space-y-8">
+                        @foreach($service['steps_new'] as $index => $step)
+                        <div class="flex gap-6 group">
+                            <div class="flex-none w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black text-sm group-hover:bg-brgyGreen transition-colors duration-300">
+                                {{ sprintf('%02d', $index + 1) }}
+                            </div>
+                            <div class="pt-3">
+                                <p class="text-slate-600 leading-relaxed font-medium">{{ $step }}</p>
                             </div>
                         </div>
-
-                        <div x-show="tab === 'renewal'" x-transition x-cloak>
-                            <h4 class="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] mb-8">Follow these steps for renewal</h4>
-                            <div class="space-y-8">
-                                @foreach($service['steps_renewal'] as $index => $step)
-                                <div class="flex gap-6 group">
-                                    <div class="flex-none w-12 h-12 bg-brgyGold text-brgyGreen rounded-2xl flex items-center justify-center font-black text-sm group-hover:scale-105 transition-all">
-                                        {{ sprintf('%02d', $index + 1) }}
-                                    </div>
-                                    <div class="pt-3">
-                                        <p class="text-slate-600 leading-relaxed font-medium">{{ $step }}</p>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
 
                     {{-- CTA Footer --}}
