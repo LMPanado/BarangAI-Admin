@@ -91,6 +91,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::get('/', [DocumentRequestController::class, 'index'])->name('index');
             Route::get('/issuance/{id}', [DocumentRequestController::class, 'issuance'])->name('issuance');
             Route::patch('/{id}/status', [DocumentRequestController::class, 'updateStatus'])->name('updateStatus');
+            Route::patch('/{id}/verify', [DocumentRequestController::class, 'verify'])->name('verify');
             Route::delete('/{id}', [DocumentRequestController::class, 'destroy'])->middleware('role:1')->name('destroy');
         });
 

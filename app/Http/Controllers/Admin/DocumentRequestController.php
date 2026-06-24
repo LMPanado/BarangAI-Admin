@@ -32,10 +32,16 @@ class DocumentRequestController extends Controller
             });
         }
 
-        // Use paginate() instead of get() to support the UI's pagination links
-        $requests = $query->latest()->paginate(10);
-        
-        return view('admin.documents.index', compact('requests'));
+        $allRequests = $query->latest()->get();
+
+        // Split into mobile (has reference_no OR source = mobile) and kiosk
+        $mobileRequests = $allRequests->filter(fn($r) => $r->source === 'mobile' || ($r->source !== 'kiosk'));
+        $kioskRequests  = $allRequests->filter(fn($r) => $r->source === 'kiosk');
+
+        // Keep $requests for backward-compat (stats row)
+        $requests = $allRequests;
+
+        return view('admin.documents.index', compact('requests', 'mobileRequests', 'kioskRequests'));
     }
 
     /**
@@ -66,6 +72,24 @@ class DocumentRequestController extends Controller
 
         return redirect()->back()->with('success', 'Status updated!');
     }
+    /**
+     * Verify a kiosk request and generate a reference number.
+     */
+    public function verify($id)
+    {
+        $docRequest = DocumentRequest::findOrFail($id);
+
+        $refNo = 'REF-' . now()->format('Ymd') . '-' . str_pad($docRequest->id, 4, '0', STR_PAD_LEFT);
+        $docRequest->update(['reference_no' => $refNo]);
+
+        AuditLogger::log('updated', 'DocumentRequest',
+            'Kiosk request #' . $docRequest->id . ' verified → ' . $refNo,
+            $docRequest->id
+        );
+
+        return redirect()->back()->with('success', 'Request verified. Reference number generated: ' . $refNo);
+    }
+
     public function destroy($id)
     {
         $docRequest = DocumentRequest::with('resident')->findOrFail($id);

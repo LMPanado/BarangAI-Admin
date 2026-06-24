@@ -2,19 +2,6 @@
 
 @section('content')
 
-{{-- Success Toast Notification --}}
-@if(session('success'))
-<div id="toast" style="background-color: #1d4ed8;" class="fixed top-5 right-5 z-[100] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-right-10 duration-500">
-    <div class="bg-white/20 p-1.5 rounded-lg">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-    </div>
-    <div>
-        <p class="text-[10px] font-black uppercase tracking-widest leading-none">Success</p>
-        <p class="text-xs font-bold mt-1 opacity-90">{{ session('success') }}</p>
-    </div>
-</div>
-<script>setTimeout(() => { const t = document.getElementById('toast'); if(t) t.remove(); }, 4000);</script>
-@endif
 
 <div class="space-y-8 p-4 font-sans">
     
@@ -203,11 +190,12 @@
 
 <script>
     function confirmDelete(eventId) {
-        if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
-            const form = document.getElementById('delete-event-form');
-            form.action = `/admin/schedules/${eventId}`;
-            form.submit();
-        }
+        document.getElementById('delete-event-form').action = `/admin/schedules/${eventId}`;
+        window._deleteForm = document.getElementById('delete-event-form');
+        document.getElementById('delete-modal-message').textContent = 'Delete this event? This action cannot be undone.';
+        const modal = document.getElementById('delete-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
     }
 </script>
 
