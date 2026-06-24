@@ -98,8 +98,6 @@
              'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751A11.959 11.959 0 0 1 12 2.714Z"/>'],
             ['title'=>'Barangay ID',        'slug'=>'barangay-id',        'desc'=>'Official identification issued to residents of Barangay 419.',
              'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/>'],
-            ['title'=>'Cedula',             'slug'=>'cedula',             'desc'=>'Community tax certificate required for various government transactions.',
-             'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6v.75m0 3v.75m0 3v.75m0 3V18m15-10.5v10.5m-15-10.5h15"/>'],
             ['title'=>'Business Permit',    'slug'=>'business-permit',    'desc'=>'Required to legally operate a business within the barangay.',
              'icon'=>'<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A4.806 4.806 0 0 1 9 10.37a4.806 4.806 0 0 1 3.75-1.637 4.806 4.806 0 0 1 3.75 1.637 3.001 3.001 0 0 0 3.75.615"/>'],
         ];
