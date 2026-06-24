@@ -192,9 +192,21 @@
                             </span>
                         </td>
                         <td class="px-6 py-5">
+                            @if(auth()->user()->isCaptain() || auth()->user()->isAdmin())
+                            <form action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST">
+                                @csrf @method('PATCH')
+                                <select name="status" onchange="this.form.submit()"
+                                        class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 cursor-pointer focus:ring-2 focus:ring-brgyGreen/20 outline-none
+                                               {{ ($complaint->status ?? 'open') === 'open' ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700' }}">
+                                    <option value="open"   {{ ($complaint->status ?? 'open') === 'open'   ? 'selected' : '' }}>Open</option>
+                                    <option value="closed" {{ ($complaint->status ?? 'open') === 'closed' ? 'selected' : '' }}>Closed</option>
+                                </select>
+                            </form>
+                            @else
                             <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $statusStyle }}">
                                 {{ $complaint->status ?? 'open' }}
                             </span>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

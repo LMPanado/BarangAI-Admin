@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 
 class ComplaintController extends Controller
@@ -60,5 +61,14 @@ class ComplaintController extends Controller
         return view('admin.complaints.index', compact(
             'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort'
         ));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $complaint = Complaint::findOrFail($id);
+        $request->validate(['status' => 'required|in:open,closed']);
+        $complaint->update(['status' => $request->status]);
+        AuditLogger::log('updated', 'Complaint', 'Complaint #' . $id . ' status → ' . $request->status, $id);
+        return redirect()->back()->with('success', 'Complaint status updated.');
     }
 }
