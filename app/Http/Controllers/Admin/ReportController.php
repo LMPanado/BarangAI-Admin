@@ -135,6 +135,12 @@ class ReportController extends Controller
         ));
     }
 
+    public function destroyFeedback($id)
+    {
+        Feedback::findOrFail($id)->delete();
+        return redirect()->route('admin.feedback.index')->with('success', 'Feedback deleted.');
+    }
+
     public function replyFeedback(Request $request, $id)
     {
         $request->validate(['reply' => 'required|string|max:1000']);

@@ -124,6 +124,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         // Feedback: Visible to 1, 2, and 3
         Route::get('/feedback', [ReportController::class, 'feedback'])->name('admin.feedback.index');
         Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->name('admin.feedback.reply');
+        Route::delete('/feedback/{id}', [ReportController::class, 'destroyFeedback'])->name('admin.feedback.destroy');
 
         // Verification image proxy (private Supabase bucket — streams via service key)
         Route::get('/verification/image/{userId}/{type}', [VerificationImageController::class, 'show'])

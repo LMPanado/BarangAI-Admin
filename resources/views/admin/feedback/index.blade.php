@@ -198,6 +198,17 @@
                                         </svg>
                                         {{ $item->admin_reply ? 'Edit Reply' : 'Reply' }}
                                     </button>
+
+                                    <form id="del-feedback-{{ $item->id }}" action="{{ route('admin.feedback.destroy', $item->id) }}" method="POST" class="hidden">
+                                        @csrf @method('DELETE')
+                                    </form>
+                                    <button onclick="confirmDelete('del-feedback-{{ $item->id }}', 'Delete feedback from {{ addslashes($item->user_email) }}? This cannot be undone.')"
+                                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border-2 border-red-100 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
 
