@@ -10,7 +10,7 @@ class ServiceController extends Controller
     {
         $commonSteps = function (string $documentName) {
             return [
-                'Download the BarangAI Mobile Application from the App Store or Google Play Store.',
+                'Download the BarangAI Mobile Application from the link below.',
                 'Open the Barangay 419 Mobile App and navigate to Quick Access or Services, then tap "Request Document".',
                 'Select "' . $documentName . '" from the list of available documents.',
                 'Enter your personal information and purpose of request.',
