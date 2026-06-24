@@ -56,7 +56,15 @@
             <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->count() }} {{ Str::plural('entry', $mobileRequests->count()) }}</span>
         </div>
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-            <table class="w-full text-left">
+            <table class="w-full text-left table-fixed">
+                <colgroup>
+                    <col class="w-[22%]">
+                    <col class="w-[16%]">
+                    <col class="w-[24%]">
+                    <col class="w-[12%]">
+                    <col class="w-[14%]">
+                    <col class="w-[12%]">
+                </colgroup>
                 <thead>
                     <tr class="border-b border-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest">
                         <th class="px-6 py-3">Resident</th>
@@ -85,7 +93,15 @@
             <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->count() }} {{ Str::plural('entry', $kioskRequests->count()) }}</span>
         </div>
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-            <table class="w-full text-left">
+            <table class="w-full text-left table-fixed">
+                <colgroup>
+                    <col class="w-[22%]">
+                    <col class="w-[16%]">
+                    <col class="w-[24%]">
+                    <col class="w-[12%]">
+                    <col class="w-[14%]">
+                    <col class="w-[12%]">
+                </colgroup>
                 <thead>
                     <tr class="border-b border-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest">
                         <th class="px-6 py-3">Resident</th>
