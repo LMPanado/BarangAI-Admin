@@ -74,15 +74,9 @@
     {{-- SECTION 1: Mobile App Requests --}}
     {{-- ============================================================ --}}
     <div>
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-8 h-8 bg-brgyGreen/10 rounded-xl flex items-center justify-center">
-                <svg class="w-4 h-4 text-brgyGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-            </div>
-            <div>
-                <h2 class="text-sm font-extrabold text-gray-700 uppercase tracking-widest">Mobile App Requests</h2>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Submitted via the BarangAI mobile app</p>
-            </div>
-            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->count() }} {{ Str::plural('request', $mobileRequests->count()) }}</span>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-extrabold text-gray-600 uppercase tracking-widest">Mobile App Requests</h2>
+            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->count() }} {{ Str::plural('request', $mobileRequests->count()) }}</span>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden">
@@ -118,15 +112,9 @@
     {{-- SECTION 2: Walk-in / Kiosk Requests --}}
     {{-- ============================================================ --}}
     <div>
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-8 h-8 bg-amber-50 rounded-xl flex items-center justify-center">
-                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
-            </div>
-            <div>
-                <h2 class="text-sm font-extrabold text-gray-700 uppercase tracking-widest">Walk-in / Kiosk Requests</h2>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Submitted at the barangay hall — verify to generate a reference number</p>
-            </div>
-            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->count() }} {{ Str::plural('request', $kioskRequests->count()) }}</span>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-extrabold text-gray-600 uppercase tracking-widest">Walk-in / Kiosk Requests</h2>
+            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->count() }} {{ Str::plural('request', $kioskRequests->count()) }}</span>
         </div>
 
         <div class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden">
