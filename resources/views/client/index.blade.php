@@ -17,10 +17,10 @@
         </div>
     @endif
 
-    <div class="relative z-10 max-w-7xl mx-auto px-6 pt-36 pb-32 w-full">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-28 md:pt-36 pb-24 md:pb-32 w-full">
         <div class="max-w-3xl">
             {{-- Eyebrow --}}
-            <div class="flex items-center gap-3 mb-10">
+            <div class="flex items-center gap-3 mb-8 md:mb-10">
                 <div class="flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/15 rounded-full backdrop-blur-sm">
                     <div class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
                     <span class="text-white/80 text-[10px] font-black uppercase tracking-[0.25em]">Official Information Portal</span>
@@ -28,16 +28,16 @@
             </div>
 
             {{-- Headline --}}
-            <h1 class="text-6xl md:text-7xl xl:text-8xl font-extrabold text-white leading-[1] tracking-tight mb-8">
+            <h1 class="text-4xl sm:text-5xl md:text-7xl xl:text-8xl font-extrabold text-white leading-[1] tracking-tight mb-6 md:mb-8">
                 Barangay<br>
                 <span class="text-white/40">419</span>
             </h1>
 
-            <p class="text-white/60 text-lg md:text-xl font-medium leading-relaxed max-w-xl mb-12">
+            <p class="text-white/60 text-base md:text-xl font-medium leading-relaxed max-w-xl mb-8 md:mb-12">
                 Serving the community of Zone 43, District IV, Sampaloc, Manila with transparency and digital innovation.
             </p>
 
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-3 md:gap-4">
                 <a href="#announcements"
                    class="inline-flex items-center gap-2 px-7 py-4 bg-white text-brgyGreen font-extrabold rounded-2xl hover:bg-white/90 transition-all text-xs tracking-widest uppercase shadow-2xl shadow-black/30">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
@@ -73,7 +73,7 @@
 {{-- ═══════════════════════════════════════════
      SERVICES
 ═══════════════════════════════════════════ --}}
-<section id="services" class="py-28 max-w-7xl mx-auto px-6">
+<section id="services" class="py-16 md:py-28 max-w-7xl mx-auto px-4 sm:px-6">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
         {{-- Left: Header + description --}}
@@ -82,7 +82,7 @@
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Barangay Services
             </span>
-            <h2 class="text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
                 Documents &<br>Processes
             </h2>
             <p class="text-slate-500 text-base font-medium leading-relaxed mb-8 max-w-sm">
@@ -135,12 +135,12 @@
 {{-- ═══════════════════════════════════════════
      OFFICIALS
 ═══════════════════════════════════════════ --}}
-<section id="officials" class="py-28 mx-4 md:mx-10 mb-20 rounded-[3rem] overflow-hidden relative" style="background: linear-gradient(135deg, #0f2d6b 0%, #1e3a8a 100%);">
+<section id="officials" class="py-16 md:py-28 mx-3 md:mx-10 mb-10 md:mb-20 rounded-[2rem] md:rounded-[3rem] overflow-hidden relative" style="background: linear-gradient(135deg, #0f2d6b 0%, #1e3a8a 100%);">
     <div class="absolute inset-0 opacity-[0.03]" style="background-image:url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='1'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E\");"></div>
     <div class="absolute -right-32 -top-32 w-[500px] h-[500px] rounded-full bg-brgyGreen/10 blur-[120px]"></div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10 md:mb-16">
             <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/15 rounded-full text-[10px] font-black text-white/60 uppercase tracking-[0.25em] mb-5">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Leadership
@@ -187,26 +187,11 @@
         ]; @endphp
         @php $topRow = array_slice($officials, 0, 8); $bottomRow = array_slice($officials, 8); @endphp
 
-        {{-- Top 8 (2 rows of 4) --}}
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            @foreach($topRow as $off)
-            <div class="flex flex-col items-center gap-3 p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
-                <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
-                    <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
-                </div>
-                <div>
-                    <p class="text-white font-bold text-xs leading-snug">{{ $off['name'] }}</p>
-                    <p class="text-white/35 text-[9px] font-black uppercase tracking-widest mt-1">{{ $off['role'] }}</p>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        {{-- Bottom 3 centered --}}
-        <div class="flex justify-center gap-4 max-w-4xl mx-auto mt-4">
-            @foreach($bottomRow as $off)
-            <div class="flex flex-col items-center gap-3 p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center w-[calc(25%-0.75rem)]">
-                <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+        {{-- All officials in a responsive grid --}}
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
+            @foreach($officials as $off)
+            <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
                     <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
                 </div>
                 <div>
@@ -222,14 +207,14 @@
 {{-- ═══════════════════════════════════════════
      ANNOUNCEMENTS
 ═══════════════════════════════════════════ --}}
-<section id="announcements" class="py-28 max-w-7xl mx-auto px-6">
+<section id="announcements" class="py-16 md:py-28 max-w-7xl mx-auto px-4 sm:px-6">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
         <div>
             <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-5">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                 Community Feed
             </span>
-            <h2 class="text-5xl font-extrabold text-slate-900 tracking-tight">Announcements</h2>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Announcements</h2>
         </div>
         <p class="text-slate-400 text-sm font-medium max-w-xs leading-relaxed">
             Official bulletins and news from Barangay 419.
@@ -278,14 +263,14 @@
 {{-- ═══════════════════════════════════════════
      ACTIVITIES
 ═══════════════════════════════════════════ --}}
-<section id="schedule" class="py-28 max-w-7xl mx-auto px-6 mb-8">
+<section id="schedule" class="py-16 md:py-28 max-w-7xl mx-auto px-4 sm:px-6 mb-8">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
         <div>
             <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-5">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 Calendar
             </span>
-            <h2 class="text-5xl font-extrabold text-slate-900 tracking-tight">Upcoming Activities</h2>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Upcoming Activities</h2>
         </div>
         <p class="text-slate-400 text-sm font-medium max-w-xs leading-relaxed">Events and activities happening in Barangay 419.</p>
     </div>

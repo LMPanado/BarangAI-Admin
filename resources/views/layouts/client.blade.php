@@ -34,18 +34,19 @@
 </head>
 <body class="bg-[#f8fafc] text-slate-800 font-sans">
 
-    <nav class="fixed top-0 w-full glass shadow-[0_2px_20px_rgba(0,0,0,0.04)] z-50 border-b border-slate-100/80">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <nav x-data="{ mobileOpen: false, servicesOpen: false }" class="fixed top-0 w-full glass shadow-[0_2px_20px_rgba(0,0,0,0.04)] z-50 border-b border-slate-100/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
             <a href="/" class="flex items-center gap-3 group">
                 <img src="{{ asset('images/brgy_logo.png') }}"
                      alt="Barangay 419 Logo"
-                     class="w-11 h-11 object-contain rounded-full group-hover:scale-110 transition-transform duration-300">
+                     class="w-9 h-9 md:w-11 md:h-11 object-contain rounded-full group-hover:scale-110 transition-transform duration-300">
                 <div class="flex flex-col">
-                    <span class="font-extrabold tracking-tight text-brgyGreen text-base uppercase leading-none">Barangay 419</span>
+                    <span class="font-extrabold tracking-tight text-brgyGreen text-sm md:text-base uppercase leading-none">Barangay 419</span>
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-0.5">Sampaloc, Manila</span>
                 </div>
             </a>
 
+            {{-- Desktop nav --}}
             <div class="hidden md:flex items-center gap-1 text-[11px] font-black text-slate-500 uppercase tracking-widest h-full">
                 <a href="/" class="h-20 flex items-center px-4 border-b-2 transition {{ request()->is('/') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen hover:border-brgyGreen/30' }}">Home</a>
 
@@ -60,16 +61,54 @@
                          x-transition:enter-end="opacity-100 translate-y-0"
                          class="absolute top-full left-0 w-56 bg-white shadow-xl border border-slate-100 rounded-2xl py-2 z-50"
                          x-cloak>
-                        <a href="{{ route('services.show', 'barangay-id') }}"       class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay I.D.</a>
-                        <a href="{{ route('services.show', 'business-permit') }}"   class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Business Permit</a>
-                        <a href="{{ route('services.show', 'cedula') }}"            class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Cedula</a>
+                        <a href="{{ route('services.show', 'barangay-id') }}"        class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay I.D.</a>
+                        <a href="{{ route('services.show', 'business-permit') }}"    class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Business Permit</a>
+                        <a href="{{ route('services.show', 'cedula') }}"             class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Cedula</a>
                         <a href="{{ route('services.show', 'barangay-clearance') }}" class="flex items-center gap-3 px-5 py-3 text-slate-600 hover:bg-brgyGreen/5 hover:text-brgyGreen transition text-xs font-bold">Barangay Clearance</a>
                     </div>
                 </div>
 
-                <a href="/#officials"   class="h-20 flex items-center px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">Officials</a>
+                <a href="/#officials"     class="h-20 flex items-center px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">Officials</a>
                 <a href="/#announcements" class="h-20 flex items-center px-4 border-b-2 border-transparent hover:text-brgyGreen hover:border-brgyGreen/30 transition">Announcements</a>
                 <a href="{{ route('about') }}" class="h-20 flex items-center px-4 border-b-2 transition {{ request()->routeIs('about') ? 'text-brgyGreen border-brgyGreen' : 'border-transparent hover:text-brgyGreen hover:border-brgyGreen/30' }}">About</a>
+            </div>
+
+            {{-- Hamburger (mobile only) --}}
+            <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2 rounded-xl text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition-all">
+                <svg x-show="!mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <svg x-show="mobileOpen"  class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        {{-- Mobile menu --}}
+        <div x-show="mobileOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="md:hidden bg-white border-t border-slate-100 shadow-lg"
+             x-cloak>
+            <div class="px-4 py-4 space-y-1 text-[11px] font-black uppercase tracking-widest text-slate-500">
+                <a href="/" @click="mobileOpen=false" class="block px-4 py-3 rounded-xl hover:bg-brgyGreen/5 hover:text-brgyGreen transition">Home</a>
+
+                <div>
+                    <button @click="servicesOpen = !servicesOpen" class="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-brgyGreen/5 hover:text-brgyGreen transition">
+                        Services
+                        <svg class="w-3 h-3 transition-transform duration-200" :class="{'rotate-180': servicesOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="servicesOpen" x-cloak class="ml-4 mt-1 space-y-1 border-l-2 border-brgyGreen/10 pl-3">
+                        <a href="{{ route('services.show', 'barangay-id') }}"        @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Barangay I.D.</a>
+                        <a href="{{ route('services.show', 'business-permit') }}"    @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Business Permit</a>
+                        <a href="{{ route('services.show', 'cedula') }}"             @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Cedula</a>
+                        <a href="{{ route('services.show', 'barangay-clearance') }}" @click="mobileOpen=false" class="block px-3 py-2.5 rounded-lg text-slate-500 hover:text-brgyGreen hover:bg-brgyGreen/5 transition">Barangay Clearance</a>
+                    </div>
+                </div>
+
+                <a href="/#officials"     @click="mobileOpen=false" class="block px-4 py-3 rounded-xl hover:bg-brgyGreen/5 hover:text-brgyGreen transition">Officials</a>
+                <a href="/#announcements" @click="mobileOpen=false" class="block px-4 py-3 rounded-xl hover:bg-brgyGreen/5 hover:text-brgyGreen transition">Announcements</a>
+                <a href="{{ route('about') }}" @click="mobileOpen=false" class="block px-4 py-3 rounded-xl hover:bg-brgyGreen/5 hover:text-brgyGreen transition">About</a>
             </div>
         </div>
     </nav>

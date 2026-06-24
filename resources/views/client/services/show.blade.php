@@ -1,7 +1,7 @@
 @extends('layouts.client')
 
 @section('content')
-<section class="hero-gradient pt-40 pb-20 px-6">
+<section class="hero-gradient pt-28 md:pt-40 pb-12 md:pb-20 px-4 sm:px-6">
     <div class="max-w-7xl mx-auto">
         <nav class="flex mb-8 text-[10px] font-bold uppercase tracking-widest text-white/50">
             <a href="/" class="hover:text-white transition">Home</a>
@@ -17,7 +17,7 @@
     </div>
 </section>
 
-<section class="py-20 px-6 bg-white">
+<section class="py-12 md:py-20 px-4 sm:px-6 bg-white">
     <div class="max-w-7xl mx-auto">
         <div class="grid lg:grid-cols-3 gap-16">
             

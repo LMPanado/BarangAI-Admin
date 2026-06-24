@@ -1,9 +1,9 @@
 @extends('layouts.client') {{-- Adjust this to match your actual layout filename --}}
 
 @section('content')
-<div class="max-w-7xl mx-auto px-6 py-20">
-    <div class="bg-white rounded-[3rem] shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
-        <div class="hero-gradient p-12 text-white">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-20">
+    <div class="bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+        <div class="hero-gradient p-6 sm:p-10 md:p-12 text-white">
             <h1 class="text-4xl font-extrabold tracking-tight mb-4">About Barangay 419</h1>
             <p class="text-white/80 max-w-2xl text-lg font-medium leading-relaxed">
                 Serving the heart of Zone 43, District IV, Manila. We are committed to transparency, 
@@ -11,7 +11,7 @@
             </p>
         </div>
 
-        <div class="p-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="p-6 sm:p-10 md:p-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {{-- Contact Info --}}
             <div class="space-y-8">
                 <div>
