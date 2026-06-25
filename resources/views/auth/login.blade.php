@@ -6,123 +6,198 @@
     <title>Admin Login | Barangay 419</title>
     <link rel="icon" type="image/png" href="{{ asset('images/brgy_logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap');
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .brgy-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        .login-panel {
+            display: flex;
+            width: 900px;
+            max-width: 96vw;
+            min-height: 520px;
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+        }
+
+        /* Left decorative panel */
+        .login-left {
+            flex: 1;
+            background: linear-gradient(160deg, #1e3a8a 0%, #0f172a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                60deg,
+                transparent,
+                transparent 38px,
+                rgba(255,255,255,0.03) 38px,
+                rgba(255,255,255,0.03) 39px
+            );
+        }
+
+        .login-left::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 260px;
+            height: 260px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+
+        /* Right form panel */
+        .login-right {
+            width: 400px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3.5rem 3rem;
         }
 
         .input-field {
-            background: #f1f5f9;
-            border: 1px solid transparent;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
             transition: all 0.2s ease;
+            width: 100%;
+            padding: 0.85rem 1.1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            color: #1e293b;
         }
 
         .input-field:focus {
-            background: white;
+            background: #fff;
             border-color: #1e3a8a;
-            box-shadow: 0 0 0 4px rgba(30, 61, 26, 0.05);
+            box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.08);
         }
 
-        .btn-primary {
-            background-color: #1e3a8a;
+        .btn-signin {
+            width: 100%;
+            background: #1e3a8a;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            padding: 0.9rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
             transition: all 0.2s ease;
+            margin-top: 0.5rem;
         }
 
-        .btn-primary:hover {
-            background-color: #1d4ed8;
+        .btn-signin:hover {
+            background: #1d4ed8;
             transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(30,58,138,0.25);
+        }
+
+        .btn-signin:active { transform: scale(0.98); }
+
+        @media (max-width: 640px) {
+            .login-left { display: none; }
+            .login-right { width: 100%; padding: 2.5rem 2rem; border-radius: 2rem; }
         }
     </style>
 </head>
-<body class="antialiased text-slate-900">
-    <div class="min-h-screen flex flex-col items-center justify-center px-6">
-        
-        {{-- Header --}}
-        <div class="mb-8 text-center">
-            <a href="/">
-                <img src="{{ asset('images/brgy_logo.png') }}" 
-                     class="w-20 h-20 mx-auto mb-4 drop-shadow-sm" 
-                     alt="Logo">
-            </a>
-            <h1 class="text-2xl font-bold tracking-tight text-slate-800">Admin Login</h1>
-            <p class="text-slate-500 text-sm mt-1 font-medium">Barangay 419 Management System</p>
+<body class="antialiased">
+
+    <div class="login-panel">
+
+        {{-- Left: Branding --}}
+        <div class="login-left">
+            <div style="position:relative;z-index:1;text-align:center;">
+                <img src="{{ asset('images/brgy_logo.png') }}"
+                     style="width:88px;height:88px;margin:0 auto 1.5rem;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.4));"
+                     alt="Barangay 419 Logo">
+                <h1 style="color:#fff;font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:0.5rem;">Barangay 419</h1>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;">Sampaloc, Manila</p>
+                <div style="width:40px;height:2px;background:rgba(255,255,255,0.2);margin:1.75rem auto;"></div>
+                <p style="color:rgba(255,255,255,0.4);font-size:0.7rem;font-weight:500;line-height:1.7;max-width:200px;">
+                    Authorized personnel only.<br>This portal contains sensitive<br>barangay data.
+                </p>
+            </div>
         </div>
 
-        {{-- Login Card --}}
-        <div class="w-full max-w-[400px] brgy-card p-8 sm:p-10 rounded-[2rem]">
-            
+        {{-- Right: Form --}}
+        <div class="login-right">
+            <div style="margin-bottom:2rem;">
+                <p style="font-size:0.65rem;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;margin-bottom:0.4rem;">Admin Portal</p>
+                <h2 style="font-size:1.6rem;font-weight:800;color:#0f172a;letter-spacing:-0.02em;line-height:1.2;">Sign In</h2>
+            </div>
+
+            {{-- Error / Session Messages --}}
             @if (session('error'))
-                <div class="mb-6 flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-100">
-                    <div class="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-extrabold text-red-600 uppercase tracking-widest">Access Denied</p>
-                        <p class="text-xs text-red-500 font-medium mt-0.5">This portal is for barangay admin accounts only. Residents must use the mobile app.</p>
-                    </div>
+                <div style="margin-bottom:1.25rem;padding:0.85rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:0.75rem;display:flex;align-items:flex-start;gap:0.6rem;">
+                    <svg style="width:16px;height:16px;color:#ef4444;flex-shrink:0;margin-top:1px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    </svg>
+                    <p style="font-size:0.75rem;font-weight:600;color:#dc2626;">{{ session('error') }}</p>
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 p-3 rounded-xl bg-red-50 border border-red-100 text-[10px] font-bold text-red-600 text-center uppercase tracking-wider">
-                    {{ $errors->first() }}
+                <div style="margin-bottom:1.25rem;padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:0.75rem;">
+                    <p style="font-size:0.75rem;font-weight:700;color:#dc2626;text-align:center;">{{ $errors->first() }}</p>
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login.post') }}" class="space-y-6">
+            <form method="POST" action="{{ route('login.post') }}">
                 @csrf
 
-                {{-- Email --}}
-                <div class="space-y-2">
-                    <label for="email" class="text-[11px] font-bold uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
-                    <input id="email" 
-                           class="input-field block w-full rounded-xl py-3.5 px-5 outline-none text-sm" 
-                           type="email" 
-                           name="email" 
+                <div style="margin-bottom:1.1rem;">
+                    <label for="email" style="display:block;font-size:0.65rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:0.5rem;">Email Address</label>
+                    <input id="email"
+                           class="input-field"
+                           type="email"
+                           name="email"
                            placeholder="admin@barangay419.ph"
-                           value="{{ old('email') }}" 
+                           value="{{ old('email') }}"
                            required autofocus />
                 </div>
 
-                {{-- Password --}}
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center ml-1">
-                        <label for="password" class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Password</label>
-                        <a href="#" class="text-[10px] font-bold text-slate-400 hover:text-[#1e3a8a] transition-colors uppercase tracking-widest">Forgot Password?</a>
-                    </div>
-                    <input id="password" 
-                           class="input-field block w-full rounded-xl py-3.5 px-5 outline-none text-sm"
+                <div style="margin-bottom:1.5rem;">
+                    <label for="password" style="display:block;font-size:0.65rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:0.5rem;">Password</label>
+                    <input id="password"
+                           class="input-field"
                            type="password"
                            name="password"
                            placeholder="••••••••••••"
                            required />
                 </div>
 
-                {{-- Action Button --}}
-                <div class="pt-2">
-                    <button type="submit" class="btn-primary w-full text-white font-bold py-4 rounded-xl shadow-lg shadow-green-900/10 active:scale-[0.98]">
-                        Sign In
-                    </button>
-                </div>
+                <button type="submit" class="btn-signin">Sign In</button>
             </form>
+
+            <a href="/" style="display:block;text-align:center;margin-top:1.75rem;font-size:0.65rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#cbd5e1;text-decoration:none;transition:color 0.2s;"
+               onmouseover="this.style.color='#1e3a8a'" onmouseout="this.style.color='#cbd5e1'">
+                ← Back to Home
+            </a>
         </div>
 
-        {{-- Simple Back Link --}}
-        <a href="/" class="mt-8 text-slate-400 text-xs font-bold uppercase tracking-widest hover:text-[#1e3a8a] transition-colors">
-            ← Back to Home
-        </a>
     </div>
+
 </body>
 </html>
