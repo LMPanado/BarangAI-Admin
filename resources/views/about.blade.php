@@ -52,6 +52,23 @@
                 </div>
             </div>
         </div>
+
+        {{-- Map Section --}}
+        <div class="px-6 sm:px-10 md:px-12 pb-6 sm:pb-10 md:pb-12">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-brgyGreen mb-6">Map and Location</h3>
+            <div class="rounded-[1.5rem] overflow-hidden border border-slate-100 shadow-sm" style="height: 420px;">
+                <iframe
+                    src="https://maps.google.com/maps?q=Barangay+419+Sampaloc+Manila+Philippines&output=embed&z=16"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
