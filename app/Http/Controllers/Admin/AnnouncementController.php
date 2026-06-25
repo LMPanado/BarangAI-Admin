@@ -12,7 +12,7 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcements = Announcement::latest()->get();
+        $announcements = Announcement::latest()->paginate(15);
         return view('Admin.announcements.index', compact('announcements'));
     }
 
