@@ -32,6 +32,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+    // Called by JS when sessionStorage is empty (tab was closed and reopened)
+    Route::get('/admin/force-logout', [AuthController::class, 'forceLogout'])->name('admin.force-logout');
+
     Route::middleware(['auth', 'role:1,2,3', 'session.timeout'])->prefix('admin')->group(function () {
         
         Route::get('/dashboard', function () {

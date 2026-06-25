@@ -339,5 +339,23 @@
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
     }
     </script>
+
+    {{-- Tab-close session guard --}}
+    {{-- sessionStorage is wiped when the tab closes, unlike cookies which browsers restore. --}}
+    {{-- If the flag is missing on load, the tab was closed and reopened → destroy the session. --}}
+    <script>
+    (function () {
+        @if(session('just_logged_in'))
+            {{-- Fresh login: seed the flag so subsequent page loads pass the check --}}
+            sessionStorage.setItem('admin_tab_active', '1');
+        @else
+            if (!sessionStorage.getItem('admin_tab_active')) {
+                window.location.replace('{{ route("admin.force-logout") }}');
+                return;
+            }
+        @endif
+        sessionStorage.setItem('admin_tab_active', '1');
+    })();
+    </script>
 </body>
 </html>
