@@ -32,9 +32,11 @@ return [
     |
     */
 
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
+    // Session expires after 60 minutes of inactivity
+    'lifetime' => (int) env('SESSION_LIFETIME', 60),
 
-    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
+    // Session cookie deleted when browser/tab is closed — forces re-login
+    'expire_on_close' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +171,8 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // Only send cookie over HTTPS (safe to force true since site runs on HTTPS)
+    'secure' => env('SESSION_SECURE_COOKIE', true),
 
     /*
     |--------------------------------------------------------------------------

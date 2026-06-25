@@ -32,7 +32,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-    Route::middleware(['auth', 'role:1,2,3'])->prefix('admin')->group(function () {
+    Route::middleware(['auth', 'role:1,2,3', 'session.timeout'])->prefix('admin')->group(function () {
         
         Route::get('/dashboard', function () {
             // One query for all resident counts

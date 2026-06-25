@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // We register the 'role' alias here so Laravel knows 
         // which class to use in your routes/web.php file.
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role'            => \App\Http\Middleware\RoleMiddleware::class,
+            'session.timeout' => \App\Http\Middleware\SessionTimeout::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
