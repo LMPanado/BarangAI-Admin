@@ -47,8 +47,8 @@
         $activeIconColor = $role == 1 ? 'text-gray-900' : ($role == 2 ? 'text-red-800' : 'text-darkGreen');
         $hoverIconClass  = $role == 2 ? 'bg-white/5 text-white/40 group-hover:bg-white group-hover:text-red-700' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen';
     @endphp
-    <aside class="w-56 xl:w-72 {{ $sidebarClass }} sidebar-pattern text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
-        <div class="px-4 py-6 xl:px-8 xl:py-8">
+    <aside class="w-72 {{ $sidebarClass }} sidebar-pattern text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
+        <div class="px-8 py-8">
             <div class="flex flex-col items-center text-center">
                 <div class="w-20 h-20 mb-3 transition-transform hover:scale-110 duration-300 ease-out">
                     <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-full h-full object-contain drop-shadow-2xl">
@@ -203,7 +203,7 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-14 xl:h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-8 xl:px-12 z-20">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-12 z-20">
             <div><h2 class="text-sm font-black text-slate-400 uppercase tracking-[0.3em]"></h2></div>
             <div class="flex items-center gap-4">
                 @php
@@ -242,7 +242,7 @@
             </div>
         </header>
 
-        <main class="flex-grow overflow-y-auto p-4 md:p-6 xl:p-12">
+        <main class="flex-grow overflow-y-auto p-12">
             @yield('content')
         </main>
     </div>
