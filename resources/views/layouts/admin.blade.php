@@ -10,7 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/brgy_logo.png') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { 
+                extend: { 
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brgyGreen: '#1d4ed8',
+                        brgyGold: '#ffffff',
+                        darkGreen: '#1e3a8a'
+                    }
+                } 
+            }
+        }
+    </script>
     <style>
         .sidebar-gradient { background: linear-gradient(180deg, #1e3a8a 0%, #0f1f5c 100%); }
         .sidebar-black { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
