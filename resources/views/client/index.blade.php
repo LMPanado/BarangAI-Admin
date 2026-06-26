@@ -236,10 +236,24 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($announcements as $announcement)
-        <article class="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 flex flex-col">
+        @php
+            $annImg      = $announcement->image_url ? Storage::url($announcement->image_url) : '';
+            $annDate     = $announcement->created_at->format('M d, Y');
+            $annCategory = $announcement->category ?? 'Bulletin';
+            $annPinned   = $announcement->is_pinned ? 'true' : 'false';
+        @endphp
+        <article onclick="openAnnouncementModal(
+                    {{ json_encode($announcement->title) }},
+                    {{ json_encode($annImg) }},
+                    {{ json_encode($annDate) }},
+                    {{ json_encode($annCategory) }},
+                    {{ json_encode($announcement->content) }},
+                    {{ $annPinned }}
+                 )"
+                 class="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 flex flex-col cursor-pointer">
             @if($announcement->image_url)
             <div class="h-52 overflow-hidden">
-                <img src="{{ Storage::url($announcement->image_url) }}"
+                <img src="{{ $annImg }}"
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                      alt="{{ $announcement->title }}">
             </div>
@@ -252,13 +266,16 @@
                         Pinned
                     </span>
                     @endif
-                    <span class="px-2.5 py-1 bg-brgyGreen/10 text-brgyGreen rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $announcement->category }}</span>
+                    <span class="px-2.5 py-1 bg-brgyGreen/10 text-brgyGreen rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $annCategory }}</span>
                 </div>
                 <h3 class="font-extrabold text-slate-800 text-base leading-snug mb-2 group-hover:text-brgyGreen transition-colors">{{ $announcement->title }}</h3>
                 <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 flex-1">{{ $announcement->content }}</p>
                 <div class="mt-5 pt-4 border-t border-slate-50 flex justify-between items-center">
-                    <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Official Bulletin</span>
-                    <span class="text-[9px] font-black text-slate-400">{{ $announcement->created_at->format('M d, Y') }}</span>
+                    <span class="text-brgyGreen text-xs font-black uppercase tracking-widest flex items-center gap-1">
+                        Read More
+                        <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </span>
+                    <span class="text-[9px] font-black text-slate-400">{{ $annDate }}</span>
                 </div>
             </div>
         </article>
@@ -342,6 +359,39 @@
 {{-- ═══════════════════════════════════════════
      EVENT MODAL
 ═══════════════════════════════════════════ --}}
+{{-- ═══════════════════════════════════════════
+     ANNOUNCEMENT MODAL
+═══════════════════════════════════════════ --}}
+<div id="announcementModal" onclick="handleAnnBackdropClick(event)"
+     class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
+    <div id="annModalContainer"
+         class="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300 relative">
+        <button onclick="closeAnnouncementModal()"
+                class="absolute top-4 right-4 w-9 h-9 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center transition-all z-10">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div id="annModalImgWrap" class="relative h-64 bg-slate-100">
+            <img id="annModalImg" src="" alt="" class="w-full h-full object-cover hidden">
+            <div id="annModalNoImg" class="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-3">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                <p class="text-xs font-bold uppercase tracking-widest">No Image</p>
+            </div>
+        </div>
+        <div class="p-8 max-h-[55vh] overflow-y-auto">
+            <div class="flex items-center gap-2 mb-3">
+                <span id="annModalPinned" class="hidden inline-flex items-center gap-1.5 px-2.5 py-1 bg-brgyGreen text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
+                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+                    Pinned
+                </span>
+                <span id="annModalCategory" class="px-2.5 py-1 bg-brgyGreen/10 text-brgyGreen rounded-lg text-[9px] font-black uppercase tracking-widest"></span>
+            </div>
+            <p id="annModalDate" class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2"></p>
+            <h3 id="annModalTitle" class="text-2xl font-extrabold text-slate-900 leading-tight mb-4"></h3>
+            <p id="annModalContent" class="text-slate-500 text-sm leading-relaxed whitespace-pre-line"></p>
+        </div>
+    </div>
+</div>
+
 <div id="eventDetailModal" onclick="handleBackdropClick(event)"
      class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
     <div id="modalContainer"
@@ -369,6 +419,32 @@
 </div>
 
 <script>
+function openAnnouncementModal(title, image, date, category, content, pinned) {
+    const modal = document.getElementById('announcementModal');
+    const box   = document.getElementById('annModalContainer');
+    const img   = document.getElementById('annModalImg');
+    const noImg = document.getElementById('annModalNoImg');
+    document.getElementById('annModalTitle').innerText    = title;
+    document.getElementById('annModalDate').innerText     = date;
+    document.getElementById('annModalCategory').innerText = category;
+    document.getElementById('annModalContent').innerText  = content;
+    const pinnedEl = document.getElementById('annModalPinned');
+    pinned ? pinnedEl.classList.remove('hidden') : pinnedEl.classList.add('hidden');
+    if (image) { img.src = image; img.classList.remove('hidden'); noImg.classList.add('hidden'); }
+    else        { img.src = '';   img.classList.add('hidden');    noImg.classList.remove('hidden'); }
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    setTimeout(() => box.classList.remove('scale-95','opacity-0'), 10);
+    document.body.style.overflow = 'hidden';
+}
+function closeAnnouncementModal() {
+    const modal = document.getElementById('announcementModal');
+    const box   = document.getElementById('annModalContainer');
+    box.classList.add('scale-95','opacity-0');
+    setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = 'auto'; }, 300);
+}
+function handleAnnBackdropClick(e) { if (!document.getElementById('annModalContainer').contains(e.target)) closeAnnouncementModal(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAnnouncementModal(); closeEventModal(); } });
+
 function openEventModal(title, image, date, time) {
     const modal = document.getElementById('eventDetailModal');
     const box   = document.getElementById('modalContainer');
@@ -390,6 +466,5 @@ function closeEventModal() {
     setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = 'auto'; }, 300);
 }
 function handleBackdropClick(e) { if (!document.getElementById('modalContainer').contains(e.target)) closeEventModal(); }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEventModal(); });
 </script>
 @endsection
