@@ -1,162 +1,177 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-8 p-2">
+<div class="space-y-6 max-w-[1600px] mx-auto">
 
-    {{-- Page Header --}}
-    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
+    {{-- Header --}}
+    <div class="flex justify-between items-end pb-5 border-b border-gray-100">
         <div>
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Document Requests</h1>
-            <p class="text-sm text-gray-500 mt-1 font-medium">Review and process certificates for the residents of <span class="text-brgyGreen font-bold">Barangay 419</span>.</p>
+            <p class="text-sm text-gray-400 font-medium mt-0.5">Barangay 419 — Certificates & Permits</p>
         </div>
-        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
-            <span class="text-gray-400">Home</span>
-            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-            <span class="text-brgyGreen">Requests</span>
-        </nav>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <button onclick="location.reload()" title="Refresh"
+                        class="p-1.5 rounded-lg text-gray-300 hover:text-brgyGreen hover:bg-green-50 transition-all">
+                    <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider">
+                <span class="text-gray-300">Home</span>
+                <svg class="w-3 h-3 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                <span class="text-brgyGreen">Requests</span>
+            </nav>
+        </div>
     </div>
 
-    {{-- Search --}}
-    <div>
-        <form action="{{ route('admin.documents.index') }}" method="GET" class="relative w-full sm:w-80 group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-slate-400 group-focus-within:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+    {{-- Search + Sort + Stats --}}
+    <div class="flex items-center gap-3">
+        {{-- Search + Filters (single form) --}}
+        <form action="{{ route('admin.documents.index') }}" method="GET" class="flex items-center gap-2">
+            {{-- Search --}}
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <svg class="h-3.5 w-3.5 text-gray-300 group-focus-within:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}"
+                       placeholder="Search resident or purpose..."
+                       class="pl-9 pr-4 py-2.5 text-xs font-bold border border-gray-200 rounded-xl focus:border-brgyGreen focus:ring-0 outline-none w-60 transition-all bg-white placeholder:text-gray-300 placeholder:font-medium">
             </div>
-            <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Search resident or purpose..."
-                   class="pl-11 pr-4 py-3.5 text-xs font-bold border-2 border-slate-100 rounded-2xl focus:border-brgyGreen focus:ring-0 outline-none w-full transition-all bg-white shadow-sm placeholder:text-slate-400 placeholder:font-black placeholder:uppercase placeholder:tracking-widest">
+
+            {{-- Status Filter --}}
+            <select name="status_filter"
+                    class="text-[10px] font-black uppercase tracking-widest px-3 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-500 focus:border-brgyGreen focus:ring-0 outline-none cursor-pointer">
+                <option value="">All Statuses</option>
+                <option value="pending"          {{ request('status_filter') === 'pending'          ? 'selected' : '' }}>Pending</option>
+                <option value="processing"       {{ request('status_filter') === 'processing'       ? 'selected' : '' }}>Processing</option>
+                <option value="ready_for_pickup" {{ request('status_filter') === 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
+                <option value="completed"        {{ request('status_filter') === 'completed'        ? 'selected' : '' }}>Completed</option>
+                <option value="cancelled"        {{ request('status_filter') === 'cancelled'        ? 'selected' : '' }}>Cancelled</option>
+            </select>
+
+            {{-- Sort --}}
+            <input type="hidden" name="sort" value="{{ $sort }}">
+            <button type="submit" class="px-4 py-2.5 bg-brgyGreen text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-md transition-all">
+                Filter
+            </button>
+            @if(request('search') || request('status_filter'))
+            <a href="{{ route('admin.documents.index', ['sort' => $sort]) }}"
+               class="px-3 py-2.5 border border-gray-200 text-gray-400 text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-gray-600 transition-all">
+                Clear
+            </a>
+            @endif
         </form>
-    </div>
 
-    {{-- Stats Row --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 flex-shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending</p>
-                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'pending')->count() }}</h3>
-            </div>
+        {{-- Sort Buttons --}}
+        <div class="flex items-center gap-1.5">
+            @foreach([['latest','Latest'],['oldest','Oldest'],['status','By Status'],['document','By Document']] as [$val,$label])
+            <a href="{{ route('admin.documents.index', array_merge(request()->except('sort'), ['sort' => $val])) }}"
+               class="px-3 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
+                      {{ $sort === $val ? 'bg-brgyGreen text-white' : 'border border-gray-200 text-gray-400 hover:text-gray-600' }}">
+                {{ $label }}
+            </a>
+            @endforeach
         </div>
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center text-violet-500 flex-shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+
+        {{-- Stats --}}
+        <div class="flex items-center gap-3 ml-auto">
+            @php
+            $statItems = [
+                ['label' => 'Pending',       'count' => $requests->where('status','pending')->count(),          'color' => 'text-amber-500',   'bg' => 'bg-amber-50'],
+                ['label' => 'Processing',    'count' => $requests->where('status','processing')->count(),       'color' => 'text-violet-500',  'bg' => 'bg-violet-50'],
+                ['label' => 'Ready',         'count' => $requests->where('status','ready_for_pickup')->count(), 'color' => 'text-blue-500',    'bg' => 'bg-blue-50'],
+                ['label' => 'Completed',     'count' => $requests->where('status','completed')->count(),        'color' => 'text-emerald-500', 'bg' => 'bg-emerald-50'],
+            ];
+            @endphp
+            @foreach($statItems as $s)
+            <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-xl px-4 py-2.5">
+                <span class="text-lg font-extrabold {{ $s['color'] }}">{{ $s['count'] }}</span>
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $s['label'] }}</span>
             </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Processing</p>
-                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'processing')->count() }}</h3>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 flex-shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ready for Pick-up</p>
-                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'ready_for_pickup')->count() }}</h3>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 flex-shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Completed</p>
-                <h3 class="text-2xl font-extrabold text-slate-800">{{ $requests->where('status', 'completed')->count() }}</h3>
-            </div>
+            @endforeach
         </div>
     </div>
 
-    {{-- ============================================================ --}}
-    {{-- SECTION 1: Mobile App Requests --}}
-    {{-- ============================================================ --}}
+    {{-- MOBILE APP REQUESTS --}}
     <div>
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-8 h-8 bg-brgyGreen/10 rounded-xl flex items-center justify-center">
-                <svg class="w-4 h-4 text-brgyGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-            </div>
-            <div>
-                <h2 class="text-sm font-extrabold text-gray-700 uppercase tracking-widest">Mobile App Requests</h2>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Submitted via the BarangAI mobile app</p>
-            </div>
-            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->count() }} {{ Str::plural('request', $mobileRequests->count()) }}</span>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Mobile App Requests</h2>
+            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->count() }} {{ Str::plural('entry', $mobileRequests->count()) }}</span>
         </div>
-
-        <div class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50/80 border-b border-slate-100 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em]">
-                            <th class="px-8 py-5">Resident Info</th>
-                            <th class="px-8 py-5">Document</th>
-                            <th class="px-8 py-5">Purpose</th>
-                            <th class="px-8 py-5">Schedule</th>
-                            <th class="px-8 py-5">Status</th>
-                            <th class="px-8 py-5 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        @forelse($mobileRequests as $req)
-                        @include('admin.documents._row', ['request' => $req, 'showVerify' => false])
-                        @empty
-                        <tr>
-                            <td colspan="6" class="px-8 py-12 text-center">
-                                <p class="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">No mobile requests found</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <table class="w-full text-left table-fixed">
+                <colgroup>
+                    <col class="w-[22%]">
+                    <col class="w-[16%]">
+                    <col class="w-[24%]">
+                    <col class="w-[12%]">
+                    <col class="w-[14%]">
+                    <col class="w-[12%]">
+                </colgroup>
+                <thead>
+                    <tr class="border-b border-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest">
+                        <th class="px-6 py-3">Resident</th>
+                        <th class="px-6 py-3">Document</th>
+                        <th class="px-6 py-3">Purpose</th>
+                        <th class="px-6 py-3">Schedule</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @forelse($mobileRequests as $req)
+                    @include('admin.documents._row', ['request' => $req, 'showVerify' => false])
+                    @empty
+                    <tr><td colspan="6" class="px-6 py-10 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">No mobile requests</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
-    {{-- ============================================================ --}}
-    {{-- SECTION 2: Walk-in / Kiosk Requests --}}
-    {{-- ============================================================ --}}
+    {{-- WALK-IN / KIOSK REQUESTS --}}
     <div>
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-8 h-8 bg-amber-50 rounded-xl flex items-center justify-center">
-                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
-            </div>
-            <div>
-                <h2 class="text-sm font-extrabold text-gray-700 uppercase tracking-widest">Walk-in / Kiosk Requests</h2>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Submitted at the barangay hall — verify to generate a reference number</p>
-            </div>
-            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->count() }} {{ Str::plural('request', $kioskRequests->count()) }}</span>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Walk-in / Kiosk Requests</h2>
+            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->count() }} {{ Str::plural('entry', $kioskRequests->count()) }}</span>
         </div>
-
-        <div class="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50/80 border-b border-slate-100 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em]">
-                            <th class="px-8 py-5">Resident Info</th>
-                            <th class="px-8 py-5">Document</th>
-                            <th class="px-8 py-5">Purpose</th>
-                            <th class="px-8 py-5">Schedule</th>
-                            <th class="px-8 py-5">Status</th>
-                            <th class="px-8 py-5 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        @forelse($kioskRequests as $req)
-                        @include('admin.documents._row', ['request' => $req, 'showVerify' => true])
-                        @empty
-                        <tr>
-                            <td colspan="6" class="px-8 py-12 text-center">
-                                <p class="text-slate-400 font-black uppercase text-[10px] tracking-[0.3em]">No kiosk requests found</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <table class="w-full text-left table-fixed">
+                <colgroup>
+                    <col class="w-[22%]">
+                    <col class="w-[16%]">
+                    <col class="w-[24%]">
+                    <col class="w-[12%]">
+                    <col class="w-[14%]">
+                    <col class="w-[12%]">
+                </colgroup>
+                <thead>
+                    <tr class="border-b border-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest">
+                        <th class="px-6 py-3">Resident</th>
+                        <th class="px-6 py-3">Document</th>
+                        <th class="px-6 py-3">Purpose</th>
+                        <th class="px-6 py-3">Schedule</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @forelse($kioskRequests as $req)
+                    @include('admin.documents._row', ['request' => $req, 'showVerify' => true])
+                    @empty
+                    <tr><td colspan="6" class="px-6 py-10 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">No kiosk requests</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
 </div>
+
+<script>
+</script>
 @endsection

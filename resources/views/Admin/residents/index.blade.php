@@ -10,11 +10,21 @@
                 Centralized database for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span> resident information.
             </p>
         </div>
-        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
-            <a href="#" class="text-gray-400 hover:text-brgyGreen transition-colors">Home</a>
-            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-            <span class="text-brgyGreen">Residents</span>
-        </nav>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <button onclick="location.reload()" title="Refresh"
+                        class="p-1.5 rounded-lg text-gray-300 hover:text-brgyGreen hover:bg-green-50 transition-all">
+                    <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+                <a href="#" class="text-gray-400 hover:text-brgyGreen transition-colors">Home</a>
+                <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                <span class="text-brgyGreen">Residents</span>
+            </nav>
+        </div>
     </div>
 
     {{-- Search & Action Bar --}}
