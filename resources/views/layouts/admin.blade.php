@@ -172,6 +172,14 @@
                     </div>
                     <span class="uppercase tracking-widest">Audit Logs</span>
                 </a>
+                <a href="{{ route('admin.document-activity.index') }}"
+                   class="group flex items-center px-4 py-3 mt-1 text-[10px] font-bold transition-all duration-300 rounded-xl
+                   {{ request()->routeIs('admin.document-activity.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                    <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.document-activity.*') ? 'bg-white ' . $activeIconColor : $hoverIconClass }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <span class="uppercase tracking-widest">Doc. Activity</span>
+                </a>
             </div>
             @endif
 

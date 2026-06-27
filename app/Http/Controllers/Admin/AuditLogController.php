@@ -26,12 +26,6 @@ class AuditLogController extends Controller
 
         $logs = $query->paginate(25)->withQueryString();
 
-        $docAuditLogs = AuditLog::with('user')
-            ->where('subject_type', 'DocumentRequest')
-            ->latest('created_at')
-            ->limit(50)
-            ->get();
-
-        return view('admin.audit-logs.index', compact('logs', 'docAuditLogs'));
+        return view('admin.audit-logs.index', compact('logs'));
     }
 }

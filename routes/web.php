@@ -151,6 +151,14 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             });
 
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
+
+            Route::get('/document-activity', function () {
+                $logs = \App\Models\AuditLog::with('user')
+                    ->where('subject_type', 'DocumentRequest')
+                    ->latest('created_at')
+                    ->paginate(25);
+                return view('admin.document-activity.index', compact('logs'));
+            })->name('admin.document-activity.index');
         });
     });
 });
