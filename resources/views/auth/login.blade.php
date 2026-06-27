@@ -77,7 +77,11 @@
 
             @if ($errors->any())
                 <div class="mb-6 p-3 rounded-xl bg-red-50 border border-red-100 text-[10px] font-bold text-red-600 text-center uppercase tracking-wider">
-                    {{ $errors->first() }}
+                    @if ($errors->has('throttle') || str_contains($errors->first(), 'Too Many'))
+                        Too many login attempts. Please wait 1 minute before trying again.
+                    @else
+                        {{ $errors->first() }}
+                    @endif
                 </div>
             @endif
 

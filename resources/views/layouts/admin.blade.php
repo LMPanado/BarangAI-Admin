@@ -351,14 +351,17 @@
     {{-- Tab-close session guard --}}
     {{-- sessionStorage is wiped when the tab closes, unlike cookies which browsers restore. --}}
     {{-- If the flag is missing on load, the tab was closed and reopened → destroy the session. --}}
+    {{-- Hidden form used by JS to POST force-logout (GET would be vulnerable to prefetch/link preview) --}}
+    <form id="force-logout-form" action="{{ route('admin.force-logout') }}" method="POST" class="hidden">
+        @csrf
+    </form>
     <script>
     (function () {
         @if(session('just_logged_in'))
-            {{-- Fresh login: seed the flag so subsequent page loads pass the check --}}
             sessionStorage.setItem('admin_tab_active', '1');
         @else
             if (!sessionStorage.getItem('admin_tab_active')) {
-                window.location.replace('{{ route("admin.force-logout") }}');
+                document.getElementById('force-logout-form').submit();
                 return;
             }
         @endif

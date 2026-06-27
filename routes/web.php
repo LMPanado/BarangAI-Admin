@@ -26,14 +26,14 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showAdminLogin'])->name('login');
-        Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+        Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
         Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
     // Called by JS when sessionStorage is empty (tab was closed and reopened)
-    Route::get('/admin/force-logout', [AuthController::class, 'forceLogout'])->name('admin.force-logout');
+    Route::post('/admin/force-logout', [AuthController::class, 'forceLogout'])->name('admin.force-logout');
 
     Route::middleware(['auth', 'role:1,2,3', 'session.timeout'])->prefix('admin')->group(function () {
         
