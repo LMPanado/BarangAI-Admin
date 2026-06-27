@@ -76,12 +76,27 @@
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 p-3 rounded-xl bg-red-50 border border-red-100 text-[10px] font-bold text-red-600 text-center uppercase tracking-wider">
-                    @if ($errors->has('throttle') || str_contains($errors->first(), 'Too Many'))
-                        Too many login attempts. Please wait 1 minute before trying again.
-                    @else
-                        {{ $errors->first() }}
-                    @endif
+                @php $isThrottle = str_contains(strtolower($errors->first()), 'too many'); @endphp
+                <div class="mb-6 flex items-start gap-3 p-4 rounded-2xl border {{ $isThrottle ? 'bg-orange-50 border-orange-100' : 'bg-red-50 border-red-100' }}">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 {{ $isThrottle ? 'bg-orange-100' : 'bg-red-100' }}">
+                        @if($isThrottle)
+                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        @else
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                            </svg>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-xs font-extrabold uppercase tracking-widest {{ $isThrottle ? 'text-orange-600' : 'text-red-600' }}">
+                            {{ $isThrottle ? 'Too Many Attempts' : 'Login Failed' }}
+                        </p>
+                        <p class="text-xs font-medium mt-0.5 {{ $isThrottle ? 'text-orange-500' : 'text-red-500' }}">
+                            {{ $errors->first() }}
+                        </p>
+                    </div>
                 </div>
             @endif
 

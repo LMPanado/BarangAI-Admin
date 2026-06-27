@@ -19,5 +19,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, $request) {
+            if ($request->is('login') || $request->is('admin/login')) {
+                $seconds = (int) $e->getHeaders()['Retry-After'] ?? 60;
+                $minutes = ceil($seconds / 60);
+                $msg = $minutes > 1
+                    ? "Too many login attempts. Please wait {$minutes} minutes before trying again."
+                    : "Too many login attempts. Please wait {$seconds} seconds before trying again.";
+                return redirect()->route('login')->withErrors(['email' => $msg]);
+            }
+        });
     })->create();
