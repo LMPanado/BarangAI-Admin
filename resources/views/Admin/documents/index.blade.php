@@ -172,6 +172,85 @@
 
 </div>
 
+{{-- ═══════════════════════════════════════════
+     DOCUMENT REQUEST ACTIVITY LOG (Role 1 only)
+═══════════════════════════════════════════ --}}
+@if(auth()->user()->role == 1)
+<div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+    <div class="px-8 py-5 border-b border-gray-50 flex items-center justify-between">
+        <div>
+            <h2 class="text-sm font-extrabold text-gray-800 tracking-tight">Document Request Activity Log</h2>
+            <p class="text-[10px] text-gray-400 font-medium mt-0.5 uppercase tracking-widest">Last 50 actions — visible to System Admin only</p>
+        </div>
+        <a href="{{ route('admin.audit-logs.index') }}?subject=DocumentRequest"
+           class="text-[10px] font-black text-brgyGreen uppercase tracking-widest hover:underline">
+            View Full Audit Log →
+        </a>
+    </div>
+
+    @if($docAuditLogs->isEmpty())
+        <div class="py-16 text-center">
+            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No document activity recorded yet</p>
+        </div>
+    @else
+    <table class="w-full">
+        <thead>
+            <tr class="bg-gray-50/50 border-b border-gray-50">
+                <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">When</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Staff</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Action</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Details</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">IP</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+        @foreach($docAuditLogs as $log)
+        @php
+            $colorMap = [
+                'green'  => ['bg' => 'bg-green-50',  'text' => 'text-green-700',  'dot' => 'bg-green-400'],
+                'blue'   => ['bg' => 'bg-blue-50',   'text' => 'text-blue-700',   'dot' => 'bg-blue-400'],
+                'red'    => ['bg' => 'bg-red-50',    'text' => 'text-red-700',    'dot' => 'bg-red-400'],
+                'amber'  => ['bg' => 'bg-amber-50',  'text' => 'text-amber-700',  'dot' => 'bg-amber-400'],
+                'indigo' => ['bg' => 'bg-indigo-50', 'text' => 'text-indigo-700', 'dot' => 'bg-indigo-400'],
+                'purple' => ['bg' => 'bg-purple-50', 'text' => 'text-purple-700', 'dot' => 'bg-purple-400'],
+                'teal'   => ['bg' => 'bg-teal-50',   'text' => 'text-teal-700',   'dot' => 'bg-teal-400'],
+                'gray'   => ['bg' => 'bg-gray-50',   'text' => 'text-gray-600',   'dot' => 'bg-gray-300'],
+            ];
+            $c = $colorMap[$log->actionColor()];
+        @endphp
+        <tr class="hover:bg-gray-50/30 transition-colors">
+            <td class="px-6 py-3 whitespace-nowrap">
+                <p class="text-xs font-bold text-gray-700">{{ $log->created_at->format('M d, Y') }}</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">{{ $log->created_at->format('h:i A') }}</p>
+            </td>
+            <td class="px-6 py-3">
+                @if($log->user)
+                    <p class="text-xs font-bold text-gray-800">{{ $log->user->last_name }}, {{ $log->user->first_name }}</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">{{ ['','System Admin','Barangay Captain','Barangay Official'][$log->user->role] ?? 'Staff' }}</p>
+                @else
+                    <span class="text-[10px] text-gray-300 italic">Deleted account</span>
+                @endif
+            </td>
+            <td class="px-6 py-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest {{ $c['bg'] }} {{ $c['text'] }}">
+                    <span class="w-1.5 h-1.5 rounded-full {{ $c['dot'] }}"></span>
+                    {{ str_replace('_', ' ', $log->action) }}
+                </span>
+            </td>
+            <td class="px-6 py-3 max-w-xs">
+                <p class="text-xs font-bold text-gray-700 truncate" title="{{ $log->subject_label }}">{{ $log->subject_label }}</p>
+            </td>
+            <td class="px-6 py-3">
+                <span class="text-[10px] font-mono text-gray-400">{{ $log->ip_address ?? '—' }}</span>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+    </table>
+    @endif
+</div>
+@endif
+
 <script>
 </script>
 @endsection

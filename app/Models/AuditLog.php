@@ -36,6 +36,7 @@ class AuditLog extends Model
             'updated'        => 'blue',
             'deleted'        => 'red',
             'status_changed' => 'amber',
+            'issued'         => 'indigo',
             'role_changed'   => 'purple',
             'login'          => 'teal',
             'logout'         => 'gray',

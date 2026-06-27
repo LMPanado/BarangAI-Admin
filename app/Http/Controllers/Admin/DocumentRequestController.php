@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Resident;
 use App\Models\DocumentRequest;
 use App\Services\AuditLogger;
@@ -50,7 +51,12 @@ class DocumentRequestController extends Controller
         $kioskRequests  = $allRequests->filter(fn($r) => $r->source === 'kiosk');
         $requests       = $allRequests;
 
-        return view('admin.documents.index', compact('requests', 'mobileRequests', 'kioskRequests', 'sort'));
+        $docAuditLogs = auth()->user()->role == 1
+            ? AuditLog::with('user')->where('subject_type', 'DocumentRequest')
+                ->latest('created_at')->limit(50)->get()
+            : collect();
+
+        return view('admin.documents.index', compact('requests', 'mobileRequests', 'kioskRequests', 'sort', 'docAuditLogs'));
     }
 
     /**
@@ -59,9 +65,12 @@ class DocumentRequestController extends Controller
      */
     public function issuance($id)
     {
-        // Find the specific request by its ID and include resident data
         $request = DocumentRequest::with('resident')->findOrFail($id);
-        
+        $residentName = optional($request->resident)->last_name . ', ' . optional($request->resident)->first_name;
+        AuditLogger::log('issued', 'DocumentRequest',
+            $request->document_type . ' for ' . $residentName,
+            $request->id
+        );
         return view('admin.documents.issuance', compact('request'));
     }
 
