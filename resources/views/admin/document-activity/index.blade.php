@@ -1,0 +1,128 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
+
+    {{-- Header --}}
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
+        <div>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Document Request Activity</h1>
+            <p class="text-sm text-gray-500 mt-1 font-medium italic">
+                Full trail of who processed document requests in <span class="text-brgyGreen font-bold not-italic">Barangay 419</span>.
+            </p>
+        </div>
+        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+            <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Dashboard</a>
+            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+            <span class="text-brgyGreen">Document Activity</span>
+        </nav>
+    </div>
+
+    {{-- Stats --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        @php
+            $total        = $logs->total();
+            $statusCount  = $logs->getCollection()->where('action', 'status_changed')->count();
+            $issuedCount  = $logs->getCollection()->where('action', 'issued')->count();
+            $deletedCount = $logs->getCollection()->where('action', 'deleted')->count();
+        @endphp
+        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Actions</p>
+            <p class="text-2xl font-extrabold text-gray-800">{{ $total }}</p>
+        </div>
+        <div class="bg-amber-50 rounded-2xl border border-amber-100 p-5 shadow-sm">
+            <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Status Changes</p>
+            <p class="text-2xl font-extrabold text-amber-700">{{ $logs->getCollection()->where('action', 'status_changed')->count() }}</p>
+        </div>
+        <div class="bg-indigo-50 rounded-2xl border border-indigo-100 p-5 shadow-sm">
+            <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Issued</p>
+            <p class="text-2xl font-extrabold text-indigo-700">{{ $logs->getCollection()->where('action', 'issued')->count() }}</p>
+        </div>
+        <div class="bg-red-50 rounded-2xl border border-red-100 p-5 shadow-sm">
+            <p class="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Deleted</p>
+            <p class="text-2xl font-extrabold text-red-700">{{ $logs->getCollection()->where('action', 'deleted')->count() }}</p>
+        </div>
+    </div>
+
+    {{-- Log Table --}}
+    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+
+        @if($logs->isEmpty())
+            <div class="py-24 text-center">
+                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No document request activity yet</p>
+            </div>
+        @else
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-50 bg-gray-50/50">
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">When</th>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Staff</th>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Action</th>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Details</th>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">IP</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @foreach($logs as $log)
+                @php
+                    $colorMap = [
+                        'green'  => ['bg' => 'bg-green-50',  'text' => 'text-green-700',  'dot' => 'bg-green-400'],
+                        'blue'   => ['bg' => 'bg-blue-50',   'text' => 'text-blue-700',   'dot' => 'bg-blue-400'],
+                        'red'    => ['bg' => 'bg-red-50',    'text' => 'text-red-700',    'dot' => 'bg-red-400'],
+                        'amber'  => ['bg' => 'bg-amber-50',  'text' => 'text-amber-700',  'dot' => 'bg-amber-400'],
+                        'indigo' => ['bg' => 'bg-indigo-50', 'text' => 'text-indigo-700', 'dot' => 'bg-indigo-400'],
+                        'purple' => ['bg' => 'bg-purple-50', 'text' => 'text-purple-700', 'dot' => 'bg-purple-400'],
+                        'teal'   => ['bg' => 'bg-teal-50',   'text' => 'text-teal-700',   'dot' => 'bg-teal-400'],
+                        'gray'   => ['bg' => 'bg-gray-50',   'text' => 'text-gray-600',   'dot' => 'bg-gray-300'],
+                    ];
+                    $c = $colorMap[$log->actionColor()];
+                @endphp
+                <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <p class="text-xs font-bold text-gray-700">{{ $log->created_at->format('M d, Y') }}</p>
+                        <p class="text-[10px] text-gray-400 font-medium mt-0.5">{{ $log->created_at->format('h:i A') }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        @if($log->user)
+                            <p class="text-xs font-bold text-gray-800">{{ $log->user->last_name }}, {{ $log->user->first_name }}</p>
+                            <p class="text-[10px] text-gray-400 font-medium mt-0.5">
+                                {{ ['','System Admin','Barangay Captain','Barangay Official'][$log->user->role] ?? 'Staff' }}
+                            </p>
+                        @else
+                            <span class="text-[10px] text-gray-300 font-bold italic">Deleted account</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest {{ $c['bg'] }} {{ $c['text'] }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $c['dot'] }}"></span>
+                            {{ str_replace('_', ' ', $log->action) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 max-w-xs">
+                        <p class="text-xs font-bold text-gray-700 truncate" title="{{ $log->subject_label }}">
+                            {{ $log->subject_label }}
+                        </p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-[10px] font-mono text-gray-400">{{ $log->ip_address ?? '—' }}</span>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        @if($logs->hasPages())
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $logs->links() }}
+            </div>
+        @endif
+        @endif
+    </div>
+
+</div>
+@endsection
