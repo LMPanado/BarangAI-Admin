@@ -152,11 +152,17 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
 
-            Route::get('/document-activity', function () {
-                $logs = \App\Models\AuditLog::with('user')
+            Route::get('/document-activity', function (\Illuminate\Http\Request $request) {
+                $query = \App\Models\AuditLog::with('user')
                     ->where('subject_type', 'DocumentRequest')
-                    ->latest('created_at')
-                    ->paginate(25);
+                    ->latest('created_at');
+                if ($request->filled('search')) {
+                    $query->where('subject_label', 'ilike', '%' . $request->search . '%');
+                }
+                if ($request->filled('action')) {
+                    $query->where('action', $request->action);
+                }
+                $logs = $query->paginate(25)->withQueryString();
                 return view('admin.document-activity.index', compact('logs'));
             })->name('admin.document-activity.index');
         });

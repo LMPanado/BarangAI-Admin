@@ -44,6 +44,40 @@
         </div>
     </div>
 
+    {{-- Search & Filters --}}
+    <form method="GET" action="{{ route('admin.document-activity.index') }}" class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Search by resident name or document type..."
+                   class="col-span-2 bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all placeholder:text-gray-300">
+
+            <select name="action"
+                    class="bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
+                <option value="">All Actions</option>
+                <option value="status_changed" {{ request('action') === 'status_changed' ? 'selected' : '' }}>Status Changed</option>
+                <option value="issued"         {{ request('action') === 'issued'         ? 'selected' : '' }}>Issued</option>
+                <option value="updated"        {{ request('action') === 'updated'        ? 'selected' : '' }}>Updated</option>
+                <option value="deleted"        {{ request('action') === 'deleted'        ? 'selected' : '' }}>Deleted</option>
+            </select>
+        </div>
+
+        <div class="flex items-center gap-3 mt-4">
+            <button type="submit"
+                    class="bg-brgyGreen text-white px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all">
+                Filter
+            </button>
+            @if(request()->hasAny(['search','action']))
+                <a href="{{ route('admin.document-activity.index') }}"
+                   class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl border-2 border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600 transition-all">
+                    Clear
+                </a>
+            @endif
+            <span class="ml-auto text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                {{ $logs->total() }} {{ Str::plural('entry', $logs->total()) }}
+            </span>
+        </div>
+    </form>
+
     {{-- Log Table --}}
     <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
 
