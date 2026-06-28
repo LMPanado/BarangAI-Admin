@@ -231,11 +231,11 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-12 z-20 shadow-sm">
+        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-12 z-20 shadow-sm">
             {{-- Left: live clock --}}
             <div class="flex flex-col gap-0.5">
-                <p id="header-time" class="text-xl font-black text-slate-800 leading-none tabular-nums"></p>
-                <p id="header-date" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none"></p>
+                <p id="header-time" class="text-sm font-black text-slate-700 leading-none tabular-nums"></p>
+                <p id="header-date" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-0.5"></p>
             </div>
 
             {{-- Right: user info --}}
@@ -256,19 +256,19 @@
                 $lastName  = Auth::user()->last_name ?? '';
                 $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
             @endphp
-            <div class="hidden md:flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-2.5">
                 {{-- Name + role --}}
                 <div class="flex flex-col items-end gap-0.5">
-                    <p class="text-sm font-extrabold text-slate-800 leading-none whitespace-nowrap">
+                    <p class="text-xs font-extrabold text-slate-800 leading-none whitespace-nowrap">
                         {{ $firstName }} {{ $lastName }}
                     </p>
-                    <span class="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest {{ $badgeText }} leading-none">
+                    <span class="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest {{ $badgeText }} leading-none mt-0.5">
                         <span class="w-1.5 h-1.5 rounded-full {{ $dotColor }}"></span>
                         {{ $roleLabel }}
                     </span>
                 </div>
                 {{-- Initials avatar --}}
-                <div class="w-10 h-10 rounded-2xl {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-sm flex-shrink-0">
+                <div class="w-8 h-8 rounded-xl {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-xs flex-shrink-0">
                     {{ $initials }}
                 </div>
             </div>
