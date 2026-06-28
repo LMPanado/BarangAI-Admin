@@ -250,22 +250,16 @@
                 $lastName  = Auth::user()->last_name ?? '';
                 $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
             @endphp
-            <div class="hidden md:flex items-center gap-2.5">
+            <div class="hidden md:flex items-center gap-3">
                 {{-- Live time --}}
-                <p id="header-time" class="text-xs font-bold text-slate-400 tabular-nums leading-none whitespace-nowrap"></p>
-                <div class="w-px h-5 bg-slate-200"></div>
-                {{-- Name + role --}}
-                <div class="flex flex-col items-end gap-0.5">
-                    <p class="text-xs font-extrabold text-slate-800 leading-none whitespace-nowrap">
-                        {{ $firstName }} {{ $lastName }}
-                    </p>
-                    <span class="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest {{ $badgeText }} leading-none mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full {{ $dotColor }}"></span>
-                        {{ $roleLabel }}
-                    </span>
-                </div>
+                <p id="header-time" class="text-[11px] font-semibold text-slate-400 tabular-nums leading-none whitespace-nowrap"></p>
+                <div class="w-px h-4 bg-slate-200"></div>
+                {{-- Name --}}
+                <p class="text-[11px] font-extrabold text-slate-700 leading-none whitespace-nowrap">
+                    {{ $firstName }} {{ $lastName }}
+                </p>
                 {{-- Initials avatar --}}
-                <div class="w-8 h-8 rounded-xl {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-xs flex-shrink-0">
+                <div class="w-7 h-7 rounded-lg {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-[10px] flex-shrink-0">
                     {{ $initials }}
                 </div>
             </div>
