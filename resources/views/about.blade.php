@@ -19,7 +19,7 @@
     </div>
 
     {{-- Info Cards Row --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8 mt-8">
 
         {{-- Address --}}
         <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7 flex flex-col gap-4">
