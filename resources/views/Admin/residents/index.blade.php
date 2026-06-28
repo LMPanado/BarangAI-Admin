@@ -70,6 +70,27 @@
         @endif
     </div>
 
+    {{-- Quick Stats --}}
+    @php
+        $statTotal   = $residents->total();
+        $statMale    = \App\Models\Resident::where('gender', 'Male')->count();
+        $statFemale  = \App\Models\Resident::where('gender', 'Female')->count();
+        $statVoters  = \App\Models\Resident::where('is_voter', true)->count();
+    @endphp
+    <div class="grid grid-cols-4 gap-4">
+        @foreach([
+            ['Total Residents', $statTotal,  'text-gray-700',  'bg-gray-50',   'border-gray-100'],
+            ['Male',            $statMale,   'text-blue-600',  'bg-blue-50',   'border-blue-100'],
+            ['Female',          $statFemale, 'text-pink-600',  'bg-pink-50',   'border-pink-100'],
+            ['Registered Voters',$statVoters,'text-green-600', 'bg-green-50',  'border-green-100'],
+        ] as [$lbl, $val, $clr, $bg, $border])
+        <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
+            <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight">{{ $lbl }}</p>
+        </div>
+        @endforeach
+    </div>
+
     {{-- Table Section --}}
     <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
@@ -89,11 +110,16 @@
                     <tr class="hover:bg-brgyGreen/[0.02] transition-all group">
                         <td class="px-8 py-3">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-bold text-xs border-2 border-white shadow-sm group-hover:border-brgyGreen/20 transition-all">
+                                @php
+                                    $avatarClass = $resident->gender === 'Female'
+                                        ? 'bg-pink-100 text-pink-500 border-pink-100'
+                                        : 'bg-blue-100 text-blue-500 border-blue-100';
+                                @endphp
+                                <div class="w-10 h-10 rounded-full {{ $avatarClass }} flex items-center justify-center font-bold text-xs border-2 shadow-sm transition-all">
                                     {{ substr($resident->first_name, 0, 1) }}{{ substr($resident->last_name, 0, 1) }}
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-[9px] font-black text-brgyGold mb-0.5 tracking-widest uppercase">ID-{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="text-[9px] font-black text-gray-400 mb-0.5 tracking-widest uppercase">ID-{{ str_pad($resident->id, 5, '0', STR_PAD_LEFT) }}</span>
                                     <span class="text-sm font-black text-gray-800 uppercase tracking-tight group-hover:text-brgyGreen transition-colors">
                                         {{ $resident->last_name }}, {{ $resident->first_name }}
                                     </span>
