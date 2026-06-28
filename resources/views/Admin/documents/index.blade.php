@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-6 max-w-[1600px] mx-auto">
+<div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
 
     {{-- Header --}}
-    <div class="flex justify-between items-end pb-5 border-b border-gray-100">
+    <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Document Requests</h1>
             <p class="text-sm text-gray-400 font-medium mt-0.5">Barangay 419 — Certificates & Permits</p>

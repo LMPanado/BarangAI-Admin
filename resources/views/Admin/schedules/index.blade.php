@@ -1,10 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
+<div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
 
-
-<div class="space-y-8 p-4 font-sans">
-    
     {{-- Page Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
