@@ -231,44 +231,63 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-12 z-20">
-            <div><h2 class="text-sm font-black text-slate-400 uppercase tracking-[0.3em]"></h2></div>
-            <div class="flex items-center gap-4">
-                @php
-                    $roleLabel = match((int) Auth::user()->role) {
-                        1 => 'I.T. Administrator',
-                        2 => 'Punong Barangay',
-                        3 => 'Barangay Official',
-                        default => 'Staff',
-                    };
-                    [$dotColor, $badgeBg, $badgeText] = match((int) Auth::user()->role) {
-                        1 => ['bg-violet-500', 'bg-violet-50 border-violet-100', 'text-violet-600'],
-                        2 => ['bg-blue-500',   'bg-blue-50 border-blue-100',     'text-blue-700'],
-                        3 => ['bg-sky-500',    'bg-sky-50 border-sky-100',       'text-sky-600'],
-                        default => ['bg-slate-400', 'bg-slate-50 border-slate-100', 'text-slate-500'],
-                    };
-                    $firstName = Auth::user()->first_name ?? Auth::user()->name ?? 'Admin';
-                    $lastName  = Auth::user()->last_name ?? '';
-                    $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
-                @endphp
-                <div class="hidden md:flex items-center gap-3 bg-white border border-slate-100 shadow-sm rounded-2xl px-4 py-2.5">
-                    {{-- Initials avatar --}}
-                    <div class="w-9 h-9 rounded-xl {{ $badgeBg }} border {{ $badgeText }} flex items-center justify-center font-black text-xs flex-shrink-0">
-                        {{ $initials }}
-                    </div>
-                    {{-- Name + role --}}
-                    <div class="flex flex-col gap-0.5">
-                        <p class="text-xs font-extrabold text-slate-800 leading-none whitespace-nowrap">
-                            {{ $firstName }} {{ $lastName }}
-                        </p>
-                        <span class="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest {{ $badgeText }} leading-none">
-                            <span class="w-1.5 h-1.5 rounded-full {{ $dotColor }}"></span>
-                            {{ $roleLabel }}
-                        </span>
-                    </div>
+        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-12 z-20 shadow-sm">
+            {{-- Left: live clock --}}
+            <div class="flex flex-col gap-0.5">
+                <p id="header-time" class="text-xl font-black text-slate-800 leading-none tabular-nums"></p>
+                <p id="header-date" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none"></p>
+            </div>
+
+            {{-- Right: user info --}}
+            @php
+                $roleLabel = match((int) Auth::user()->role) {
+                    1 => 'I.T. Administrator',
+                    2 => 'Punong Barangay',
+                    3 => 'Barangay Official',
+                    default => 'Staff',
+                };
+                [$dotColor, $badgeBg, $badgeText] = match((int) Auth::user()->role) {
+                    1 => ['bg-violet-500', 'bg-violet-50', 'text-violet-600'],
+                    2 => ['bg-blue-500',   'bg-blue-50',   'text-blue-700'],
+                    3 => ['bg-sky-500',    'bg-sky-50',    'text-sky-600'],
+                    default => ['bg-slate-400', 'bg-slate-50', 'text-slate-500'],
+                };
+                $firstName = Auth::user()->first_name ?? Auth::user()->name ?? 'Admin';
+                $lastName  = Auth::user()->last_name ?? '';
+                $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
+            @endphp
+            <div class="hidden md:flex items-center gap-3">
+                {{-- Name + role --}}
+                <div class="flex flex-col items-end gap-0.5">
+                    <p class="text-sm font-extrabold text-slate-800 leading-none whitespace-nowrap">
+                        {{ $firstName }} {{ $lastName }}
+                    </p>
+                    <span class="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest {{ $badgeText }} leading-none">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $dotColor }}"></span>
+                        {{ $roleLabel }}
+                    </span>
+                </div>
+                {{-- Initials avatar --}}
+                <div class="w-10 h-10 rounded-2xl {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-sm flex-shrink-0">
+                    {{ $initials }}
                 </div>
             </div>
         </header>
+        <script>
+        (function () {
+            function updateClock() {
+                const now = new Date();
+                const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const t = document.getElementById('header-time');
+                const d = document.getElementById('header-date');
+                if (t) t.textContent = time;
+                if (d) d.textContent = date;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        })();
+        </script>
 
         <main class="flex-grow overflow-y-auto p-12">
             @yield('content')
