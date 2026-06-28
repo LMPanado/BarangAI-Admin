@@ -231,9 +231,6 @@
             </span>
             <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Announcements</h2>
         </div>
-        <p class="text-slate-400 text-xs font-medium max-w-sm leading-relaxed">
-            This serves as the community's official news feed, providing real-time updates on barangay ordinances, health advisories, and public service notices to keep residents informed and engaged.
-        </p>
     </div>
 
     @php
@@ -377,7 +374,6 @@
             </span>
             <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Upcoming Activities</h2>
         </div>
-        <p class="text-slate-400 text-sm font-medium max-w-xs leading-relaxed">Events and activities happening in Barangay 419.</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
