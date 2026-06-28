@@ -223,15 +223,15 @@
 <section id="announcements" class="py-16 md:py-28 max-w-7xl mx-auto px-4 sm:px-6">
 
     {{-- Section Header --}}
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-5">
+            <span class="inline-flex items-center gap-2 px-3 py-1 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-3">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                 Community Feed
             </span>
-            <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Announcements</h2>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Announcements</h2>
         </div>
-        <p class="text-slate-400 text-sm font-medium max-w-sm leading-relaxed">
+        <p class="text-slate-400 text-xs font-medium max-w-sm leading-relaxed">
             This serves as the community's official news feed, providing real-time updates on barangay ordinances, health advisories, and public service notices to keep residents informed and engaged.
         </p>
     </div>
@@ -278,7 +278,7 @@
              class="group relative bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 mb-6 cursor-pointer">
         <div class="flex flex-col md:flex-row">
             {{-- Image --}}
-            <div class="md:w-[40%] h-60 md:h-auto overflow-hidden flex-shrink-0">
+            <div class="md:w-[35%] h-48 md:h-auto overflow-hidden flex-shrink-0">
                 @if($featured->image_url)
                     <img src="{{ $fImg }}" alt="{{ $featured->title }}"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -289,7 +289,7 @@
                 @endif
             </div>
             {{-- Content --}}
-            <div class="flex-1 p-8 md:p-10 flex flex-col justify-between">
+            <div class="flex-1 p-6 md:p-7 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center flex-wrap gap-2 mb-4">
                         @if($featured->is_pinned)
@@ -301,10 +301,10 @@
                         <span class="px-2.5 py-1 {{ $fStyle['pill'] }} rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $fCategory }}</span>
                         <span class="ml-auto text-[9px] font-black text-slate-300 uppercase tracking-widest">{{ $fDate }}</span>
                     </div>
-                    <h3 class="font-extrabold text-slate-800 text-xl md:text-2xl leading-snug mb-3 group-hover:text-brgyGreen transition-colors">{{ $featured->title }}</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed line-clamp-3">{{ $featured->content }}</p>
+                    <h3 class="font-extrabold text-slate-800 text-lg md:text-xl leading-snug mb-2 group-hover:text-brgyGreen transition-colors">{{ $featured->title }}</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed line-clamp-2">{{ $featured->content }}</p>
                 </div>
-                <div class="mt-6 pt-5 border-t border-slate-50 flex items-center gap-2 text-brgyGreen text-xs font-black uppercase tracking-widest">
+                <div class="mt-4 pt-4 border-t border-slate-50 flex items-center gap-2 text-brgyGreen text-xs font-black uppercase tracking-widest">
                     Read Full Announcement
                     <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </div>
