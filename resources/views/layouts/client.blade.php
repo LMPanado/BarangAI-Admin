@@ -44,7 +44,7 @@
                      class="w-9 h-9 md:w-11 md:h-11 object-contain rounded-full group-hover:scale-110 transition-transform duration-300">
                 <div class="flex flex-col">
                     <span class="font-extrabold tracking-tight text-brgyGreen text-sm md:text-base uppercase leading-none">Barangay 419</span>
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-0.5">Official Information Portal</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Official Information Portal</span>
                 </div>
             </a>
 
