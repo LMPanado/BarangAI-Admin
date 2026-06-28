@@ -184,7 +184,9 @@
             @endif
 
             <div class="pt-4">
+                @if(Auth::user()->role != 1)
                 <p class="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Analytics</p>
+                @endif
                 
                 {{-- Reports (Analytics): Only for Role 2 --}}
                 @if(Auth::user()->role == 2)
