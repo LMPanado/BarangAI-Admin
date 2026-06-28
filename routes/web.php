@@ -154,6 +154,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
 
             Route::get('/document-activity', function (\Illuminate\Http\Request $request) {
+                if (auth()->user()->role == 1) abort(403);
                 $query = \App\Models\AuditLog::with('user')
                     ->where('subject_type', 'DocumentRequest')
                     ->latest('created_at');
