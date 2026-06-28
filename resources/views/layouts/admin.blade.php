@@ -208,7 +208,8 @@
                 </a>
                 @endif
 
-                {{-- Feedback: Still visible for everyone (1, 2, 3) --}}
+                {{-- Feedback: Visible to Role 2 and 3 only --}}
+                @if(auth()->user()->role != 1)
                 <a href="{{ route('admin.feedback.index') }}" class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
                     {{ request()->routeIs('admin.feedback.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
                     <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.feedback.*') ? 'bg-white ' . $activeIconColor : $hoverIconClass }}">
@@ -216,6 +217,7 @@
                     </div>
                     <span class="uppercase tracking-widest">Feedback</span>
                 </a>
+                @endif
             </div>
         </nav>
 

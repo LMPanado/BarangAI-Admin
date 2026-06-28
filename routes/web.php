@@ -127,10 +127,11 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             ->middleware('role:1,2')
             ->name('admin.reports.index');
 
-        // Feedback: Visible to 1, 2, and 3
-        Route::get('/feedback', [ReportController::class, 'feedback'])->name('admin.feedback.index');
-        Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->name('admin.feedback.reply');
-        Route::delete('/feedback/{id}', [ReportController::class, 'destroyFeedback'])->name('admin.feedback.destroy');
+        // Feedback: Visible to 2 and 3 only (Role 1 blocked)
+        Route::get('/feedback', [ReportController::class, 'feedback'])->middleware('role:2,3')->name('admin.feedback.index');
+        Route::post('/feedback/{id}/reply', [ReportController::class, 'replyFeedback'])->middleware('role:2,3')->name('admin.feedback.reply');
+        // Delete: Role 2 only
+        Route::delete('/feedback/{id}', [ReportController::class, 'destroyFeedback'])->middleware('role:2')->name('admin.feedback.destroy');
 
         // Verification image proxy (private Supabase bucket — streams via service key)
         Route::get('/verification/image/{userId}/{type}', [VerificationImageController::class, 'show'])

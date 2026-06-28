@@ -15,7 +15,6 @@
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Updated <span id="last-updated">just now</span></span>
                 <button onclick="location.reload()" title="Refresh"
                         class="p-1.5 rounded-lg text-gray-300 hover:text-brgyGreen hover:bg-green-50 transition-all">
                     <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,6 +198,7 @@
                                         {{ $item->admin_reply ? 'Edit Reply' : 'Reply' }}
                                     </button>
 
+                                    @if(auth()->user()->role == 2)
                                     <form id="del-feedback-{{ $item->id }}" action="{{ route('admin.feedback.destroy', $item->id) }}" method="POST" class="hidden">
                                         @csrf @method('DELETE')
                                     </form>
@@ -209,6 +209,7 @@
                                         </svg>
                                         Delete
                                     </button>
+                                    @endif
                                 </div>
                             </div>
 
