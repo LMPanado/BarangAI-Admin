@@ -26,11 +26,34 @@
         </div>
     </div>
 
-    {{-- Search + Sort + Stats --}}
+    {{-- Quick Stats --}}
+    @php
+        use App\Models\DocumentRequest;
+        $sTotal      = DocumentRequest::count();
+        $sPending    = DocumentRequest::where('status', 'pending')->count();
+        $sProcessing = DocumentRequest::where('status', 'processing')->count();
+        $sReady      = DocumentRequest::where('status', 'ready_for_pickup')->count();
+        $sCompleted  = DocumentRequest::where('status', 'completed')->count();
+    @endphp
+    <div class="grid grid-cols-5 gap-4">
+        @foreach([
+            ['Total Requests',   $sTotal,      'text-gray-700',   'bg-gray-50',    'border-gray-100'],
+            ['Pending',          $sPending,    'text-amber-600',  'bg-amber-50',   'border-amber-100'],
+            ['Processing',       $sProcessing, 'text-violet-600', 'bg-violet-50',  'border-violet-100'],
+            ['Ready for Pickup', $sReady,      'text-blue-600',   'bg-blue-50',    'border-blue-100'],
+            ['Completed',        $sCompleted,  'text-green-600',  'bg-green-50',   'border-green-100'],
+        ] as [$lbl, $val, $clr, $bg, $border])
+        <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
+            <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight">{{ $lbl }}</p>
+        </div>
+        @endforeach
+    </div>
+
+    {{-- Search + Sort --}}
     <div class="flex items-center gap-3">
         {{-- Search + Filters (single form) --}}
         <form action="{{ route('admin.documents.index') }}" method="GET" class="flex items-center gap-2">
-            {{-- Search --}}
             <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <svg class="h-3.5 w-3.5 text-gray-300 group-focus-within:text-brgyGreen transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +65,6 @@
                        class="pl-9 pr-4 py-2.5 text-xs font-bold border border-gray-200 rounded-xl focus:border-brgyGreen focus:ring-0 outline-none w-60 transition-all bg-white placeholder:text-gray-300 placeholder:font-medium">
             </div>
 
-            {{-- Status Filter --}}
             <select name="status_filter"
                     class="text-[10px] font-black uppercase tracking-widest px-3 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-500 focus:border-brgyGreen focus:ring-0 outline-none cursor-pointer">
                 <option value="">All Statuses</option>
@@ -53,7 +75,6 @@
                 <option value="cancelled"        {{ request('status_filter') === 'cancelled'        ? 'selected' : '' }}>Cancelled</option>
             </select>
 
-            {{-- Sort --}}
             <input type="hidden" name="sort" value="{{ $sort }}">
             <button type="submit" class="px-4 py-2.5 bg-brgyGreen text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-md transition-all">
                 Filter
@@ -66,7 +87,6 @@
             @endif
         </form>
 
-        {{-- Sort Buttons --}}
         <div class="flex items-center gap-1.5">
             @foreach([['latest','Latest'],['oldest','Oldest'],['status','By Status'],['document','By Document']] as [$val,$label])
             <a href="{{ route('admin.documents.index', array_merge(request()->except('sort'), ['sort' => $val])) }}"
@@ -74,24 +94,6 @@
                       {{ $sort === $val ? 'bg-brgyGreen text-white' : 'border border-gray-200 text-gray-400 hover:text-gray-600' }}">
                 {{ $label }}
             </a>
-            @endforeach
-        </div>
-
-        {{-- Stats --}}
-        <div class="flex items-center gap-3 ml-auto">
-            @php
-            $statItems = [
-                ['label' => 'Pending',       'count' => $requests->where('status','pending')->count(),          'color' => 'text-amber-500',   'bg' => 'bg-amber-50'],
-                ['label' => 'Processing',    'count' => $requests->where('status','processing')->count(),       'color' => 'text-violet-500',  'bg' => 'bg-violet-50'],
-                ['label' => 'Ready',         'count' => $requests->where('status','ready_for_pickup')->count(), 'color' => 'text-blue-500',    'bg' => 'bg-blue-50'],
-                ['label' => 'Completed',     'count' => $requests->where('status','completed')->count(),        'color' => 'text-emerald-500', 'bg' => 'bg-emerald-50'],
-            ];
-            @endphp
-            @foreach($statItems as $s)
-            <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-xl px-4 py-2.5">
-                <span class="text-lg font-extrabold {{ $s['color'] }}">{{ $s['count'] }}</span>
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $s['label'] }}</span>
-            </div>
             @endforeach
         </div>
     </div>
