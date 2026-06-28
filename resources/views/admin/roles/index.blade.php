@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-8 p-2">
+<div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
 
     {{-- Page Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
@@ -14,6 +14,28 @@
             <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
             <span class="text-brgyGreen">Roles</span>
         </nav>
+    </div>
+
+    {{-- Quick Stats --}}
+    @php
+        use App\Models\User;
+        $rTotal    = User::count();
+        $rAdmins   = User::where('role', 1)->count();
+        $rCaptains = User::where('role', 2)->count();
+        $rOfficials= User::where('role', 3)->count();
+    @endphp
+    <div class="grid grid-cols-4 gap-4">
+        @foreach([
+            ['Total Users', $rTotal,    'text-gray-700',   'bg-gray-50',   'border-gray-100'],
+            ['IT Admin',    $rAdmins,   'text-violet-600', 'bg-violet-50', 'border-violet-100'],
+            ['Captain',     $rCaptains, 'text-amber-600',  'bg-amber-50',  'border-amber-100'],
+            ['Officials',   $rOfficials,'text-blue-600',   'bg-blue-50',   'border-blue-100'],
+        ] as [$lbl, $val, $clr, $bg, $border])
+        <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
+            <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight">{{ $lbl }}</p>
+        </div>
+        @endforeach
     </div>
 
     {{-- Search + Sort Bar --}}

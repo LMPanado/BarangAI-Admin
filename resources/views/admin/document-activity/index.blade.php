@@ -18,30 +18,26 @@
         </nav>
     </div>
 
-    {{-- Stats --}}
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        @php
-            $total        = $logs->total();
-            $statusCount  = $logs->getCollection()->where('action', 'status_changed')->count();
-            $issuedCount  = $logs->getCollection()->where('action', 'issued')->count();
-            $deletedCount = $logs->getCollection()->where('action', 'deleted')->count();
-        @endphp
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Actions</p>
-            <p class="text-2xl font-extrabold text-gray-800">{{ $total }}</p>
+    {{-- Quick Stats --}}
+    @php
+        use App\Models\AuditLog;
+        $daTotal   = AuditLog::where('subject_type', 'DocumentRequest')->count();
+        $daStatus  = AuditLog::where('subject_type', 'DocumentRequest')->where('action', 'status_changed')->count();
+        $daIssued  = AuditLog::where('subject_type', 'DocumentRequest')->where('action', 'issued')->count();
+        $daDeleted = AuditLog::where('subject_type', 'DocumentRequest')->where('action', 'deleted')->count();
+    @endphp
+    <div class="grid grid-cols-4 gap-4">
+        @foreach([
+            ['Total Actions',   $daTotal,   'text-gray-700',   'bg-gray-50',   'border-gray-100'],
+            ['Status Changes',  $daStatus,  'text-amber-600',  'bg-amber-50',  'border-amber-100'],
+            ['Issued',          $daIssued,  'text-indigo-600', 'bg-indigo-50', 'border-indigo-100'],
+            ['Deleted',         $daDeleted, 'text-red-600',    'bg-red-50',    'border-red-100'],
+        ] as [$lbl, $val, $clr, $bg, $border])
+        <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
+            <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight">{{ $lbl }}</p>
         </div>
-        <div class="bg-amber-50 rounded-2xl border border-amber-100 p-5 shadow-sm">
-            <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Status Changes</p>
-            <p class="text-2xl font-extrabold text-amber-700">{{ $logs->getCollection()->where('action', 'status_changed')->count() }}</p>
-        </div>
-        <div class="bg-indigo-50 rounded-2xl border border-indigo-100 p-5 shadow-sm">
-            <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Issued</p>
-            <p class="text-2xl font-extrabold text-indigo-700">{{ $logs->getCollection()->where('action', 'issued')->count() }}</p>
-        </div>
-        <div class="bg-red-50 rounded-2xl border border-red-100 p-5 shadow-sm">
-            <p class="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Deleted</p>
-            <p class="text-2xl font-extrabold text-red-700">{{ $logs->getCollection()->where('action', 'deleted')->count() }}</p>
-        </div>
+        @endforeach
     </div>
 
     {{-- Search & Filters --}}

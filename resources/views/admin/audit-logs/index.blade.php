@@ -6,7 +6,7 @@
     {{-- Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Audit Logs</h1>
+            <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Manage Logs</h1>
             <p class="text-sm text-gray-500 mt-1 font-medium italic">
                 Full activity trail for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span> admin portal.
             </p>
@@ -14,8 +14,30 @@
         <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
             <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-brgyGreen transition-colors">Dashboard</a>
             <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-            <span class="text-brgyGreen">Audit Logs</span>
+            <span class="text-brgyGreen">Manage Logs</span>
         </nav>
+    </div>
+
+    {{-- Quick Stats --}}
+    @php
+        use App\Models\AuditLog;
+        $lTotal   = AuditLog::count();
+        $lCreated = AuditLog::where('action', 'created')->count();
+        $lUpdated = AuditLog::where('action', 'updated')->count();
+        $lDeleted = AuditLog::where('action', 'deleted')->count();
+    @endphp
+    <div class="grid grid-cols-4 gap-4">
+        @foreach([
+            ['Total Logs', $lTotal,   'text-gray-700',  'bg-gray-50',  'border-gray-100'],
+            ['Created',    $lCreated, 'text-green-600', 'bg-green-50', 'border-green-100'],
+            ['Updated',    $lUpdated, 'text-blue-600',  'bg-blue-50',  'border-blue-100'],
+            ['Deleted',    $lDeleted, 'text-red-600',   'bg-red-50',   'border-red-100'],
+        ] as [$lbl, $val, $clr, $bg, $border])
+        <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
+            <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight">{{ $lbl }}</p>
+        </div>
+        @endforeach
     </div>
 
     {{-- Filters --}}
@@ -97,6 +119,7 @@
                             'blue'   => ['bg' => 'bg-blue-50',   'text' => 'text-blue-700',   'dot' => 'bg-blue-400'],
                             'red'    => ['bg' => 'bg-red-50',    'text' => 'text-red-700',    'dot' => 'bg-red-400'],
                             'amber'  => ['bg' => 'bg-amber-50',  'text' => 'text-amber-700',  'dot' => 'bg-amber-400'],
+                            'indigo' => ['bg' => 'bg-indigo-50', 'text' => 'text-indigo-700', 'dot' => 'bg-indigo-400'],
                             'purple' => ['bg' => 'bg-purple-50', 'text' => 'text-purple-700', 'dot' => 'bg-purple-400'],
                             'teal'   => ['bg' => 'bg-teal-50',   'text' => 'text-teal-700',   'dot' => 'bg-teal-400'],
                             'gray'   => ['bg' => 'bg-gray-50',   'text' => 'text-gray-600',   'dot' => 'bg-gray-300'],
