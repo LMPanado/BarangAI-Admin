@@ -6,7 +6,6 @@
     {{-- Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">{{ now()->format('l, F j, Y') }}</p>
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Document Requests</h1>
             <p class="text-sm text-gray-400 font-medium mt-0.5">Barangay 419 — Certificates & Permits</p>
         </div>

@@ -8,7 +8,6 @@
     {{-- Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
-            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">{{ now()->format('l, F j, Y') }}</p>
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Community Feedback</h1>
             <p class="text-sm text-gray-500 mt-1 font-medium italic">
                 Resident sentiment and suggestions for <span class="text-brgyGreen font-bold not-italic">Barangay 419</span>.
