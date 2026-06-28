@@ -18,9 +18,9 @@
     @endif
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-28 md:pt-36 pb-24 md:pb-32 w-full">
-        <div class="max-w-3xl">
+        <div class="max-w-3xl text-center md:text-left mx-auto md:mx-0">
             {{-- Eyebrow --}}
-            <div class="flex items-center gap-3 mb-8 md:mb-10">
+            <div class="flex items-center justify-center md:justify-start gap-3 mb-8 md:mb-10">
                 <div class="flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/15 rounded-full backdrop-blur-sm">
                     <div class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
                     <span class="text-white/80 text-[10px] font-black uppercase tracking-[0.25em]">Official Information Portal</span>
@@ -33,11 +33,11 @@
                 <span class="text-white/40">419</span>
             </h1>
 
-            <p class="text-white/60 text-base md:text-xl font-medium leading-relaxed max-w-xl mb-8 md:mb-12">
+            <p class="text-white/60 text-base md:text-xl font-medium leading-relaxed max-w-xl mb-8 md:mb-12 mx-auto md:mx-0">
                 Serving the community of Zone 43, District IV, Sampaloc, Manila with transparency and digital innovation.
             </p>
 
-            <div class="flex flex-wrap gap-3 md:gap-4">
+            <div class="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4">
                 <a href="#announcements"
                    class="inline-flex items-center gap-2 px-7 py-4 bg-white text-brgyGreen font-extrabold rounded-2xl hover:bg-white/90 transition-all text-xs tracking-widest uppercase shadow-2xl shadow-black/30">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
@@ -77,7 +77,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
         {{-- Left: Header + description --}}
-        <div class="lg:sticky lg:top-32">
+        <div class="lg:sticky lg:top-32 text-center lg:text-left">
             <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-6">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Barangay Services
@@ -85,10 +85,10 @@
             <h2 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
                 Documents &<br>Processes
             </h2>
-            <p class="text-slate-500 text-base font-medium leading-relaxed mb-8 max-w-sm">
+            <p class="text-slate-500 text-base font-medium leading-relaxed mb-8 max-w-sm mx-auto lg:mx-0">
                 Learn the requirements and step-by-step process for each barangay issuance. Click any service to view details.
             </p>
-            <div class="w-12 h-1 bg-brgyGreen rounded-full"></div>
+            <div class="w-12 h-1 bg-brgyGreen rounded-full mx-auto lg:mx-0"></div>
         </div>
 
         {{-- Right: Service cards --}}
@@ -223,7 +223,7 @@
 <section id="announcements" class="py-16 md:py-28 max-w-7xl mx-auto px-4 sm:px-6">
 
     {{-- Section Header --}}
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 text-center md:text-left">
         <div>
             <span class="inline-flex items-center gap-2 px-3 py-1 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-3">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
@@ -366,7 +366,7 @@
      ACTIVITIES
 ═══════════════════════════════════════════ --}}
 <section id="schedule" class="py-16 md:py-28 max-w-7xl mx-auto px-4 sm:px-6 mb-8">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 text-center md:text-left">
         <div>
             <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-brgyGreen/8 text-brgyGreen rounded-full text-[10px] font-black tracking-[0.25em] uppercase mb-5">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
