@@ -185,8 +185,8 @@
         ]; @endphp
         @php $topRow = array_slice($officials, 0, 8); $bottomRow = array_slice($officials, 8); @endphp
 
-        {{-- Top 8: 2 cols on mobile, 4 cols on desktop --}}
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
+        {{-- Top 8: 1 col on mobile, 2 cols on sm, 4 cols on desktop --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
             @foreach($topRow as $off)
             <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
                 <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
@@ -200,10 +200,10 @@
             @endforeach
         </div>
 
-        {{-- Bottom 3: 2 cols on mobile (last card spans full), centered on desktop --}}
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 max-w-4xl mx-auto mt-3 md:mt-4 sm:max-w-[calc(75%-0.5rem)] md:max-w-[calc(75%-0.75rem)]">
+        {{-- Bottom 3: 1 col on mobile, centered on desktop --}}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-4xl mx-auto mt-3 md:mt-4 sm:max-w-[calc(75%-0.5rem)] md:max-w-[calc(75%-0.75rem)]">
             @foreach($bottomRow as $off)
-            <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center {{ $loop->last && $loop->iteration % 2 !== 0 ? 'col-span-2 sm:col-span-1' : '' }}">
+            <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
                 <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
                     <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
                 </div>

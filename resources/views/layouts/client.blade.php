@@ -27,8 +27,7 @@
         }
     </script>
     <style>
-        /* Preserve exact layout on all screen sizes */
-        html { min-width: 1200px; }
+        /* Responsive for all screen sizes */
 
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
         .hero-gradient { background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); }
