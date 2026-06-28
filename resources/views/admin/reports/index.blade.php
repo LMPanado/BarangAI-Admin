@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-8 pb-12 max-w-[1600px] mx-auto" id="report-content">
+<div class="space-y-6 max-w-[1600px] mx-auto pb-12" id="report-content">
 
     {{-- Header --}}
     <div class="flex justify-between items-center border-b border-gray-100 pb-6 no-print">
@@ -18,202 +18,216 @@
         </nav>
     </div>
 
-    {{-- Month Picker + Generate Button --}}
-    <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 no-print">
+    {{-- Controls --}}
+    <div class="flex items-center justify-between no-print">
         <form method="GET" action="{{ route('admin.reports.index') }}" class="flex items-center gap-3">
             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Month</label>
             <input type="month" name="month" value="{{ $month }}"
-                   class="bg-white border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:border-brgyGreen outline-none transition-all shadow-sm">
+                   class="bg-white border-2 border-gray-100 rounded-2xl px-5 py-2.5 text-sm font-bold text-gray-700 focus:border-brgyGreen outline-none transition-all shadow-sm">
             <button type="submit"
-                    class="bg-brgyGreen text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all">
+                    class="bg-brgyGreen text-white px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all">
                 View
             </button>
         </form>
-
         <button onclick="window.print()"
-                class="flex items-center gap-2 bg-gray-800 text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
             </svg>
-            Generate PDF Report
+            Print Report
         </button>
     </div>
 
-    {{-- PDF Print Header (only shows when printing) --}}
-    <div class="print-only hidden">
-        <div class="text-center border-b-2 border-gray-800 pb-4 mb-6">
-            <h1 class="text-2xl font-black text-gray-900 uppercase tracking-widest">Barangay 419</h1>
-            <p class="text-sm font-bold text-gray-600 mt-1">Monthly Barangay Report</p>
-            <p class="text-xs text-gray-500 mt-0.5">{{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}</p>
-            <p class="text-[10px] text-gray-400 mt-1">Generated: {{ now()->format('F d, Y \a\t h:i A') }}</p>
-        </div>
+    {{-- Print Header --}}
+    <div class="print-only hidden text-center border-b-2 border-gray-800 pb-4 mb-2">
+        <h1 class="text-xl font-black text-gray-900 uppercase tracking-widest">Barangay 419</h1>
+        <p class="text-sm font-bold text-gray-600 mt-0.5">Monthly Barangay Report — {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}</p>
+        <p class="text-[10px] text-gray-400 mt-0.5">Generated: {{ now()->format('F d, Y \a\t h:i A') }}</p>
     </div>
 
-    {{-- Report Period Label --}}
-    <div class="bg-brgyGreen/5 border border-brgyGreen/20 rounded-2xl px-6 py-4">
+    {{-- Period Banner --}}
+    <div class="flex items-center gap-3 bg-brgyGreen/5 border border-brgyGreen/20 rounded-2xl px-6 py-3.5">
+        <svg class="w-4 h-4 text-brgyGreen shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
         <p class="text-xs font-black text-brgyGreen uppercase tracking-widest">
-            Report Period: {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}
+            Showing data for: {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}
         </p>
     </div>
 
-    {{-- SECTION 1: Population Overview --}}
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gray-50/50 px-8 py-4 border-b border-gray-100">
-            <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">1. Population Overview</h2>
+    {{-- At a Glance: 4 key numbers --}}
+    <div class="grid grid-cols-4 gap-4">
+        @php
+        $glance = [
+            ['label' => 'Total Residents',   'value' => $totalResidents,   'sub' => $newResidents . ' new this month', 'color' => 'text-gray-800',   'dot' => 'bg-gray-400'],
+            ['label' => 'Document Requests', 'value' => $totalDocs,        'sub' => $pendingDocs . ' still pending',   'color' => 'text-blue-700',   'dot' => 'bg-blue-400'],
+            ['label' => 'Complaints',        'value' => $totalComplaints,  'sub' => $openComplaints . ' open',         'color' => 'text-amber-700',  'dot' => 'bg-amber-400'],
+            ['label' => 'Feedback',          'value' => $totalFeedback,    'sub' => $positiveFeedback . ' positive',   'color' => 'text-green-700',  'dot' => 'bg-green-400'],
+        ];
+        @endphp
+        @foreach($glance as $g)
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 rounded-full {{ $g['dot'] }}"></span>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $g['label'] }}</p>
+            </div>
+            <p class="text-3xl font-extrabold {{ $g['color'] }} leading-none">{{ $g['value'] }}</p>
+            <p class="text-[10px] text-gray-400 font-semibold mt-2">{{ $g['sub'] }}</p>
         </div>
-        <div class="p-8">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                @php
-                    $popCards = [
-                        ['label' => 'Total Residents', 'value' => $totalResidents,  'color' => 'text-gray-800',  'bg' => 'bg-gray-50'],
-                        ['label' => 'Male',            'value' => $maleCount,        'color' => 'text-blue-700',  'bg' => 'bg-blue-50'],
-                        ['label' => 'Female',          'value' => $femaleCount,      'color' => 'text-pink-700',  'bg' => 'bg-pink-50'],
-                        ['label' => 'Registered Voters','value' => $voterCount,     'color' => 'text-green-700', 'bg' => 'bg-green-50'],
-                    ];
-                @endphp
-                @foreach($popCards as $card)
-                <div class="rounded-2xl border border-gray-100 p-5 text-center">
-                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{{ $card['label'] }}</p>
-                    <div class="inline-flex items-center justify-center px-4 py-1.5 {{ $card['bg'] }} rounded-xl">
-                        <p class="text-3xl font-extrabold {{ $card['color'] }}">{{ $card['value'] }}</p>
+        @endforeach
+    </div>
+
+    {{-- Detail Sections: 2x2 grid --}}
+    <div class="grid grid-cols-2 gap-6">
+
+        {{-- Population --}}
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div class="px-7 py-4 border-b border-gray-50 flex items-center justify-between">
+                <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Population</h2>
+                <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalResidents }} total</span>
+            </div>
+            <div class="p-7 space-y-4">
+                {{-- Gender --}}
+                <div class="flex items-center gap-6">
+                    <div class="text-center">
+                        <p class="text-2xl font-extrabold text-blue-600">{{ $maleCount }}</p>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Male</p>
+                    </div>
+                    <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        @php $malePct = $totalResidents > 0 ? round(($maleCount / $totalResidents) * 100) : 0; @endphp
+                        <div class="h-full bg-blue-400 rounded-full" style="width: {{ $malePct }}%"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-extrabold text-pink-500">{{ $femaleCount }}</p>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Female</p>
                     </div>
                 </div>
-                @endforeach
-            </div>
 
-            {{-- Age Groups --}}
-            <div>
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Age Group Breakdown</p>
-                <div class="space-y-3">
+                <div class="border-t border-gray-50 pt-4 space-y-2.5">
                     @foreach($ageGroups as $label => $count)
                     @php $pct = $totalResidents > 0 ? round(($count / $totalResidents) * 100) : 0; @endphp
-                    <div class="flex items-center gap-4">
-                        <span class="text-xs font-bold text-gray-600 w-36 shrink-0">{{ $label }}</span>
-                        <div class="flex-1 bg-gray-100 rounded-full h-2.5">
-                            <div class="bg-brgyGreen h-2.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-bold text-gray-500 w-28 shrink-0">{{ $label }}</span>
+                        <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-brgyGreen h-1.5 rounded-full" style="width: {{ $pct }}%"></div>
                         </div>
-                        <span class="text-xs font-black text-gray-700 w-10 text-right">{{ $count }}</span>
-                        <span class="text-[10px] text-gray-400 w-8">{{ $pct }}%</span>
+                        <span class="text-[10px] font-black text-gray-600 w-6 text-right">{{ $count }}</span>
+                        <span class="text-[10px] text-gray-300 w-8">{{ $pct }}%</span>
                     </div>
                     @endforeach
                 </div>
-            </div>
 
-            @if($newResidents > 0)
-            <div class="mt-6 pt-6 border-t border-gray-50">
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                    New residents registered this month:
-                    <span class="text-brgyGreen text-sm ml-2">{{ $newResidents }}</span>
-                </p>
-            </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- SECTION 2: Document Requests --}}
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gray-50/50 px-8 py-4 border-b border-gray-100">
-            <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">2. Document Requests This Month</h2>
-        </div>
-        <div class="p-8">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                @php
-                    $docCards = [
-                        ['label' => 'Total Requests', 'value' => $totalDocs,    'color' => 'text-gray-800',   'bg' => 'bg-gray-50'],
-                        ['label' => 'Pending',         'value' => $pendingDocs,  'color' => 'text-amber-700',  'bg' => 'bg-amber-50'],
-                        ['label' => 'Approved',        'value' => $approvedDocs, 'color' => 'text-green-700',  'bg' => 'bg-green-50'],
-                        ['label' => 'Rejected',        'value' => $rejectedDocs, 'color' => 'text-red-700',    'bg' => 'bg-red-50'],
-                    ];
-                @endphp
-                @foreach($docCards as $card)
-                <div class="rounded-2xl border border-gray-100 p-5 text-center">
-                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{{ $card['label'] }}</p>
-                    <div class="inline-flex items-center justify-center px-4 py-1.5 {{ $card['bg'] }} rounded-xl">
-                        <p class="text-3xl font-extrabold {{ $card['color'] }}">{{ $card['value'] }}</p>
-                    </div>
+                @if($newResidents > 0)
+                <div class="pt-3 border-t border-gray-50">
+                    <p class="text-[10px] font-bold text-gray-400">New this month: <span class="text-brgyGreen font-black">{{ $newResidents }}</span></p>
                 </div>
-                @endforeach
+                @endif
             </div>
+        </div>
 
-            @if($docsByType->isNotEmpty())
-            <div>
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Requests by Document Type</p>
-                <div class="space-y-3">
+        {{-- Document Requests --}}
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div class="px-7 py-4 border-b border-gray-50 flex items-center justify-between">
+                <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Document Requests</h2>
+                <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalDocs }} total</span>
+            </div>
+            <div class="p-7 space-y-4">
+                {{-- Status row --}}
+                <div class="grid grid-cols-3 gap-3">
+                    @foreach([['Pending', $pendingDocs, 'text-amber-600', 'bg-amber-50'], ['Approved', $approvedDocs, 'text-green-600', 'bg-green-50'], ['Rejected', $rejectedDocs, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
+                    <div class="rounded-xl {{ $bg }} px-4 py-3 text-center">
+                        <p class="text-xl font-extrabold {{ $clr }}">{{ $val }}</p>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $lbl }}</p>
+                    </div>
+                    @endforeach
+                </div>
+
+                @if($docsByType->isNotEmpty())
+                <div class="border-t border-gray-50 pt-4 space-y-2.5">
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">By document type</p>
                     @foreach($docsByType as $doc)
                     @php $pct = $totalDocs > 0 ? round(($doc->total / $totalDocs) * 100) : 0; @endphp
-                    <div class="flex items-center gap-4">
-                        <span class="text-xs font-bold text-gray-600 w-48 shrink-0 capitalize">{{ str_replace('_', ' ', $doc->document_type) }}</span>
-                        <div class="flex-1 bg-gray-100 rounded-full h-2.5">
-                            <div class="bg-blue-500 h-2.5 rounded-full transition-all" style="width: {{ $pct }}%"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-bold text-gray-500 w-36 shrink-0 capitalize truncate">{{ str_replace('_', ' ', $doc->document_type) }}</span>
+                        <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-blue-400 h-1.5 rounded-full" style="width: {{ $pct }}%"></div>
                         </div>
-                        <span class="text-xs font-black text-gray-700 w-10 text-right">{{ $doc->total }}</span>
-                        <span class="text-[10px] text-gray-400 w-8">{{ $pct }}%</span>
+                        <span class="text-[10px] font-black text-gray-600 w-6 text-right">{{ $doc->total }}</span>
+                        <span class="text-[10px] text-gray-300 w-8">{{ $pct }}%</span>
                     </div>
                     @endforeach
                 </div>
+                @else
+                <p class="text-xs text-gray-300 font-bold text-center py-4">No requests this month.</p>
+                @endif
             </div>
-            @else
-            <p class="text-xs text-gray-400 font-bold text-center py-6">No document requests for this month.</p>
-            @endif
         </div>
-    </div>
 
-    {{-- SECTION 3: Complaints --}}
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gray-50/50 px-8 py-4 border-b border-gray-100">
-            <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">3. Complaints This Month</h2>
-        </div>
-        <div class="p-8">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                @php
-                    $compCards = [
-                        ['label' => 'Total',    'value' => $totalComplaints,    'color' => 'text-gray-800',   'bg' => 'bg-gray-50'],
-                        ['label' => 'Open',     'value' => $openComplaints,     'color' => 'text-amber-700',  'bg' => 'bg-amber-50'],
-                        ['label' => 'Closed',   'value' => $closedComplaints,   'color' => 'text-green-700',  'bg' => 'bg-green-50'],
-                        ['label' => 'Critical', 'value' => $criticalComplaints, 'color' => 'text-red-700',    'bg' => 'bg-red-50'],
-                    ];
-                @endphp
-                @foreach($compCards as $card)
-                <div class="rounded-2xl border border-gray-100 p-5 text-center">
-                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{{ $card['label'] }}</p>
-                    <div class="inline-flex items-center justify-center px-4 py-1.5 {{ $card['bg'] }} rounded-xl">
-                        <p class="text-3xl font-extrabold {{ $card['color'] }}">{{ $card['value'] }}</p>
+        {{-- Complaints --}}
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div class="px-7 py-4 border-b border-gray-50 flex items-center justify-between">
+                <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Complaints</h2>
+                <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalComplaints }} total</span>
+            </div>
+            <div class="p-7">
+                <div class="grid grid-cols-3 gap-3">
+                    @foreach([['Open', $openComplaints, 'text-amber-600', 'bg-amber-50'], ['Closed', $closedComplaints, 'text-green-600', 'bg-green-50'], ['Critical', $criticalComplaints, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
+                    <div class="rounded-xl {{ $bg }} px-4 py-5 text-center">
+                        <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">{{ $lbl }}</p>
+                    </div>
+                    @endforeach
+                </div>
+                @if($totalComplaints > 0)
+                <div class="mt-5 pt-4 border-t border-gray-50">
+                    @php $resolvedPct = $totalComplaints > 0 ? round(($closedComplaints / $totalComplaints) * 100) : 0; @endphp
+                    <div class="flex items-center justify-between mb-1.5">
+                        <p class="text-[10px] font-bold text-gray-400">Resolution rate</p>
+                        <p class="text-[10px] font-black text-green-600">{{ $resolvedPct }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="bg-green-400 h-2 rounded-full" style="width: {{ $resolvedPct }}%"></div>
                     </div>
                 </div>
-                @endforeach
+                @endif
             </div>
         </div>
-    </div>
 
-    {{-- SECTION 4: Resident Feedback --}}
-    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div class="bg-gray-50/50 px-8 py-4 border-b border-gray-100">
-            <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">4. Resident Feedback This Month</h2>
-        </div>
-        <div class="p-8">
-            <div class="grid grid-cols-3 gap-4">
-                @php
-                    $fbCards = [
-                        ['label' => 'Total',    'value' => $totalFeedback,    'color' => 'text-gray-800',  'bg' => 'bg-gray-50'],
-                        ['label' => 'Positive', 'value' => $positiveFeedback, 'color' => 'text-green-700', 'bg' => 'bg-green-50'],
-                        ['label' => 'Negative', 'value' => $negativeFeedback, 'color' => 'text-red-700',   'bg' => 'bg-red-50'],
-                    ];
-                @endphp
-                @foreach($fbCards as $card)
-                <div class="rounded-2xl border border-gray-100 p-5 text-center">
-                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{{ $card['label'] }}</p>
-                    <div class="inline-flex items-center justify-center px-4 py-1.5 {{ $card['bg'] }} rounded-xl">
-                        <p class="text-3xl font-extrabold {{ $card['color'] }}">{{ $card['value'] }}</p>
+        {{-- Feedback --}}
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+            <div class="px-7 py-4 border-b border-gray-50 flex items-center justify-between">
+                <h2 class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Resident Feedback</h2>
+                <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalFeedback }} total</span>
+            </div>
+            <div class="p-7">
+                <div class="grid grid-cols-2 gap-3">
+                    @foreach([['Positive', $positiveFeedback, 'text-green-600', 'bg-green-50'], ['Negative', $negativeFeedback, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
+                    <div class="rounded-xl {{ $bg }} px-4 py-5 text-center">
+                        <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">{{ $lbl }}</p>
+                    </div>
+                    @endforeach
+                </div>
+                @if($totalFeedback > 0)
+                <div class="mt-5 pt-4 border-t border-gray-50">
+                    @php $posPct = $totalFeedback > 0 ? round(($positiveFeedback / $totalFeedback) * 100) : 0; @endphp
+                    <div class="flex items-center justify-between mb-1.5">
+                        <p class="text-[10px] font-bold text-gray-400">Satisfaction rate</p>
+                        <p class="text-[10px] font-black text-green-600">{{ $posPct }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="bg-green-400 h-2 rounded-full" style="width: {{ $posPct }}%"></div>
                     </div>
                 </div>
-                @endforeach
+                @endif
             </div>
         </div>
+
     </div>
 
-    {{-- Footer for print --}}
-    <div class="print-only hidden border-t-2 border-gray-200 pt-4 mt-8 text-center">
-        <p class="text-[10px] text-gray-400">This report was generated from the Barangay 419 Admin Portal · {{ now()->format('F d, Y') }}</p>
+    {{-- Print Footer --}}
+    <div class="print-only hidden border-t-2 border-gray-200 pt-4 mt-4 text-center">
+        <p class="text-[10px] text-gray-400">Generated from the Barangay 419 Admin Portal · {{ now()->format('F d, Y') }}</p>
     </div>
 
 </div>
@@ -222,28 +236,10 @@
 @media print {
     .no-print { display: none !important; }
     .print-only { display: block !important; }
-
-    body { background: white !important; font-size: 12px; }
-
-    #report-content {
-        max-width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    .bg-white { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
-
-    .rounded-\[2rem\], .rounded-2xl, .rounded-xl, .rounded-full {
-        border-radius: 8px !important;
-    }
-
-    /* Force page breaks between sections */
-    .bg-white.rounded-\[2rem\] { page-break-inside: avoid; margin-bottom: 16px; }
-
-    @page {
-        size: A4;
-        margin: 20mm;
-    }
+    body { background: white !important; }
+    #report-content { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    .bg-white { box-shadow: none !important; }
+    @page { size: A4; margin: 20mm; }
 }
 </style>
 @endsection
