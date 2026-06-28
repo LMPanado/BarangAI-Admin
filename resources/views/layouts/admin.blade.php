@@ -231,14 +231,8 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-12 z-20 shadow-sm">
-            {{-- Left: live clock --}}
-            <div class="flex flex-col gap-0.5">
-                <p id="header-time" class="text-sm font-black text-slate-700 leading-none tabular-nums"></p>
-                <p id="header-date" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-0.5"></p>
-            </div>
-
-            {{-- Right: user info --}}
+        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-end px-12 z-20 shadow-sm">
+            {{-- Right: time + user info --}}
             @php
                 $roleLabel = match((int) Auth::user()->role) {
                     1 => 'I.T. Administrator',
@@ -257,6 +251,9 @@
                 $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
             @endphp
             <div class="hidden md:flex items-center gap-2.5">
+                {{-- Live time --}}
+                <p id="header-time" class="text-xs font-bold text-slate-400 tabular-nums leading-none whitespace-nowrap"></p>
+                <div class="w-px h-5 bg-slate-200"></div>
                 {{-- Name + role --}}
                 <div class="flex flex-col items-end gap-0.5">
                     <p class="text-xs font-extrabold text-slate-800 leading-none whitespace-nowrap">
@@ -278,11 +275,8 @@
             function updateClock() {
                 const now = new Date();
                 const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-                const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 const t = document.getElementById('header-time');
-                const d = document.getElementById('header-date');
                 if (t) t.textContent = time;
-                if (d) d.textContent = date;
             }
             updateClock();
             setInterval(updateClock, 1000);
