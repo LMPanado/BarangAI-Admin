@@ -1,7 +1,7 @@
 @extends('layouts.client')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-20">
 
     {{-- Hero Banner --}}
     <div class="hero-gradient rounded-3xl p-10 md:p-16 text-white mb-8 relative overflow-hidden">
