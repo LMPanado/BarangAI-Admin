@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="turbo-cache-control" content="no-cache">
     <link rel="icon" type="image/png" href="{{ asset('images/brgy_logo.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,14 +50,7 @@
 
         .sidebar-pattern > * { position: relative; z-index: 1; }
 
-        /* Turbo Drive progress bar */
-        .turbo-progress-bar {
-            height: 3px;
-            background: #60a5fa;
-            box-shadow: 0 0 8px #60a5fa;
-        }
     </style>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.12/dist/turbo.es2017.esm.js"></script>
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">
     
