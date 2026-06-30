@@ -5,38 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barangay 419 Admin Portal</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/brgy_logo.png') }}">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: { 
-                extend: { 
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        brgyGreen: '#1d4ed8',
-                        brgyGold: '#ffffff',
-                        darkGreen: '#1e3a8a'
-                    }
-                } 
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Preserve exact layout on all screen sizes */
         html { min-width: 1280px; }
-
         .sidebar-gradient { background: linear-gradient(180deg, #1e3a8a 0%, #0f1f5c 100%); }
-        .sidebar-black { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
-        .sidebar-red   { background: linear-gradient(180deg, #991b1b 0%, #5c0a0a 100%); }
-
-        /* Hexagonal chevron pattern overlay for sidebar */
+        .sidebar-black    { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
+        .sidebar-red      { background: linear-gradient(180deg, #991b1b 0%, #5c0a0a 100%); }
         .sidebar-pattern::before {
             content: '';
             position: absolute;
@@ -47,9 +23,7 @@
             pointer-events: none;
             z-index: 0;
         }
-
         .sidebar-pattern > * { position: relative; z-index: 1; }
-
     </style>
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">
