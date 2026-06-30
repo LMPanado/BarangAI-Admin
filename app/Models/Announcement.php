@@ -17,9 +17,16 @@ class Announcement extends Model
         'category',
         'image_url',
         'is_pinned',
+        'expires_at',
     ];
 
     protected $casts = [
-        'is_pinned' => 'boolean', // Crucial for PostgreSQL compatibility
+        'is_pinned'  => 'boolean',
+        'expires_at' => 'datetime',
     ];
+
+    public function isExpired(): bool
+    {
+        return $this->expires_at !== null && $this->expires_at->isPast();
+    }
 }

@@ -35,12 +35,18 @@ class AnnouncementController extends Controller
             $imagePath = $request->file('image')->store('announcements', 'public');
         }
 
+        $expiresAt = null;
+        if ($request->filled('duration_days')) {
+            $expiresAt = now()->addDays((int) $request->duration_days);
+        }
+
         $announcement = Announcement::create([
-            'title'     => $request->title,
-            'content'   => $request->content,
-            'category'  => $request->category,
-            'image_url' => $imagePath,
-            'is_pinned' => $request->has('is_pinned'),
+            'title'      => $request->title,
+            'content'    => $request->content,
+            'category'   => $request->category,
+            'image_url'  => $imagePath,
+            'is_pinned'  => $request->has('is_pinned'),
+            'expires_at' => $expiresAt,
         ]);
 
         AuditLogger::log('created', 'Announcement', $announcement->title, $announcement->id);
@@ -83,12 +89,20 @@ class AnnouncementController extends Controller
             $imagePath = $request->file('image')->store('announcements', 'public');
         }
 
+        $expiresAt = $announcement->expires_at;
+        if ($request->filled('duration_days')) {
+            $expiresAt = now()->addDays((int) $request->duration_days);
+        } elseif ($request->has('no_expiry')) {
+            $expiresAt = null;
+        }
+
         $announcement->update([
-            'title'     => $request->title,
-            'content'   => $request->content,
-            'category'  => $request->category,
-            'image_url' => $imagePath,
-            'is_pinned' => $request->has('is_pinned'),
+            'title'      => $request->title,
+            'content'    => $request->content,
+            'category'   => $request->category,
+            'image_url'  => $imagePath,
+            'is_pinned'  => $request->has('is_pinned'),
+            'expires_at' => $expiresAt,
         ]);
 
         AuditLogger::log('updated', 'Announcement', $announcement->title, $announcement->id);

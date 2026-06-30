@@ -72,17 +72,38 @@
                             </span>
                         </td>
                         <td class="px-8 py-5">
-                            @if($announcement->is_pinned)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 text-[9px] font-black rounded-lg border border-amber-100 uppercase tracking-widest">
-                                    <span class="w-1 h-1 bg-amber-500 rounded-full"></span>
-                                    Pinned
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 text-gray-400 text-[9px] font-black rounded-lg border border-gray-100 uppercase tracking-widest">
-                                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                    Standard
-                                </span>
-                            @endif
+                            <div class="flex flex-col gap-1.5">
+                                @if($announcement->is_pinned)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 text-[9px] font-black rounded-lg border border-amber-100 uppercase tracking-widest">
+                                        <span class="w-1 h-1 bg-amber-500 rounded-full"></span>
+                                        Pinned
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 text-gray-400 text-[9px] font-black rounded-lg border border-gray-100 uppercase tracking-widest">
+                                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                        Standard
+                                    </span>
+                                @endif
+
+                                @if($announcement->expires_at)
+                                    @if($announcement->isExpired())
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-500 text-[9px] font-black rounded-lg border border-red-100 uppercase tracking-widest">
+                                            <span class="w-1 h-1 bg-red-400 rounded-full"></span>
+                                            Expired {{ $announcement->expires_at->format('M d') }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-500 text-[9px] font-black rounded-lg border border-blue-100 uppercase tracking-widest">
+                                            <span class="w-1 h-1 bg-blue-400 rounded-full"></span>
+                                            Expires {{ $announcement->expires_at->format('M d') }}
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-black rounded-lg border border-emerald-100 uppercase tracking-widest">
+                                        <span class="w-1 h-1 bg-emerald-400 rounded-full"></span>
+                                        No Expiry
+                                    </span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-8 py-5">
                             <div class="flex flex-col gap-0.5">

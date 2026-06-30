@@ -99,13 +99,30 @@
                 </div>
 
                 {{-- Options --}}
-                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Options</label>
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 space-y-5">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Options</label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                         <input type="checkbox" name="is_pinned" id="is_pinned" value="1"
                                class="w-4 h-4 rounded border-gray-300 text-brgyGreen focus:ring-brgyGreen">
                         <span class="text-xs font-black uppercase tracking-widest text-gray-600 group-hover:text-brgyGreen transition-colors">Pin to top of feed</span>
                     </label>
+
+                    {{-- Duration --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Visibility Duration</label>
+                        <select name="duration_days"
+                                class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all">
+                            <option value="">No expiry (permanent)</option>
+                            <option value="1">1 Day</option>
+                            <option value="3">3 Days</option>
+                            <option value="7">7 Days</option>
+                            <option value="14">14 Days</option>
+                            <option value="30">30 Days</option>
+                            <option value="60">60 Days</option>
+                            <option value="90">90 Days</option>
+                        </select>
+                        <p class="text-[9px] text-gray-300 mt-1.5 font-medium">After this period, the announcement will be hidden from residents.</p>
+                    </div>
                 </div>
 
                 {{-- Actions --}}

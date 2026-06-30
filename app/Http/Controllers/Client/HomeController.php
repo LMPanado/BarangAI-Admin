@@ -15,7 +15,11 @@ class HomeController extends Controller
     public function index()
     {
         // 1. Fetch announcements out of Supabase (Pinned posts always stay at the top, then newest)
-        $announcements = Announcement::orderBy('is_pinned', 'desc')
+        $announcements = Announcement::where(function ($q) {
+                                          $q->whereNull('expires_at')
+                                            ->orWhere('expires_at', '>', now());
+                                      })
+                                      ->orderBy('is_pinned', 'desc')
                                       ->latest()
                                       ->take(5)
                                       ->get();

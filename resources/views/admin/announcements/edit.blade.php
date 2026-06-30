@@ -102,14 +102,44 @@
                 </div>
 
                 {{-- Options --}}
-                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Options</label>
+                <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 space-y-5">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Options</label>
                     <label class="flex items-center gap-3 cursor-pointer group">
                         <input type="checkbox" name="is_pinned" id="is_pinned" value="1"
                                {{ $announcement->is_pinned ? 'checked' : '' }}
                                class="w-4 h-4 rounded border-gray-300 text-brgyGreen focus:ring-brgyGreen">
                         <span class="text-xs font-black uppercase tracking-widest text-gray-600 group-hover:text-brgyGreen transition-colors">Pin to top of feed</span>
                     </label>
+
+                    {{-- Duration --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Visibility Duration</label>
+
+                        @if($announcement->expires_at)
+                            <div class="mb-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest
+                                {{ $announcement->isExpired() ? 'bg-red-50 text-red-500' : 'bg-amber-50 text-amber-600' }}">
+                                {{ $announcement->isExpired() ? 'Expired' : 'Expires' }}:
+                                {{ $announcement->expires_at->format('M d, Y') }}
+                            </div>
+                        @endif
+
+                        <select name="duration_days"
+                                class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all">
+                            <option value="">Keep current expiry</option>
+                            <option value="1">Extend by 1 Day</option>
+                            <option value="3">Extend by 3 Days</option>
+                            <option value="7">Extend by 7 Days</option>
+                            <option value="14">Extend by 14 Days</option>
+                            <option value="30">Extend by 30 Days</option>
+                            <option value="60">Extend by 60 Days</option>
+                            <option value="90">Extend by 90 Days</option>
+                        </select>
+                        <label class="flex items-center gap-2 mt-2 cursor-pointer group">
+                            <input type="checkbox" name="no_expiry" value="1"
+                                   class="w-4 h-4 rounded border-gray-300 text-brgyGreen focus:ring-brgyGreen">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-brgyGreen transition-colors">Remove expiry (make permanent)</span>
+                        </label>
+                    </div>
                 </div>
 
                 {{-- Actions --}}
