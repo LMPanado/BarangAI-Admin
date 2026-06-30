@@ -29,7 +29,7 @@
             ['Total Users', $rTotal,    'text-gray-700',   'bg-gray-50',   'border-gray-100'],
             ['IT Admin',    $rAdmins,   'text-violet-600', 'bg-violet-50', 'border-violet-100'],
             ['Captain',     $rCaptains, 'text-amber-600',  'bg-amber-50',  'border-amber-100'],
-            ['Officials',   $rOfficials,'text-blue-600',   'bg-blue-50',   'border-blue-100'],
+            ['Staff',   $rOfficials,'text-blue-600',   'bg-blue-50',   'border-blue-100'],
         ] as [$lbl, $val, $clr, $bg, $border])
         <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
             <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
@@ -118,7 +118,7 @@
                                 $roleLabel = match((int)$user->role) {
                                     1 => 'I.T. Administrator',
                                     2 => 'Barangay Captain',
-                                    3 => 'Barangay Official',
+                                    3 => 'Barangay Staff',
                                     default => 'Resident User',
                                 };
                             @endphp
@@ -135,7 +135,7 @@
                                         class="w-full text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer transition-all focus:border-brgyGreen focus:ring-0 outline-none hover:bg-white hover:border-slate-200 shadow-sm">
                                         <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Resident</option>
                                         <option value="2" {{ $user->role == 2 ? 'selected' : '' }}>Brgy Captain</option>
-                                        <option value="3" {{ $user->role == 3 ? 'selected' : '' }}>Brgy Official</option>
+                                        <option value="3" {{ $user->role == 3 ? 'selected' : '' }}>Brgy Staff</option>
                                     </select>
                                 </form>
                             </div>

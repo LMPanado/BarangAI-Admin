@@ -46,26 +46,30 @@ class RoleController extends Controller
             'role' => 'required|in:0,2,3',
         ]);
 
-        // Update the role and the is_admin flag automatically
-        // is_admin is true for Captain (2) and Official (3), false for Resident (0)
-        $user->update([
-            'role' => $request->role,
-            'is_admin' => in_array($request->role, [2, 3])
-        ]);
+        $newRole = (int) $request->role;
+
+        // Explicitly assign and save to force the SQL UPDATE
+        // (using update() can skip the query if Eloquent thinks nothing changed)
+        $user->role     = $newRole;
+        $user->is_admin = in_array($newRole, [2, 3]);
+        $user->saveQuietly(); // bypass observer so Resident sync doesn't run on a role-only change
+
+        // Confirm the value persisted by reading fresh from DB
+        $user->refresh();
 
         AuditLogger::log('role_changed', 'User',
-            ($user->last_name ?? $user->name) . ' → ' . $this->getRoleLabel($request->role),
+            ($user->last_name ?? $user->name) . ' → ' . $this->getRoleLabel($user->role),
             $user->id
         );
 
-        return back()->with('success', "Role for {$user->first_name} {$user->last_name} has been updated to " . $this->getRoleLabel($request->role));
+        return back()->with('success', "Role for {$user->first_name} {$user->last_name} has been updated to " . $this->getRoleLabel($user->role));
     }
 
     private function getRoleLabel($role)
     {
         return match((int)$role) {
             2 => 'Barangay Captain',
-            3 => 'Barangay Official',
+            3 => 'Barangay Staff',
             default => 'Resident',
         };
     }
