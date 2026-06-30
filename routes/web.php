@@ -61,20 +61,49 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
                 ? AuditLog::with('user')->latest('created_at')->limit(10)->get()
                 : collect();
 
+            // Civil status breakdown
+            $civilStatusRaw = Resident::selectRaw("civil_status, COUNT(*) as count")
+                ->whereNotNull('civil_status')
+                ->groupBy('civil_status')
+                ->pluck('count', 'civil_status');
+
+            // Resident registrations per month (last 6 months)
+            $registrationTrend = collect();
+            for ($i = 5; $i >= 0; $i--) {
+                $month = \Carbon\Carbon::now()->subMonths($i);
+                $registrationTrend[$month->format('M Y')] = Resident::whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+            }
+
+            // Document requests by type
+            $docByType = DocumentRequest::selectRaw("document_type, COUNT(*) as count")
+                ->groupBy('document_type')
+                ->pluck('count', 'document_type');
+
+            // Document requests by status
+            $docByStatus = DocumentRequest::selectRaw("status, COUNT(*) as count")
+                ->groupBy('status')
+                ->pluck('count', 'status');
+
             return view('admin.dashboard', [
-                'requests'        => collect(), // kept for view compatibility
-                'totalPopulation' => $residentStats->total,
-                'maleCount'       => $residentStats->male,
-                'femaleCount'     => $residentStats->female,
-                'voterCount'      => $residentStats->voters,
-                'pendingRequests' => $docStats->pending,
-                'recentLogs'      => $recentLogs,
-                'ageGroups'       => [
+                'requests'          => collect(),
+                'totalPopulation'   => $residentStats->total,
+                'maleCount'         => $residentStats->male,
+                'femaleCount'       => $residentStats->female,
+                'voterCount'        => $residentStats->voters,
+                'pendingRequests'   => $docStats->pending,
+                'recentLogs'        => $recentLogs,
+                'ageGroups'         => [
                     'Children (0–12)'  => $residentStats->children,
                     'Teens (13–17)'    => $residentStats->teens,
                     'Adults (18–59)'   => $residentStats->adults,
                     'Seniors (60+)'    => $residentStats->seniors,
                 ],
+                'civilStatusData'      => $civilStatusRaw,
+                'registrationTrend'    => $registrationTrend,
+                'docByType'            => $docByType,
+                'docByStatus'          => $docByStatus,
             ]);
         })->name('dashboard');
 

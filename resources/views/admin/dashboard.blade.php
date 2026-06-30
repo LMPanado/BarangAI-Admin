@@ -79,6 +79,42 @@
     </div>
     {{-- END OF NEW GRAPH SECTION --}}
 
+    {{-- NEW CHARTS ROW 2: Civil Status + Registration Trend --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider mb-1">Civil Status</h3>
+            <p class="text-[10px] text-gray-400 font-medium mb-6">Breakdown of residents by civil status</p>
+            <div class="h-[250px]">
+                <canvas id="civilStatusChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider mb-1">New Resident Registrations</h3>
+            <p class="text-[10px] text-gray-400 font-medium mb-6">Monthly trend over the last 6 months</p>
+            <div class="h-[250px]">
+                <canvas id="registrationTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- NEW CHARTS ROW 3: Document Requests by Type + by Status --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider mb-1">Document Requests by Type</h3>
+            <p class="text-[10px] text-gray-400 font-medium mb-6">Which documents residents request the most</p>
+            <div class="h-[280px]">
+                <canvas id="docTypeChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-sm font-extrabold text-gray-700 uppercase tracking-wider mb-1">Document Request Status</h3>
+            <p class="text-[10px] text-gray-400 font-medium mb-6">Current status of all document requests</p>
+            <div class="h-[280px]">
+                <canvas id="docStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     {{-- Audit Log Feed (role 1 only) --}}
     @if(auth()->user()->role === 1 && $recentLogs->isNotEmpty())
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
@@ -246,6 +282,124 @@
             plugins: {
                 legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } }
             }
+        }
+    });
+
+    // Civil Status Chart
+    new Chart(document.getElementById('civilStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {!! json_encode($civilStatusData->keys()) !!},
+            datasets: [{
+                data: {!! json_encode($civilStatusData->values()) !!},
+                backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#f43f5e', '#8b5cf6'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 11, weight: 'bold' } } }
+            },
+            cutout: '65%'
+        }
+    });
+
+    // Registration Trend Chart (last 6 months)
+    new Chart(document.getElementById('registrationTrendChart'), {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($registrationTrend->keys()) !!},
+            datasets: [{
+                label: 'New Residents',
+                data: {!! json_encode($registrationTrend->values()) !!},
+                borderColor: '#1d4ed8',
+                backgroundColor: 'rgba(29,78,216,0.08)',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#1d4ed8',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1, font: { size: 10, weight: 'bold' } },
+                    grid: { color: '#f1f5f9' }
+                },
+                x: {
+                    ticks: { font: { size: 10, weight: 'bold' } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Document Requests by Type
+    new Chart(document.getElementById('docTypeChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($docByType->keys()) !!},
+            datasets: [{
+                label: 'Requests',
+                data: {!! json_encode($docByType->values()) !!},
+                backgroundColor: '#1d4ed8',
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1, font: { size: 10, weight: 'bold' } },
+                    grid: { color: '#f1f5f9' }
+                },
+                y: {
+                    ticks: { font: { size: 10, weight: 'bold' } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Document Requests by Status
+    const statusColors = {
+        'pending':   '#f59e0b',
+        'approved':  '#10b981',
+        'rejected':  '#f43f5e',
+        'released':  '#6366f1',
+        'cancelled': '#94a3b8',
+    };
+    const statusLabels = {!! json_encode($docByStatus->keys()) !!};
+    new Chart(document.getElementById('docStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+            datasets: [{
+                data: {!! json_encode($docByStatus->values()) !!},
+                backgroundColor: statusLabels.map(l => statusColors[l] ?? '#94a3b8'),
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 11, weight: 'bold' } } }
+            },
+            cutout: '65%'
         }
     });
 </script>
