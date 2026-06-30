@@ -4,7 +4,7 @@
 {{-- Load Chart.js CDN --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="space-y-8 animate-fade-in">
+<div class="space-y-8 animate-fade-in max-w-[1600px] mx-auto">
     <div class="flex justify-between items-center border-b border-gray-100 pb-6">
         <div>
             <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">{{ now()->format('l, F j, Y') }}</p>

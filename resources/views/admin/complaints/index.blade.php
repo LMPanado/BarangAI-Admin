@@ -13,7 +13,6 @@
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Updated <span id="last-updated">just now</span></span>
                 <button onclick="location.reload()" title="Refresh"
                         class="p-1.5 rounded-lg text-gray-300 hover:text-brgyGreen hover:bg-green-50 transition-all">
                     <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,23 +28,18 @@
         </div>
     </div>
 
-    {{-- Summary Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        @php
-            $cards = [
-                ['label' => 'Total',    'value' => $totalComplaints,        'bg' => 'bg-gray-50',    'text' => 'text-gray-800'],
-                ['label' => 'Open',     'value' => $openComplaints,         'bg' => 'bg-amber-50',   'text' => 'text-amber-700'],
-                ['label' => 'Closed',   'value' => $closedComplaints,       'bg' => 'bg-green-50',   'text' => 'text-green-700'],
-                ['label' => 'Critical', 'value' => $bySeverity['critical'], 'bg' => 'bg-red-50',     'text' => 'text-red-700'],
-                ['label' => 'Medium',   'value' => $bySeverity['medium'],   'bg' => 'bg-orange-50',  'text' => 'text-orange-700'],
-            ];
-        @endphp
-        @foreach($cards as $card)
-        <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 p-5 text-center">
-            <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{{ $card['label'] }}</p>
-            <div class="inline-flex items-center justify-center px-4 py-1.5 {{ $card['bg'] }} rounded-xl">
-                <p class="text-2xl font-extrabold {{ $card['text'] }}">{{ $card['value'] }}</p>
-            </div>
+    {{-- Quick Stats --}}
+    <div class="grid grid-cols-5 gap-4">
+        @foreach([
+            ['Total',    $totalComplaints,        'text-gray-700',   'bg-gray-50',   'border-gray-100'],
+            ['Open',     $openComplaints,         'text-amber-600',  'bg-amber-50',  'border-amber-100'],
+            ['Closed',   $closedComplaints,       'text-green-600',  'bg-green-50',  'border-green-100'],
+            ['Critical', $bySeverity['critical'], 'text-red-600',    'bg-red-50',    'border-red-100'],
+            ['Medium',   $bySeverity['medium'],   'text-orange-600', 'bg-orange-50', 'border-orange-100'],
+        ] as [$lbl, $val, $clr, $bg, $border])
+        <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
+            <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight">{{ $lbl }}</p>
         </div>
         @endforeach
     </div>

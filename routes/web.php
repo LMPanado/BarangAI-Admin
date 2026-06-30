@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ResidentController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\DocumentRequestController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\ArchiveController;
 use App\Http\Controllers\Admin\AccountVerificationController;
 use App\Http\Controllers\Admin\VerificationImageController;
 use App\Http\Controllers\Admin\RoleController;
@@ -152,6 +153,10 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             });
 
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');
+
+            Route::get('/archive', [ArchiveController::class, 'index'])->name('admin.archive.index');
+            Route::post('/archive/restore/{type}/{id}', [ArchiveController::class, 'restore'])->name('admin.archive.restore');
+            Route::delete('/archive/force-delete/{type}/{id}', [ArchiveController::class, 'forceDelete'])->name('admin.archive.force-delete');
 
             Route::get('/document-activity', function (\Illuminate\Http\Request $request) {
                 if (auth()->user()->role == 1) abort(403);

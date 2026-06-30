@@ -198,6 +198,7 @@
                                         {{ $item->admin_reply ? 'Edit Reply' : 'Reply' }}
                                     </button>
 
+                                    @if(auth()->user()->role == 2)
                                     <form id="del-feedback-{{ $item->id }}" action="{{ route('admin.feedback.destroy', $item->id) }}" method="POST" class="hidden">
                                         @csrf @method('DELETE')
                                     </form>
@@ -208,6 +209,7 @@
                                         </svg>
                                         Delete
                                     </button>
+                                    @endif
                                 </div>
                             </div>
 

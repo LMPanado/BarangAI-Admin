@@ -172,6 +172,14 @@
                     </div>
                     <span class="uppercase tracking-widest">Manage Logs</span>
                 </a>
+                <a href="{{ route('admin.archive.index') }}"
+                   class="group flex items-center px-4 py-3 mt-1 text-[10px] font-bold transition-all duration-300 rounded-xl
+                   {{ request()->routeIs('admin.archive.*') ? 'bg-white/20 text-white shadow-lg backdrop-blur-md' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                    <div class="p-1.5 rounded-lg mr-3 transition-all duration-300 {{ request()->routeIs('admin.archive.*') ? 'bg-white ' . $activeIconColor : $hoverIconClass }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                    </div>
+                    <span class="uppercase tracking-widest">Archive</span>
+                </a>
             </div>
             @endif
 
