@@ -235,43 +235,35 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-end px-8 z-20 shadow-sm">
+        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-end px-12 z-20 shadow-sm">
+            {{-- Right: time + user info --}}
             @php
                 $roleLabel = match((int) Auth::user()->role) {
                     1 => 'I.T. Administrator',
-                    2 => 'Barangay Captain',
-                    3 => 'Barangay Staff',
+                    2 => 'Punong Barangay',
+                    3 => 'Barangay Official',
                     default => 'Staff',
                 };
-                [$badgeBg, $badgeText] = match((int) Auth::user()->role) {
-                    1 => ['bg-violet-100', 'text-violet-700'],
-                    2 => ['bg-blue-100',   'text-blue-700'],
-                    3 => ['bg-sky-100',    'text-sky-700'],
-                    default => ['bg-slate-100', 'text-slate-500'],
+                [$dotColor, $badgeBg, $badgeText] = match((int) Auth::user()->role) {
+                    1 => ['bg-violet-500', 'bg-violet-50', 'text-violet-600'],
+                    2 => ['bg-blue-500',   'bg-blue-50',   'text-blue-700'],
+                    3 => ['bg-sky-500',    'bg-sky-50',    'text-sky-600'],
+                    default => ['bg-slate-400', 'bg-slate-50', 'text-slate-500'],
                 };
                 $firstName = Auth::user()->first_name ?? Auth::user()->name ?? 'Admin';
                 $lastName  = Auth::user()->last_name ?? '';
                 $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
             @endphp
-            <div class="flex items-center gap-4">
-                {{-- Live clock --}}
-                <div class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span id="header-time" class="text-sm font-bold text-slate-500 tabular-nums whitespace-nowrap"></span>
-                </div>
-
-                <div class="w-px h-5 bg-slate-200"></div>
-
-                {{-- Name + role --}}
-                <div class="text-right leading-tight">
-                    <p class="text-sm font-extrabold text-slate-700 whitespace-nowrap">{{ $firstName }} {{ $lastName }}</p>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ $roleLabel }}</p>
-                </div>
-
+            <div class="hidden md:flex items-center gap-3">
+                {{-- Live time --}}
+                <p id="header-time" class="text-[11px] font-semibold text-slate-400 tabular-nums leading-none whitespace-nowrap"></p>
+                <div class="w-px h-4 bg-slate-200"></div>
+                {{-- Name --}}
+                <p class="text-[11px] font-extrabold text-slate-700 leading-none whitespace-nowrap">
+                    {{ $firstName }} {{ $lastName }}
+                </p>
                 {{-- Initials avatar --}}
-                <div class="w-9 h-9 rounded-xl {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-sm flex-shrink-0 border border-white shadow-sm">
+                <div class="w-7 h-7 rounded-lg {{ $badgeBg }} {{ $badgeText }} flex items-center justify-center font-black text-[10px] flex-shrink-0">
                     {{ $initials }}
                 </div>
             </div>
