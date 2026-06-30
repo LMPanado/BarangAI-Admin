@@ -14,6 +14,7 @@
             <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">Dashboard Overview</h1>
             <p class="text-sm text-slate-400 mt-1 font-medium">Welcome back, <span class="text-brgyGreen font-bold">{{ auth()->user()->first_name }}</span>. Here's what's happening in Barangay 419.</p>
         </div>
+        @if(in_array(auth()->user()->role, [2, 3]))
         <div class="flex items-center gap-2 flex-shrink-0">
             <a href="{{ route('admin.residents.create') }}"
                class="px-4 py-2.5 rounded-xl bg-brgyGreen text-white text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm">
@@ -24,6 +25,7 @@
                 + New Event
             </a>
         </div>
+        @endif
     </div>
 
     {{-- ══════════════════════════════════════════
