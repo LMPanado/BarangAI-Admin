@@ -253,66 +253,8 @@
     </div>
     @else
 
-    {{-- Featured Announcement (pinned first, otherwise latest) --}}
-    @php
-        $featured    = $annCollection->firstWhere('is_pinned', true) ?? $annCollection->first();
-        $rest        = $annCollection->filter(fn($a) => $a->id !== $featured->id)->values();
-        $fImg        = $featured->image_url ? Storage::url($featured->image_url) : '';
-        $fDate       = $featured->created_at->format('M d, Y');
-        $fCategory   = $featured->category ?? 'Bulletin';
-        $fPinned     = $featured->is_pinned ? 'true' : 'false';
-        $fStyle      = $getCatStyle($fCategory);
-    @endphp
-
-    <article onclick="openAnnouncementModal(
-                    {{ json_encode($featured->title) }},
-                    {{ json_encode($fImg) }},
-                    {{ json_encode($fDate) }},
-                    {{ json_encode($fCategory) }},
-                    {{ json_encode($featured->content) }},
-                    {{ $fPinned }}
-                 )"
-             class="group relative bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 mb-6 cursor-pointer">
-        <div class="flex flex-col md:flex-row">
-            {{-- Image --}}
-            <div class="md:w-[35%] h-48 md:h-auto overflow-hidden flex-shrink-0">
-                @if($featured->image_url)
-                    <img src="{{ $fImg }}" alt="{{ $featured->title }}"
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                @else
-                    <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg,#eff6ff,#dbeafe);">
-                        <svg class="w-16 h-16 text-brgyGreen/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                    </div>
-                @endif
-            </div>
-            {{-- Content --}}
-            <div class="flex-1 p-6 md:p-7 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center flex-wrap gap-2 mb-4">
-                        @if($featured->is_pinned)
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brgyGreen text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
-                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
-                            Pinned
-                        </span>
-                        @endif
-                        <span class="px-2.5 py-1 {{ $fStyle['pill'] }} rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $fCategory }}</span>
-                        <span class="ml-auto text-[9px] font-black text-slate-300 uppercase tracking-widest">{{ $fDate }}</span>
-                    </div>
-                    <h3 class="font-extrabold text-slate-800 text-lg md:text-xl leading-snug mb-2 group-hover:text-brgyGreen transition-colors">{{ $featured->title }}</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed line-clamp-2">{{ $featured->content }}</p>
-                </div>
-                <div class="mt-4 pt-4 border-t border-slate-50 flex items-center gap-2 text-brgyGreen text-xs font-black uppercase tracking-widest">
-                    Read Full Announcement
-                    <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                </div>
-            </div>
-        </div>
-    </article>
-
-    {{-- Remaining announcements as compact list cards --}}
-    @if($rest->isNotEmpty())
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        @foreach($rest as $announcement)
+    <div class="flex flex-col gap-4">
+        @foreach($annCollection as $announcement)
         @php
             $annImg      = $announcement->image_url ? Storage::url($announcement->image_url) : '';
             $annDate     = $announcement->created_at->format('M d, Y');
@@ -328,35 +270,44 @@
                         {{ json_encode($announcement->content) }},
                         {{ $annPinned }}
                      )"
-                 class="group flex items-stretch bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-brgyGreen/20 transition-all duration-300 cursor-pointer">
-            {{-- Category accent bar --}}
-            <div class="w-1 flex-shrink-0 {{ $annStyle['bar'] }}"></div>
+                 class="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 cursor-pointer flex flex-col md:flex-row">
+
+            {{-- Image: fixed height on mobile, fixed width+height on desktop --}}
+            <div class="w-full h-48 md:w-56 md:h-auto md:min-h-[140px] flex-shrink-0 overflow-hidden relative">
+                @if($announcement->image_url)
+                    <img src="{{ $annImg }}" alt="{{ $announcement->title }}"
+                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                @else
+                    <div class="absolute inset-0 flex items-center justify-center" style="background: linear-gradient(135deg,#eff6ff,#dbeafe);">
+                        <svg class="w-12 h-12 text-brgyGreen/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                    </div>
+                @endif
+            </div>
+
             {{-- Content --}}
-            <div class="flex-1 px-5 py-4 flex items-center gap-4 min-w-0">
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-                        <span class="px-2 py-0.5 {{ $annStyle['pill'] }} rounded-md text-[8px] font-black uppercase tracking-widest">{{ $annCategory }}</span>
+            <div class="flex-1 p-5 md:p-6 flex flex-col justify-between min-w-0">
+                <div>
+                    <div class="flex items-center flex-wrap gap-2 mb-3">
                         @if($announcement->is_pinned)
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-brgyGreen text-white text-[8px] font-black uppercase tracking-widest rounded-md">
-                            <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brgyGreen text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
+                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
                             Pinned
                         </span>
                         @endif
+                        <span class="px-2.5 py-1 {{ $annStyle['pill'] }} rounded-lg text-[9px] font-black uppercase tracking-widest">{{ $annCategory }}</span>
+                        <span class="ml-auto text-[9px] font-black text-slate-300 uppercase tracking-widest">{{ $annDate }}</span>
                     </div>
-                    <h3 class="font-extrabold text-slate-800 text-sm leading-snug group-hover:text-brgyGreen transition-colors line-clamp-1">{{ $announcement->title }}</h3>
-                    <p class="text-slate-400 text-xs mt-0.5 line-clamp-1">{{ $announcement->content }}</p>
+                    <h3 class="font-extrabold text-slate-800 text-base leading-snug group-hover:text-brgyGreen transition-colors line-clamp-1">{{ $announcement->title }}</h3>
+                    <p class="text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2">{{ $announcement->content }}</p>
                 </div>
-                <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                    <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest whitespace-nowrap">{{ $annDate }}</span>
-                    <div class="w-7 h-7 rounded-xl bg-slate-50 group-hover:bg-brgyGreen flex items-center justify-center transition-all">
-                        <svg class="w-3 h-3 text-slate-300 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                    </div>
+                <div class="mt-3 pt-3 border-t border-slate-50 flex items-center gap-2 text-brgyGreen text-xs font-black uppercase tracking-widest">
+                    Read Full Announcement
+                    <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </div>
             </div>
         </article>
         @endforeach
     </div>
-    @endif
 
     @endif
 
