@@ -96,7 +96,7 @@
                                 <div onclick="event.stopPropagation(); window.location='{{ route('admin.schedules.edit', $event->id) }}'"
                                      class="bg-white border border-slate-100 p-2 rounded-xl shadow-sm hover:border-[#1d4ed8] hover:shadow-md transition-all relative pr-7 event-card">
                                     
-                                    <button onclick="event.stopPropagation(); confirmDelete('{{ $event->id }}')" 
+                                    <button onclick="event.stopPropagation(); deleteEvent('{{ $event->id }}')" 
                                             class="absolute top-1.5 right-1.5 p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors z-10">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
@@ -149,7 +149,7 @@
                                 @endif
                             </div>
                             
-                            <button onclick="event.stopPropagation(); confirmDelete('{{ $upcoming->id }}')" 
+                            <button onclick="event.stopPropagation(); deleteEvent('{{ $upcoming->id }}')" 
                                     class="absolute right-0 top-0 opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -187,13 +187,10 @@
 </form>
 
 <script>
-    function confirmDelete(eventId) {
-        document.getElementById('delete-event-form').action = `/admin/schedules/${eventId}`;
-        window._deleteForm = document.getElementById('delete-event-form');
-        document.getElementById('delete-modal-message').textContent = 'Delete this event? This action cannot be undone.';
-        const modal = document.getElementById('delete-modal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+    function deleteEvent(eventId) {
+        const form = document.getElementById('delete-event-form');
+        form.action = `/admin/schedules/${eventId}`;
+        confirmDelete(form, 'Delete this event? This cannot be undone.');
     }
 </script>
 

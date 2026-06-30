@@ -329,10 +329,12 @@
     </div>
 
     <script>
-    let _deleteForm = null;
+    window._deleteForm = null;
 
     function confirmDelete(formId, message) {
-        _deleteForm = document.getElementById(formId);
+        window._deleteForm = (typeof formId === 'string')
+            ? document.getElementById(formId)
+            : formId; // allow passing a form element directly
         document.getElementById('delete-modal-message').textContent = message || 'This action cannot be undone.';
         const modal = document.getElementById('delete-modal');
         modal.classList.remove('hidden');
@@ -343,14 +345,14 @@
         const modal = document.getElementById('delete-modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
-        _deleteForm = null;
+        window._deleteForm = null;
     }
 
-    // Attach modal listeners once; Turbo keeps the layout alive between navigations
+    // Attach modal listeners once
     if (!window._deleteModalBound) {
         window._deleteModalBound = true;
         document.getElementById('delete-confirm-btn').addEventListener('click', function () {
-            if (_deleteForm) _deleteForm.submit();
+            if (window._deleteForm) window._deleteForm.submit();
         });
         document.getElementById('delete-modal').addEventListener('click', function (e) {
             if (e.target === this) closeDeleteModal();
