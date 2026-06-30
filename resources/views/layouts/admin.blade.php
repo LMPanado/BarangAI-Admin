@@ -235,7 +235,7 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-end px-12 z-20 shadow-sm">
+        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-end px-12 z-20 shadow-sm">
             {{-- Right: time + user info --}}
             @php
                 $roleLabel = match((int) Auth::user()->role) {
