@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class RoleController extends Controller
 {
@@ -63,6 +64,23 @@ class RoleController extends Controller
         );
 
         return back()->with('success', "Role for {$user->first_name} {$user->last_name} has been updated to " . $this->getRoleLabel($user->role));
+    }
+
+    public function resetPassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->saveQuietly();
+
+        AuditLogger::log('updated', 'User',
+            'Password reset for ' . ($user->last_name ?? '') . ', ' . ($user->first_name ?? ''),
+            $user->id
+        );
+
+        return back()->with('success', "Password for {$user->first_name} {$user->last_name} has been reset successfully.");
     }
 
     private function getRoleLabel($role)

@@ -150,6 +150,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::prefix('roles')->name('admin.roles.')->group(function () {
                 Route::get('/', [RoleController::class, 'index'])->name('index');
                 Route::patch('/{user}/update', [RoleController::class, 'update'])->name('update');
+                Route::patch('/{user}/reset-password', [RoleController::class, 'resetPassword'])->name('reset-password');
             });
 
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit-logs.index');

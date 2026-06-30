@@ -32,8 +32,9 @@ class AuthController extends Controller
         try {
             $authenticated = Auth::attempt($credentials);
         } catch (\RuntimeException $e) {
-            // Resident accounts from the mobile app may use a non-Bcrypt hash
-            return back()->with('error', 'This portal is for barangay admin accounts only. Residents must use the mobile app.');
+            // Password hash is incompatible (e.g. account created before bcrypt migration).
+            // Admin must reset the password via Manage Roles or artisan tinker.
+            return back()->with('error', 'Unable to verify password for this account. Please ask the IT Admin to reset your password.');
         }
 
         if ($authenticated) {
