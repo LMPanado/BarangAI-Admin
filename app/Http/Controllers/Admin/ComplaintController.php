@@ -44,13 +44,11 @@ class ComplaintController extends Controller
 
         $complaints = $query->paginate(10)->withQueryString();
 
-        // Load message count per complaint for the current page
         $messageCounts = ComplaintMessage::whereIn('complaint_id', $complaints->pluck('id'))
             ->selectRaw('complaint_id, COUNT(*) as cnt')
             ->groupBy('complaint_id')
             ->pluck('cnt', 'complaint_id');
 
-        // One query for all summary counts
         $stats = Complaint::selectRaw("
             COUNT(*) as total,
             COUNT(*) FILTER (WHERE status = 'open') as open,
@@ -70,6 +68,34 @@ class ComplaintController extends Controller
         ));
     }
 
+    public function getMessages($id)
+    {
+        $complaint = Complaint::findOrFail($id);
+
+        $messages = ComplaintMessage::where('complaint_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(fn($m) => [
+                'id'          => $m->id,
+                'message'     => $m->message,
+                'sender_type' => $m->sender_type,
+                'sender_name' => $m->sender_name,
+                'is_read'     => $m->is_read,
+                'created_at'  => $m->created_at->format('M d, Y h:i A'),
+            ]);
+
+        return response()->json([
+            'complaint' => [
+                'id'         => $complaint->id,
+                'user_email' => $complaint->user_email,
+                'message'    => $complaint->message,
+                'severity'   => $complaint->severity,
+                'status'     => $complaint->status,
+            ],
+            'messages' => $messages,
+        ]);
+    }
+
     public function sendMessage(Request $request, $id)
     {
         $complaint = Complaint::findOrFail($id);
@@ -78,11 +104,15 @@ class ComplaintController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
+        $admin = auth()->user();
+
         ComplaintMessage::create([
             'complaint_id'    => $complaint->id,
-            'admin_id'        => auth()->id(),
+            'admin_id'        => $admin->id,
             'recipient_email' => $complaint->user_email,
             'message'         => $request->message,
+            'sender_type'     => 'admin',
+            'sender_name'     => $admin->first_name . ' ' . $admin->last_name,
         ]);
 
         AuditLogger::log('updated', 'Complaint',
@@ -90,7 +120,7 @@ class ComplaintController extends Controller
             $id
         );
 
-        return back()->with('success', 'Message sent to ' . $complaint->user_email . '.');
+        return response()->json(['success' => true]);
     }
 
     public function updateStatus(Request $request, $id)

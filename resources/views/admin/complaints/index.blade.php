@@ -216,7 +216,7 @@
                         </td>
                         <td class="px-6 py-5">
                             <button
-                                onclick="openMessageModal({{ $complaint->id }}, '{{ addslashes($complaint->user_email) }}')"
+                                onclick="openChat({{ $complaint->id }}, '{{ addslashes($complaint->user_email) }}')"
                                 class="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brgyGreen/5 text-brgyGreen hover:bg-brgyGreen hover:text-white transition-all text-[10px] font-black uppercase tracking-widest group">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -244,121 +244,205 @@
     </div>
 </div>
 
-{{-- Message Complainant Modal --}}
-<div id="messageModal"
-     class="fixed inset-0 z-50 hidden items-center justify-center p-4"
-     onclick="if(event.target===this) closeMessageModal()">
-    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+{{-- Chat Drawer Overlay --}}
+<div id="chatOverlay" class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm hidden" onclick="closeChat()"></div>
 
-    <div class="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl overflow-hidden">
+{{-- Chat Drawer --}}
+<div id="chatDrawer"
+     class="fixed top-0 right-0 h-full w-[440px] bg-white z-50 shadow-2xl flex flex-col translate-x-full transition-transform duration-300 ease-in-out">
 
-        {{-- Colored top bar --}}
-        <div class="bg-brgyGreen px-8 py-6 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-base font-extrabold text-white tracking-tight">Message Complainant</h2>
-                    <p class="text-[11px] text-white/60 font-semibold mt-0.5">Send a notification directly to the resident's mobile app</p>
-                </div>
+    {{-- Header --}}
+    <div class="bg-brgyGreen px-6 py-5 flex items-center gap-4 shrink-0">
+        <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-[9px] font-black text-white/50 uppercase tracking-widest">Conversation</p>
+            <p id="chatEmail" class="text-sm font-bold text-white truncate mt-0.5"></p>
+        </div>
+        <button onclick="closeChat()" class="w-8 h-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    {{-- Complaint context strip --}}
+    <div id="chatComplaintContext" class="px-5 py-3 bg-slate-50 border-b border-slate-100 shrink-0">
+        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Original Complaint</p>
+        <p id="chatComplaintText" class="text-xs text-slate-600 leading-relaxed line-clamp-2"></p>
+    </div>
+
+    {{-- Messages area --}}
+    <div id="chatMessages" class="flex-1 overflow-y-auto px-5 py-5 space-y-3 bg-slate-50/50">
+        {{-- Messages injected by JS --}}
+        <div id="chatLoading" class="flex items-center justify-center h-full">
+            <div class="text-center">
+                <div class="w-8 h-8 border-2 border-brgyGreen/30 border-t-brgyGreen rounded-full animate-spin mx-auto mb-3"></div>
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Loading conversation...</p>
             </div>
-            <button onclick="closeMessageModal()"
-                    class="w-8 h-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </div>
+        <div id="chatEmpty" class="hidden flex-col items-center justify-center h-full text-center py-10">
+            <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-7 h-7 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+            </div>
+            <p class="text-xs font-bold text-slate-400">No messages yet</p>
+            <p class="text-[10px] text-slate-300 mt-1">Start the conversation below</p>
+        </div>
+    </div>
+
+    {{-- Input area --}}
+    <div class="px-5 py-4 bg-white border-t border-slate-100 shrink-0">
+        <div class="flex items-end gap-3">
+            <textarea id="chatInput"
+                      rows="2"
+                      maxlength="1000"
+                      placeholder="Type a message..."
+                      onkeydown="handleChatKey(event)"
+                      class="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all resize-none placeholder:text-slate-300 leading-relaxed"></textarea>
+            <button onclick="sendChatMessage()"
+                    id="chatSendBtn"
+                    class="w-11 h-11 bg-brgyGreen rounded-2xl flex items-center justify-center text-white shadow-lg shadow-brgyGreen/20 hover:shadow-xl hover:shadow-brgyGreen/30 hover:-translate-y-0.5 transition-all shrink-0 self-end disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                 </svg>
             </button>
         </div>
-
-        {{-- Body --}}
-        <div class="px-8 py-7">
-
-            {{-- Recipient badge --}}
-            <div class="flex items-center gap-3 mb-6 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                <div class="w-8 h-8 bg-brgyGreen rounded-xl flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Sending to</p>
-                    <p id="modalRecipient" class="text-sm font-bold text-brgyGreen mt-0.5"></p>
-                </div>
-            </div>
-
-            <form id="messageForm" method="POST" action="">
-                @csrf
-
-                <div class="mb-5">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
-                        Your Message
-                    </label>
-                    <textarea id="modalTextarea"
-                              name="message"
-                              rows="5"
-                              maxlength="1000"
-                              oninput="updateCharCount(this)"
-                              placeholder="Good day! We would like to schedule a meeting regarding your complaint. Please come to the Barangay Hall on [date] at [time]. Bring a valid ID."
-                              class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all resize-none placeholder:text-gray-300 leading-relaxed"
-                              required></textarea>
-                    <div class="flex items-center justify-between mt-2 px-1">
-                        <p class="text-[10px] text-gray-300 font-semibold flex items-center gap-1.5">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                            </svg>
-                            Resident will receive a push notification on their mobile app
-                        </p>
-                        <span id="charCount" class="text-[10px] font-black text-gray-300">0 / 1000</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <button type="submit"
-                            class="flex-1 bg-brgyGreen text-white font-black text-xs uppercase tracking-widest py-4 rounded-2xl shadow-lg shadow-brgyGreen/20 hover:shadow-xl hover:shadow-brgyGreen/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                        </svg>
-                        Send Message
-                    </button>
-                    <button type="button" onclick="closeMessageModal()"
-                            class="px-7 py-4 rounded-2xl border-2 border-gray-100 text-gray-400 text-xs font-black uppercase tracking-widest hover:border-gray-200 hover:text-gray-600 transition-all">
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+        <p class="text-[9px] text-slate-300 font-semibold mt-2 text-center">Press Enter to send · Shift+Enter for new line</p>
     </div>
 </div>
 
 <script>
-function openMessageModal(complaintId, email) {
-    document.getElementById('modalRecipient').textContent = email;
-    document.getElementById('messageForm').action = '/admin/complaints/' + complaintId + '/message';
-    const ta = document.getElementById('modalTextarea');
-    ta.value = '';
-    document.getElementById('charCount').textContent = '0 / 1000';
-    const modal = document.getElementById('messageModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    setTimeout(() => ta.focus(), 100);
+let currentComplaintId = null;
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+function openChat(complaintId, email) {
+    currentComplaintId = complaintId;
+    document.getElementById('chatEmail').textContent = email;
+    document.getElementById('chatMessages').querySelectorAll('.chat-bubble').forEach(el => el.remove());
+    document.getElementById('chatLoading').classList.remove('hidden');
+    document.getElementById('chatEmpty').classList.add('hidden');
+    document.getElementById('chatInput').value = '';
+
+    document.getElementById('chatOverlay').classList.remove('hidden');
+    document.getElementById('chatDrawer').classList.remove('translate-x-full');
+
+    loadMessages(complaintId);
 }
-function closeMessageModal() {
-    const modal = document.getElementById('messageModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+
+function closeChat() {
+    document.getElementById('chatDrawer').classList.add('translate-x-full');
+    document.getElementById('chatOverlay').classList.add('hidden');
+    currentComplaintId = null;
 }
-function updateCharCount(el) {
-    const count = el.value.length;
-    const el2 = document.getElementById('charCount');
-    el2.textContent = count + ' / 1000';
-    el2.className = 'text-[10px] font-black ' + (count > 900 ? 'text-red-400' : count > 700 ? 'text-amber-400' : 'text-gray-300');
+
+function loadMessages(complaintId) {
+    fetch('/admin/complaints/' + complaintId + '/messages', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('chatLoading').classList.add('hidden');
+        document.getElementById('chatComplaintText').textContent = data.complaint.message;
+
+        const container = document.getElementById('chatMessages');
+        container.querySelectorAll('.chat-bubble').forEach(el => el.remove());
+
+        if (data.messages.length === 0) {
+            document.getElementById('chatEmpty').classList.remove('hidden');
+            document.getElementById('chatEmpty').classList.add('flex');
+        } else {
+            document.getElementById('chatEmpty').classList.add('hidden');
+            data.messages.forEach(msg => appendBubble(msg));
+        }
+        scrollToBottom();
+    })
+    .catch(() => {
+        document.getElementById('chatLoading').classList.add('hidden');
+    });
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMessageModal(); });
+
+function appendBubble(msg) {
+    const isAdmin = msg.sender_type === 'admin';
+    const container = document.getElementById('chatMessages');
+
+    // Remove empty state if present
+    document.getElementById('chatEmpty').classList.add('hidden');
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'chat-bubble flex ' + (isAdmin ? 'justify-end' : 'justify-start');
+
+    const bubble = document.createElement('div');
+    bubble.className = 'max-w-[78%] ' + (isAdmin ? 'items-end' : 'items-start') + ' flex flex-col gap-1';
+
+    const senderLabel = document.createElement('p');
+    senderLabel.className = 'text-[9px] font-black uppercase tracking-widest px-1 ' + (isAdmin ? 'text-right text-brgyGreen' : 'text-left text-slate-400');
+    senderLabel.textContent = isAdmin ? (msg.sender_name || 'Admin') : 'Resident';
+
+    const msgBox = document.createElement('div');
+    msgBox.className = 'px-4 py-3 rounded-2xl text-sm leading-relaxed ' +
+        (isAdmin
+            ? 'bg-brgyGreen text-white rounded-br-md'
+            : 'bg-white border border-slate-200 text-slate-700 rounded-bl-md shadow-sm');
+    msgBox.textContent = msg.message;
+
+    const timeEl = document.createElement('p');
+    timeEl.className = 'text-[9px] text-slate-400 font-medium px-1 ' + (isAdmin ? 'text-right' : 'text-left');
+    timeEl.textContent = msg.created_at;
+
+    bubble.appendChild(senderLabel);
+    bubble.appendChild(msgBox);
+    bubble.appendChild(timeEl);
+    wrapper.appendChild(bubble);
+    container.appendChild(wrapper);
+}
+
+function scrollToBottom() {
+    const c = document.getElementById('chatMessages');
+    c.scrollTop = c.scrollHeight;
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text || !currentComplaintId) return;
+
+    const btn = document.getElementById('chatSendBtn');
+    btn.disabled = true;
+
+    fetch('/admin/complaints/' + currentComplaintId + '/message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({ message: text }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            input.value = '';
+            // Reload messages to get the saved one with proper timestamp
+            loadMessages(currentComplaintId);
+        }
+    })
+    .finally(() => { btn.disabled = false; input.focus(); });
+}
+
+function handleChatKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+    }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
 </script>
 @endsection

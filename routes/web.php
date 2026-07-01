@@ -151,6 +151,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::patch('/complaints/{id}/status', [ComplaintController::class, 'updateStatus'])
             ->middleware('role:1,2')
             ->name('admin.complaints.updateStatus');
+        Route::get('/complaints/{id}/messages', [ComplaintController::class, 'getMessages'])
+            ->middleware('role:1,2')
+            ->name('admin.complaints.getMessages');
         Route::post('/complaints/{id}/message', [ComplaintController::class, 'sendMessage'])
             ->middleware('role:1,2')
             ->name('admin.complaints.sendMessage');
