@@ -55,6 +55,7 @@
                 <option value="deleted"        {{ request('action') === 'deleted'        ? 'selected' : '' }}>Deleted</option>
                 <option value="status_changed" {{ request('action') === 'status_changed' ? 'selected' : '' }}>Status Changed</option>
                 <option value="role_changed"   {{ request('action') === 'role_changed'   ? 'selected' : '' }}>Role Changed</option>
+                <option value="message_sent"   {{ request('action') === 'message_sent'   ? 'selected' : '' }}>Message Sent</option>
                 <option value="login"          {{ request('action') === 'login'          ? 'selected' : '' }}>Login</option>
                 <option value="logout"         {{ request('action') === 'logout'         ? 'selected' : '' }}>Logout</option>
             </select>
@@ -67,6 +68,7 @@
                 <option value="Schedule"        {{ request('subject') === 'Schedule'        ? 'selected' : '' }}>Schedule</option>
                 <option value="DocumentRequest" {{ request('subject') === 'DocumentRequest' ? 'selected' : '' }}>Document Request</option>
                 <option value="User"            {{ request('subject') === 'User'            ? 'selected' : '' }}>User / Role</option>
+                <option value="Complaint"       {{ request('subject') === 'Complaint'       ? 'selected' : '' }}>Complaint</option>
             </select>
         </div>
 

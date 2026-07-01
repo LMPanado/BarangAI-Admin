@@ -244,162 +244,178 @@
     </div>
 </div>
 
-{{-- Chat Drawer Overlay --}}
-<div id="chatOverlay" class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm hidden" onclick="closeChat()"></div>
-
-{{-- Chat Drawer --}}
-<div id="chatDrawer"
-     class="fixed top-0 right-0 h-full w-[440px] bg-white z-50 shadow-2xl flex flex-col translate-x-full transition-transform duration-300 ease-in-out">
+{{-- Chat Widget (bottom-right) --}}
+<div id="chatModal" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9999;width:360px;height:500px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18),0 4px 20px rgba(0,0,0,0.1);display:none;flex-direction:column;background:#fff;">
 
     {{-- Header --}}
-    <div class="bg-brgyGreen px-6 py-5 flex items-center gap-4 shrink-0">
-        <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    <div style="background:#1d4ed8;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
             </svg>
         </div>
-        <div class="flex-1 min-w-0">
-            <p class="text-[9px] font-black text-white/50 uppercase tracking-widest">Conversation</p>
-            <p id="chatEmail" class="text-sm font-bold text-white truncate mt-0.5"></p>
+        <div style="flex:1;min-width:0;">
+            <p style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.12em;margin:0;">Complaint Chat</p>
+            <p id="chatEmail" style="font-size:12px;font-weight:700;color:#fff;margin:1px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
         </div>
-        <button onclick="closeChat()" class="w-8 h-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+        <button onclick="closeChat()" style="width:28px;height:28px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
 
-    {{-- Complaint context strip --}}
-    <div id="chatComplaintContext" class="px-5 py-3 bg-slate-50 border-b border-slate-100 shrink-0">
-        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Original Complaint</p>
-        <p id="chatComplaintText" class="text-xs text-slate-600 leading-relaxed line-clamp-2"></p>
+    {{-- Original complaint strip --}}
+    <div style="padding:8px 14px;background:#f8fafc;border-bottom:1px solid #f1f5f9;flex-shrink:0;">
+        <p style="font-size:8px;font-weight:900;color:#94a3b8;text-transform:uppercase;letter-spacing:.12em;margin:0 0 2px;">Original Complaint</p>
+        <p id="chatComplaintText" style="font-size:11px;color:#64748b;margin:0;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></p>
     </div>
 
-    {{-- Messages area --}}
-    <div id="chatMessages" class="flex-1 overflow-y-auto px-5 py-5 space-y-3 bg-slate-50/50">
-        {{-- Messages injected by JS --}}
-        <div id="chatLoading" class="flex items-center justify-center h-full">
-            <div class="text-center">
-                <div class="w-8 h-8 border-2 border-brgyGreen/30 border-t-brgyGreen rounded-full animate-spin mx-auto mb-3"></div>
-                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Loading conversation...</p>
-            </div>
+    {{-- Messages --}}
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:12px 12px;display:flex;flex-direction:column;gap:8px;background:#f8fafc;">
+        <div id="chatLoading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;">
+            <div style="width:24px;height:24px;border:2px solid #e2e8f0;border-top-color:#1d4ed8;border-radius:50%;animation:spin .7s linear infinite;"></div>
+            <p style="font-size:9px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:.1em;margin:0;">Loading...</p>
         </div>
-        <div id="chatEmpty" class="hidden flex-col items-center justify-center h-full text-center py-10">
-            <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg class="w-7 h-7 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-            </div>
-            <p class="text-xs font-bold text-slate-400">No messages yet</p>
-            <p class="text-[10px] text-slate-300 mt-1">Start the conversation below</p>
+        <div id="chatEmpty" style="display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;">
+            <svg width="36" height="36" fill="none" stroke="#cbd5e1" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:8px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <p style="font-size:12px;font-weight:700;color:#94a3b8;margin:0;">No messages yet</p>
+            <p style="font-size:10px;color:#cbd5e1;margin:3px 0 0;">Start the conversation below</p>
         </div>
     </div>
 
-    {{-- Input area --}}
-    <div class="px-5 py-4 bg-white border-t border-slate-100 shrink-0">
-        <div class="flex items-end gap-3">
-            <textarea id="chatInput"
-                      rows="2"
-                      maxlength="1000"
-                      placeholder="Type a message..."
-                      onkeydown="handleChatKey(event)"
-                      class="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all resize-none placeholder:text-slate-300 leading-relaxed"></textarea>
-            <button onclick="sendChatMessage()"
-                    id="chatSendBtn"
-                    class="w-11 h-11 bg-brgyGreen rounded-2xl flex items-center justify-center text-white shadow-lg shadow-brgyGreen/20 hover:shadow-xl hover:shadow-brgyGreen/30 hover:-translate-y-0.5 transition-all shrink-0 self-end disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
+    {{-- Input --}}
+    <div style="padding:10px 12px;background:#fff;border-top:1px solid #f1f5f9;flex-shrink:0;">
+        <div style="display:flex;align-items:flex-end;gap:8px;">
+            <textarea id="chatInput" rows="2" maxlength="1000" placeholder="Type a message…" onkeydown="handleChatKey(event)"
+                      style="flex:1;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:8px 12px;font-size:12px;color:#334155;resize:none;outline:none;line-height:1.5;font-family:inherit;transition:border-color .15s;"
+                      onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"></textarea>
+            <button onclick="sendChatMessage()" id="chatSendBtn"
+                    style="width:36px;height:36px;background:#1d4ed8;border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;align-self:flex-end;transition:opacity .15s;"
+                    onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
         </div>
-        <p class="text-[9px] text-slate-300 font-semibold mt-2 text-center">Press Enter to send · Shift+Enter for new line</p>
+        <p style="font-size:9px;color:#cbd5e1;text-align:center;margin:6px 0 0;">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
     </div>
 </div>
 
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 <script>
 let currentComplaintId = null;
+let lastMessageId = 0;
+let pollTimer = null;
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
 function openChat(complaintId, email) {
     currentComplaintId = complaintId;
+    lastMessageId = 0;
     document.getElementById('chatEmail').textContent = email;
+    document.getElementById('chatComplaintText').textContent = '';
     document.getElementById('chatMessages').querySelectorAll('.chat-bubble').forEach(el => el.remove());
-    document.getElementById('chatLoading').classList.remove('hidden');
-    document.getElementById('chatEmpty').classList.add('hidden');
+    document.getElementById('chatLoading').style.display = 'flex';
+    document.getElementById('chatEmpty').style.display = 'none';
     document.getElementById('chatInput').value = '';
+    const modal = document.getElementById('chatModal');
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
 
-    document.getElementById('chatOverlay').classList.remove('hidden');
-    document.getElementById('chatDrawer').classList.remove('translate-x-full');
-
-    loadMessages(complaintId);
+    loadMessages(complaintId, true);
+    startPolling();
 }
 
 function closeChat() {
-    document.getElementById('chatDrawer').classList.add('translate-x-full');
-    document.getElementById('chatOverlay').classList.add('hidden');
+    stopPolling();
+    document.getElementById('chatModal').style.display = 'none';
     currentComplaintId = null;
+    lastMessageId = 0;
 }
 
-function loadMessages(complaintId) {
+function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(() => {
+        if (currentComplaintId) fetchNewMessages(currentComplaintId);
+    }, 3000);
+}
+
+function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+}
+
+// Full load on open — sets complaint context and renders all messages
+function loadMessages(complaintId, isInitial = false) {
     fetch('/admin/complaints/' + complaintId + '/messages', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(r => r.json())
     .then(data => {
-        document.getElementById('chatLoading').classList.add('hidden');
+        document.getElementById('chatLoading').style.display = 'none';
         document.getElementById('chatComplaintText').textContent = data.complaint.message;
-
-        const container = document.getElementById('chatMessages');
-        container.querySelectorAll('.chat-bubble').forEach(el => el.remove());
+        document.getElementById('chatMessages').querySelectorAll('.chat-bubble').forEach(el => el.remove());
 
         if (data.messages.length === 0) {
-            document.getElementById('chatEmpty').classList.remove('hidden');
-            document.getElementById('chatEmpty').classList.add('flex');
+            document.getElementById('chatEmpty').style.display = 'flex';
         } else {
-            document.getElementById('chatEmpty').classList.add('hidden');
+            document.getElementById('chatEmpty').style.display = 'none';
             data.messages.forEach(msg => appendBubble(msg));
+            lastMessageId = data.messages[data.messages.length - 1].id;
         }
         scrollToBottom();
     })
-    .catch(() => {
-        document.getElementById('chatLoading').classList.add('hidden');
-    });
+    .catch(() => { document.getElementById('chatLoading').style.display = 'none'; });
+}
+
+// Poll — only appends messages newer than lastMessageId, no flicker
+function fetchNewMessages(complaintId) {
+    fetch('/admin/complaints/' + complaintId + '/messages', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const newMsgs = data.messages.filter(m => m.id > lastMessageId);
+        if (newMsgs.length === 0) return;
+
+        document.getElementById('chatEmpty').style.display = 'none';
+        newMsgs.forEach(msg => appendBubble(msg));
+        lastMessageId = newMsgs[newMsgs.length - 1].id;
+        scrollToBottom();
+    })
+    .catch(() => {});
 }
 
 function appendBubble(msg) {
     const isAdmin = msg.sender_type === 'admin';
     const container = document.getElementById('chatMessages');
 
-    // Remove empty state if present
-    document.getElementById('chatEmpty').classList.add('hidden');
-
     const wrapper = document.createElement('div');
-    wrapper.className = 'chat-bubble flex ' + (isAdmin ? 'justify-end' : 'justify-start');
+    wrapper.className = 'chat-bubble';
+    wrapper.style.cssText = 'display:flex;' + (isAdmin ? 'justify-content:flex-end' : 'justify-content:flex-start');
 
-    const bubble = document.createElement('div');
-    bubble.className = 'max-w-[78%] ' + (isAdmin ? 'items-end' : 'items-start') + ' flex flex-col gap-1';
+    const inner = document.createElement('div');
+    inner.style.cssText = 'max-width:78%;display:flex;flex-direction:column;gap:3px;' + (isAdmin ? 'align-items:flex-end' : 'align-items:flex-start');
 
-    const senderLabel = document.createElement('p');
-    senderLabel.className = 'text-[9px] font-black uppercase tracking-widest px-1 ' + (isAdmin ? 'text-right text-brgyGreen' : 'text-left text-slate-400');
-    senderLabel.textContent = isAdmin ? (msg.sender_name || 'Admin') : 'Resident';
+    const label = document.createElement('p');
+    label.style.cssText = 'font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;padding:0 4px;color:' + (isAdmin ? '#1d4ed8' : '#94a3b8');
+    label.textContent = isAdmin ? (msg.sender_name || 'Admin') : 'Resident';
 
-    const msgBox = document.createElement('div');
-    msgBox.className = 'px-4 py-3 rounded-2xl text-sm leading-relaxed ' +
+    const box = document.createElement('div');
+    box.style.cssText = 'padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;word-break:break-word;' +
         (isAdmin
-            ? 'bg-brgyGreen text-white rounded-br-md'
-            : 'bg-white border border-slate-200 text-slate-700 rounded-bl-md shadow-sm');
-    msgBox.textContent = msg.message;
+            ? 'background:#1d4ed8;color:#fff;border-bottom-right-radius:4px'
+            : 'background:#fff;color:#334155;border:1px solid #e2e8f0;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.06)');
+    box.textContent = msg.message;
 
-    const timeEl = document.createElement('p');
-    timeEl.className = 'text-[9px] text-slate-400 font-medium px-1 ' + (isAdmin ? 'text-right' : 'text-left');
-    timeEl.textContent = msg.created_at;
+    const time = document.createElement('p');
+    time.style.cssText = 'font-size:9px;color:#94a3b8;padding:0 4px;' + (isAdmin ? 'text-align:right' : 'text-align:left');
+    time.textContent = msg.created_at;
 
-    bubble.appendChild(senderLabel);
-    bubble.appendChild(msgBox);
-    bubble.appendChild(timeEl);
-    wrapper.appendChild(bubble);
+    inner.appendChild(label);
+    inner.appendChild(box);
+    inner.appendChild(time);
+    wrapper.appendChild(inner);
     container.appendChild(wrapper);
 }
 
@@ -413,34 +429,23 @@ function sendChatMessage() {
     const text = input.value.trim();
     if (!text || !currentComplaintId) return;
 
-    const btn = document.getElementById('chatSendBtn');
-    btn.disabled = true;
+    document.getElementById('chatSendBtn').disabled = true;
+    input.value = '';
 
     fetch('/admin/complaints/' + currentComplaintId + '/message', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
-        },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
         body: JSON.stringify({ message: text }),
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) {
-            input.value = '';
-            // Reload messages to get the saved one with proper timestamp
-            loadMessages(currentComplaintId);
-        }
+        if (data.success) fetchNewMessages(currentComplaintId);
     })
-    .finally(() => { btn.disabled = false; input.focus(); });
+    .finally(() => { document.getElementById('chatSendBtn').disabled = false; input.focus(); });
 }
 
 function handleChatKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendChatMessage();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });

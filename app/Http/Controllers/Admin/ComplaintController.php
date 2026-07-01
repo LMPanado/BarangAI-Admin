@@ -115,8 +115,8 @@ class ComplaintController extends Controller
             'sender_name'     => $admin->first_name . ' ' . $admin->last_name,
         ]);
 
-        AuditLogger::log('updated', 'Complaint',
-            'Message sent to complainant ' . $complaint->user_email . ' for Complaint #' . $id,
+        AuditLogger::log('message_sent', 'Complaint',
+            'Message sent to ' . $complaint->user_email . ' re: Complaint #' . $id,
             $id
         );
 
