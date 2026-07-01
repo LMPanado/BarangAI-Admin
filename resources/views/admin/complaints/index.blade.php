@@ -120,6 +120,16 @@
         </div>
     </form>
 
+    {{-- Flash messages --}}
+    @if(session('success'))
+        <div class="flex items-center gap-3 p-4 rounded-2xl bg-green-50 border border-green-100">
+            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            <p class="text-xs font-bold text-green-700">{{ session('success') }}</p>
+        </div>
+    @endif
+
     {{-- Complaints Table --}}
     <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
         @if($complaints->isEmpty())
@@ -141,6 +151,7 @@
                         <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">AI Summary</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Severity</th>
                         <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -157,6 +168,7 @@
                             'closed' => 'bg-green-50 text-green-700',
                             default  => 'bg-gray-50 text-gray-400',
                         };
+                        $msgCount = $messageCounts[$complaint->id] ?? 0;
                     @endphp
                     <tr class="hover:bg-gray-50/50 transition-colors">
                         <td class="px-6 py-5 whitespace-nowrap">
@@ -202,6 +214,22 @@
                             </span>
                             @endif
                         </td>
+                        <td class="px-6 py-5">
+                            <button
+                                onclick="openMessageModal({{ $complaint->id }}, '{{ addslashes($complaint->user_email) }}')"
+                                class="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brgyGreen/5 text-brgyGreen hover:bg-brgyGreen hover:text-white transition-all text-[10px] font-black uppercase tracking-widest group">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                </svg>
+                                Message
+                                @if($msgCount > 0)
+                                    <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-brgyGreen text-white group-hover:bg-white group-hover:text-brgyGreen rounded-full text-[8px] font-black flex items-center justify-center transition-all">
+                                        {{ $msgCount }}
+                                    </span>
+                                @endif
+                            </button>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -215,4 +243,80 @@
         @endif
     </div>
 </div>
+
+{{-- Message Complainant Modal --}}
+<div id="messageModal"
+     class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+     onclick="if(event.target===this) closeMessageModal()">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-8">
+
+        {{-- Header --}}
+        <div class="flex items-start justify-between mb-6">
+            <div>
+                <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Message Complainant</h2>
+                <p class="text-[11px] text-gray-400 font-bold mt-0.5">
+                    To: <span id="modalRecipient" class="text-brgyGreen"></span>
+                </p>
+            </div>
+            <button onclick="closeMessageModal()"
+                    class="w-8 h-8 flex items-center justify-center rounded-xl text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="messageForm" method="POST" action="">
+            @csrf
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">
+                        Your Message
+                    </label>
+                    <textarea name="message"
+                              rows="5"
+                              maxlength="1000"
+                              placeholder="e.g. Good day! We would like to schedule a meeting regarding your complaint on July 5, 2026 at 9:00 AM at the Barangay Hall. Please bring a valid ID..."
+                              class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-medium text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all resize-none placeholder:text-gray-300"
+                              required></textarea>
+                    <p class="text-[10px] text-gray-300 font-bold mt-1.5 ml-1">Max 1,000 characters. The resident will be notified on the mobile app.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 mt-6">
+                <button type="submit"
+                        class="flex-1 bg-brgyGreen text-white font-black text-[11px] uppercase tracking-widest py-3.5 rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Send Message
+                </button>
+                <button type="button" onclick="closeMessageModal()"
+                        class="px-6 py-3.5 rounded-xl border-2 border-gray-100 text-gray-400 text-[11px] font-black uppercase tracking-widest hover:border-gray-200 hover:text-gray-600 transition-all">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openMessageModal(complaintId, email) {
+    document.getElementById('modalRecipient').textContent = email;
+    document.getElementById('messageForm').action = '/admin/complaints/' + complaintId + '/message';
+    document.getElementById('messageForm').querySelector('textarea').value = '';
+    const modal = document.getElementById('messageModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+function closeMessageModal() {
+    const modal = document.getElementById('messageModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMessageModal(); });
+</script>
 @endsection

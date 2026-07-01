@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Models\ComplaintMessage;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 
@@ -43,6 +44,12 @@ class ComplaintController extends Controller
 
         $complaints = $query->paginate(10)->withQueryString();
 
+        // Load message count per complaint for the current page
+        $messageCounts = ComplaintMessage::whereIn('complaint_id', $complaints->pluck('id'))
+            ->selectRaw('complaint_id, COUNT(*) as cnt')
+            ->groupBy('complaint_id')
+            ->pluck('cnt', 'complaint_id');
+
         // One query for all summary counts
         $stats = Complaint::selectRaw("
             COUNT(*) as total,
@@ -59,8 +66,31 @@ class ComplaintController extends Controller
         $bySeverity = ['critical' => $stats->critical, 'medium' => $stats->medium, 'low' => $stats->low];
 
         return view('admin.complaints.index', compact(
-            'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort'
+            'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort', 'messageCounts'
         ));
+    }
+
+    public function sendMessage(Request $request, $id)
+    {
+        $complaint = Complaint::findOrFail($id);
+
+        $request->validate([
+            'message' => 'required|string|max:1000',
+        ]);
+
+        ComplaintMessage::create([
+            'complaint_id'    => $complaint->id,
+            'admin_id'        => auth()->id(),
+            'recipient_email' => $complaint->user_email,
+            'message'         => $request->message,
+        ]);
+
+        AuditLogger::log('updated', 'Complaint',
+            'Message sent to complainant ' . $complaint->user_email . ' for Complaint #' . $id,
+            $id
+        );
+
+        return back()->with('success', 'Message sent to ' . $complaint->user_email . '.');
     }
 
     public function updateStatus(Request $request, $id)

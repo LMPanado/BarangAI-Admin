@@ -151,6 +151,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::patch('/complaints/{id}/status', [ComplaintController::class, 'updateStatus'])
             ->middleware('role:1,2')
             ->name('admin.complaints.updateStatus');
+        Route::post('/complaints/{id}/message', [ComplaintController::class, 'sendMessage'])
+            ->middleware('role:1,2')
+            ->name('admin.complaints.sendMessage');
 
         // Reports (Analytics): Visible to 1 and 2 (Role 3 Blocked)
         Route::get('/reports', [ReportController::class, 'index'])
