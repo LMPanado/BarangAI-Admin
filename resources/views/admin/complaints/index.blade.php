@@ -244,72 +244,59 @@
     </div>
 </div>
 
-{{-- Chat Modal --}}
-<div id="chatModal" style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeChat()"></div>
+{{-- Chat Widget (bottom-right) --}}
+<div id="chatModal" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9999;width:360px;height:500px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18),0 4px 20px rgba(0,0,0,0.1);display:none;flex-direction:column;background:#fff;">
 
-    <div class="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden flex flex-col" style="height:580px">
+    {{-- Header --}}
+    <div style="background:#1d4ed8;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <div style="width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+            <p style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.12em;margin:0;">Complaint Chat</p>
+            <p id="chatEmail" style="font-size:12px;font-weight:700;color:#fff;margin:1px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+        </div>
+        <button onclick="closeChat()" style="width:28px;height:28px;border-radius:8px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
 
-        {{-- Header --}}
-        <div class="bg-brgyGreen px-6 py-4 flex items-center gap-3 shrink-0">
-            <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-[9px] font-black text-white/50 uppercase tracking-widest">Conversation with</p>
-                <p id="chatEmail" class="text-sm font-bold text-white truncate"></p>
-            </div>
-            <button onclick="closeChat()" class="w-8 h-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+    {{-- Original complaint strip --}}
+    <div style="padding:8px 14px;background:#f8fafc;border-bottom:1px solid #f1f5f9;flex-shrink:0;">
+        <p style="font-size:8px;font-weight:900;color:#94a3b8;text-transform:uppercase;letter-spacing:.12em;margin:0 0 2px;">Original Complaint</p>
+        <p id="chatComplaintText" style="font-size:11px;color:#64748b;margin:0;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></p>
+    </div>
+
+    {{-- Messages --}}
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:12px 12px;display:flex;flex-direction:column;gap:8px;background:#f8fafc;">
+        <div id="chatLoading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;">
+            <div style="width:24px;height:24px;border:2px solid #e2e8f0;border-top-color:#1d4ed8;border-radius:50%;animation:spin .7s linear infinite;"></div>
+            <p style="font-size:9px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:.1em;margin:0;">Loading...</p>
+        </div>
+        <div id="chatEmpty" style="display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;">
+            <svg width="36" height="36" fill="none" stroke="#cbd5e1" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:8px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <p style="font-size:12px;font-weight:700;color:#94a3b8;margin:0;">No messages yet</p>
+            <p style="font-size:10px;color:#cbd5e1;margin:3px 0 0;">Start the conversation below</p>
+        </div>
+    </div>
+
+    {{-- Input --}}
+    <div style="padding:10px 12px;background:#fff;border-top:1px solid #f1f5f9;flex-shrink:0;">
+        <div style="display:flex;align-items:flex-end;gap:8px;">
+            <textarea id="chatInput" rows="2" maxlength="1000" placeholder="Type a message…" onkeydown="handleChatKey(event)"
+                      style="flex:1;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:8px 12px;font-size:12px;color:#334155;resize:none;outline:none;line-height:1.5;font-family:inherit;transition:border-color .15s;"
+                      onfocus="this.style.borderColor='#1d4ed8'" onblur="this.style.borderColor='#e2e8f0'"></textarea>
+            <button onclick="sendChatMessage()" id="chatSendBtn"
+                    style="width:36px;height:36px;background:#1d4ed8;border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;align-self:flex-end;transition:opacity .15s;"
+                    onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
         </div>
-
-        {{-- Original complaint context --}}
-        <div class="px-5 py-2.5 bg-slate-50 border-b border-slate-100 shrink-0">
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Original Complaint</p>
-            <p id="chatComplaintText" class="text-xs text-slate-500 mt-0.5 leading-relaxed" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden"></p>
-        </div>
-
-        {{-- Messages --}}
-        <div id="chatMessages" class="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-slate-50/40">
-            <div id="chatLoading" class="flex flex-col items-center justify-center h-full gap-3">
-                <div style="width:28px;height:28px;border:2px solid #e2e8f0;border-top-color:#1d4ed8;border-radius:50%;animation:spin .7s linear infinite"></div>
-                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Loading...</p>
-            </div>
-            <div id="chatEmpty" style="display:none" class="flex flex-col items-center justify-center h-full text-center">
-                <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                </div>
-                <p class="text-xs font-bold text-slate-400">No messages yet</p>
-                <p class="text-[10px] text-slate-300 mt-0.5">Start the conversation below</p>
-            </div>
-        </div>
-
-        {{-- Input --}}
-        <div class="px-4 py-3 bg-white border-t border-slate-100 shrink-0">
-            <div class="flex items-end gap-2">
-                <textarea id="chatInput"
-                          rows="2"
-                          maxlength="1000"
-                          placeholder="Type a message..."
-                          onkeydown="handleChatKey(event)"
-                          class="flex-1 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-2.5 text-sm text-slate-700 focus:bg-white focus:border-brgyGreen outline-none transition-all resize-none placeholder:text-slate-300 leading-relaxed"></textarea>
-                <button onclick="sendChatMessage()" id="chatSendBtn"
-                        class="w-10 h-10 bg-brgyGreen rounded-xl flex items-center justify-center text-white shadow-lg shrink-0 self-end hover:opacity-90 transition-opacity">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                    </svg>
-                </button>
-            </div>
-            <p class="text-[9px] text-slate-300 font-medium mt-1.5 text-center">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
-        </div>
+        <p style="font-size:9px;color:#cbd5e1;text-align:center;margin:6px 0 0;">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
     </div>
 </div>
 
@@ -329,7 +316,9 @@ function openChat(complaintId, email) {
     document.getElementById('chatLoading').style.display = 'flex';
     document.getElementById('chatEmpty').style.display = 'none';
     document.getElementById('chatInput').value = '';
-    document.getElementById('chatModal').style.display = 'flex';
+    const modal = document.getElementById('chatModal');
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
     loadMessages(complaintId);
 }
 
