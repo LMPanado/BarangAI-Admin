@@ -3,6 +3,8 @@
 use App\Models\AuditLog;
 use App\Models\Resident;
 use App\Models\DocumentRequest;
+use App\Models\User;
+use App\Models\ComplaintMessage;
 use App\Http\Controllers\Admin\ResidentController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\DocumentRequestController;
@@ -39,7 +41,47 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
     Route::middleware(['auth', 'role:1,2,3', 'session.timeout'])->prefix('admin')->group(function () {
         
         Route::get('/dashboard', function () {
-            // One query for all resident counts
+            $role = auth()->user()->role;
+
+            if ($role === 1) {
+                // ── IT Admin dashboard ──────────────────────────────
+                $userStats = User::selectRaw("
+                    COUNT(*) as total,
+                    COUNT(*) FILTER (WHERE role = 0) as residents,
+                    COUNT(*) FILTER (WHERE role = 1) as admins,
+                    COUNT(*) FILTER (WHERE role = 2) as captains,
+                    COUNT(*) FILTER (WHERE role = 3) as staff
+                ")->first();
+
+                $recentLogs = AuditLog::with('user')->latest('created_at')->limit(20)->get();
+
+                $auditByAction = AuditLog::selectRaw("action, COUNT(*) as count")
+                    ->groupBy('action')
+                    ->pluck('count', 'action');
+
+                $auditTrend = collect();
+                for ($i = 6; $i >= 0; $i--) {
+                    $day = \Carbon\Carbon::now()->subDays($i);
+                    $auditTrend[$day->format('D M d')] = AuditLog::whereDate('created_at', $day->toDateString())->count();
+                }
+
+                $complaintStats = \App\Models\Complaint::selectRaw("
+                    COUNT(*) as total,
+                    COUNT(*) FILTER (WHERE status = 'open') as open,
+                    COUNT(*) FILTER (WHERE status = 'closed') as closed,
+                    COUNT(*) FILTER (WHERE severity = 'critical') as critical
+                ")->first();
+
+                $totalMessages  = ComplaintMessage::count();
+                $totalArchived  = \App\Models\Resident::onlyTrashed()->count();
+
+                return view('admin.dashboard', compact(
+                    'userStats', 'recentLogs', 'auditByAction', 'auditTrend',
+                    'complaintStats', 'totalMessages', 'totalArchived', 'role'
+                ));
+            }
+
+            // ── Captain / Staff dashboard ───────────────────────────
             $residentStats = Resident::selectRaw("
                 COUNT(*) as total,
                 COUNT(*) FILTER (WHERE gender = 'Male') as male,
@@ -51,59 +93,45 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
                 COUNT(*) FILTER (WHERE age >= 60) as seniors
             ")->first();
 
-            // One query for document request counts
             $docStats = DocumentRequest::selectRaw("
                 COUNT(*) as total,
                 COUNT(*) FILTER (WHERE status = 'pending') as pending
             ")->first();
 
-            $recentLogs = auth()->user()->role === 1
-                ? AuditLog::with('user')->latest('created_at')->limit(10)->get()
-                : collect();
-
-            // Civil status breakdown
             $civilStatusRaw = Resident::selectRaw("civil_status, COUNT(*) as count")
                 ->whereNotNull('civil_status')
                 ->groupBy('civil_status')
                 ->pluck('count', 'civil_status');
 
-            // Resident registrations per month (last 6 months)
             $registrationTrend = collect();
             for ($i = 5; $i >= 0; $i--) {
                 $month = \Carbon\Carbon::now()->subMonths($i);
                 $registrationTrend[$month->format('M Y')] = Resident::whereYear('created_at', $month->year)
-                    ->whereMonth('created_at', $month->month)
-                    ->count();
+                    ->whereMonth('created_at', $month->month)->count();
             }
 
-            // Document requests by type
-            $docByType = DocumentRequest::selectRaw("document_type, COUNT(*) as count")
-                ->groupBy('document_type')
-                ->pluck('count', 'document_type');
-
-            // Document requests by status
-            $docByStatus = DocumentRequest::selectRaw("status, COUNT(*) as count")
-                ->groupBy('status')
-                ->pluck('count', 'status');
+            $docByType   = DocumentRequest::selectRaw("document_type, COUNT(*) as count")->groupBy('document_type')->pluck('count', 'document_type');
+            $docByStatus = DocumentRequest::selectRaw("status, COUNT(*) as count")->groupBy('status')->pluck('count', 'status');
 
             return view('admin.dashboard', [
+                'role'              => $role,
                 'requests'          => collect(),
                 'totalPopulation'   => $residentStats->total,
                 'maleCount'         => $residentStats->male,
                 'femaleCount'       => $residentStats->female,
                 'voterCount'        => $residentStats->voters,
                 'pendingRequests'   => $docStats->pending,
-                'recentLogs'        => $recentLogs,
+                'recentLogs'        => collect(),
                 'ageGroups'         => [
                     'Children (0–12)'  => $residentStats->children,
                     'Teens (13–17)'    => $residentStats->teens,
                     'Adults (18–59)'   => $residentStats->adults,
                     'Seniors (60+)'    => $residentStats->seniors,
                 ],
-                'civilStatusData'      => $civilStatusRaw,
-                'registrationTrend'    => $registrationTrend,
-                'docByType'            => $docByType,
-                'docByStatus'          => $docByStatus,
+                'civilStatusData'   => $civilStatusRaw,
+                'registrationTrend' => $registrationTrend,
+                'docByType'         => $docByType,
+                'docByStatus'       => $docByStatus,
             ]);
         })->name('dashboard');
 
