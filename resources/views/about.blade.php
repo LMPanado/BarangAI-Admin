@@ -39,13 +39,13 @@
                 </div>
             </div>
 
-            {{-- Operating Hours --}}
+            {{-- Office Hours --}}
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7 flex items-start gap-5">
                 <div class="w-11 h-11 rounded-2xl bg-brgyGreen/8 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-brgyGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div class="flex-1">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Operating Hours</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Office Hours</p>
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold text-slate-500">Mon – Sun</span>
