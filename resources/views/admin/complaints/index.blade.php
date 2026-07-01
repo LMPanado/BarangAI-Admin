@@ -306,10 +306,13 @@
 
 <script>
 let currentComplaintId = null;
+let lastMessageId = 0;
+let pollTimer = null;
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
 function openChat(complaintId, email) {
     currentComplaintId = complaintId;
+    lastMessageId = 0;
     document.getElementById('chatEmail').textContent = email;
     document.getElementById('chatComplaintText').textContent = '';
     document.getElementById('chatMessages').querySelectorAll('.chat-bubble').forEach(el => el.remove());
@@ -319,15 +322,31 @@ function openChat(complaintId, email) {
     const modal = document.getElementById('chatModal');
     modal.style.display = 'flex';
     modal.style.flexDirection = 'column';
-    loadMessages(complaintId);
+
+    loadMessages(complaintId, true);
+    startPolling();
 }
 
 function closeChat() {
+    stopPolling();
     document.getElementById('chatModal').style.display = 'none';
     currentComplaintId = null;
+    lastMessageId = 0;
 }
 
-function loadMessages(complaintId) {
+function startPolling() {
+    stopPolling();
+    pollTimer = setInterval(() => {
+        if (currentComplaintId) fetchNewMessages(currentComplaintId);
+    }, 3000);
+}
+
+function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+}
+
+// Full load on open — sets complaint context and renders all messages
+function loadMessages(complaintId, isInitial = false) {
     fetch('/admin/complaints/' + complaintId + '/messages', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
@@ -340,15 +359,34 @@ function loadMessages(complaintId) {
         if (data.messages.length === 0) {
             document.getElementById('chatEmpty').style.display = 'flex';
         } else {
+            document.getElementById('chatEmpty').style.display = 'none';
             data.messages.forEach(msg => appendBubble(msg));
+            lastMessageId = data.messages[data.messages.length - 1].id;
         }
         scrollToBottom();
     })
     .catch(() => { document.getElementById('chatLoading').style.display = 'none'; });
 }
 
+// Poll — only appends messages newer than lastMessageId, no flicker
+function fetchNewMessages(complaintId) {
+    fetch('/admin/complaints/' + complaintId + '/messages', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const newMsgs = data.messages.filter(m => m.id > lastMessageId);
+        if (newMsgs.length === 0) return;
+
+        document.getElementById('chatEmpty').style.display = 'none';
+        newMsgs.forEach(msg => appendBubble(msg));
+        lastMessageId = newMsgs[newMsgs.length - 1].id;
+        scrollToBottom();
+    })
+    .catch(() => {});
+}
+
 function appendBubble(msg) {
-    document.getElementById('chatEmpty').style.display = 'none';
     const isAdmin = msg.sender_type === 'admin';
     const container = document.getElementById('chatMessages');
 
@@ -392,6 +430,7 @@ function sendChatMessage() {
     if (!text || !currentComplaintId) return;
 
     document.getElementById('chatSendBtn').disabled = true;
+    input.value = '';
 
     fetch('/admin/complaints/' + currentComplaintId + '/message', {
         method: 'POST',
@@ -400,7 +439,7 @@ function sendChatMessage() {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) { input.value = ''; loadMessages(currentComplaintId); }
+        if (data.success) fetchNewMessages(currentComplaintId);
     })
     .finally(() => { document.getElementById('chatSendBtn').disabled = false; input.focus(); });
 }
