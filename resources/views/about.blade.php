@@ -48,12 +48,8 @@
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Operating Hours</p>
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold text-slate-500">Mon – Sat</span>
-                            <span class="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">24 Hours</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold text-slate-500">Sunday</span>
-                            <span class="text-xs font-extrabold text-red-500 bg-red-50 px-2.5 py-1 rounded-lg">Closed</span>
+                            <span class="text-xs font-bold text-slate-500">Mon – Sun</span>
+                            <span class="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">8:00 AM – 5:00 PM</span>
                         </div>
                     </div>
                 </div>

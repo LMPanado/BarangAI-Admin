@@ -97,7 +97,7 @@
                         <div class="bg-brgyGold/10 p-6 rounded-3xl border border-brgyGold/20 flex items-center">
                             <p class="text-[11px] text-slate-600 font-bold leading-relaxed uppercase tracking-wider">
                                 <span class="text-brgyGreen block mb-1">Office Hours:</span>
-                                8:00 AM — 5:00 PM <br> Monday to Friday
+                                8:00 AM — 5:00 PM <br> Monday to Sunday
                             </p>
                         </div>
                     </div>
