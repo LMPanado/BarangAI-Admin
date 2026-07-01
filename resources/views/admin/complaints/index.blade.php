@@ -248,58 +248,91 @@
 <div id="messageModal"
      class="fixed inset-0 z-50 hidden items-center justify-center p-4"
      onclick="if(event.target===this) closeMessageModal()">
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-    <div class="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-8">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
 
-        {{-- Header --}}
-        <div class="flex items-start justify-between mb-6">
-            <div>
-                <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Message Complainant</h2>
-                <p class="text-[11px] text-gray-400 font-bold mt-0.5">
-                    To: <span id="modalRecipient" class="text-brgyGreen"></span>
-                </p>
+    <div class="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-xl overflow-hidden">
+
+        {{-- Colored top bar --}}
+        <div class="bg-brgyGreen px-8 py-6 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-white tracking-tight">Message Complainant</h2>
+                    <p class="text-[11px] text-white/60 font-semibold mt-0.5">Send a notification directly to the resident's mobile app</p>
+                </div>
             </div>
             <button onclick="closeMessageModal()"
-                    class="w-8 h-8 flex items-center justify-center rounded-xl text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-all">
+                    class="w-8 h-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
 
-        <form id="messageForm" method="POST" action="">
-            @csrf
+        {{-- Body --}}
+        <div class="px-8 py-7">
 
-            <div class="space-y-4">
+            {{-- Recipient badge --}}
+            <div class="flex items-center gap-3 mb-6 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                <div class="w-8 h-8 bg-brgyGreen rounded-xl flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
                 <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-2">
-                        Your Message
-                    </label>
-                    <textarea name="message"
-                              rows="5"
-                              maxlength="1000"
-                              placeholder="e.g. Good day! We would like to schedule a meeting regarding your complaint on July 5, 2026 at 9:00 AM at the Barangay Hall. Please bring a valid ID..."
-                              class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-medium text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all resize-none placeholder:text-gray-300"
-                              required></textarea>
-                    <p class="text-[10px] text-gray-300 font-bold mt-1.5 ml-1">Max 1,000 characters. The resident will be notified on the mobile app.</p>
+                    <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest">Sending to</p>
+                    <p id="modalRecipient" class="text-sm font-bold text-brgyGreen mt-0.5"></p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 mt-6">
-                <button type="submit"
-                        class="flex-1 bg-brgyGreen text-white font-black text-[11px] uppercase tracking-widest py-3.5 rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 transition-all flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
-                    Send Message
-                </button>
-                <button type="button" onclick="closeMessageModal()"
-                        class="px-6 py-3.5 rounded-xl border-2 border-gray-100 text-gray-400 text-[11px] font-black uppercase tracking-widest hover:border-gray-200 hover:text-gray-600 transition-all">
-                    Cancel
-                </button>
-            </div>
-        </form>
+            <form id="messageForm" method="POST" action="">
+                @csrf
+
+                <div class="mb-5">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">
+                        Your Message
+                    </label>
+                    <textarea id="modalTextarea"
+                              name="message"
+                              rows="5"
+                              maxlength="1000"
+                              oninput="updateCharCount(this)"
+                              placeholder="Good day! We would like to schedule a meeting regarding your complaint. Please come to the Barangay Hall on [date] at [time]. Bring a valid ID."
+                              class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all resize-none placeholder:text-gray-300 leading-relaxed"
+                              required></textarea>
+                    <div class="flex items-center justify-between mt-2 px-1">
+                        <p class="text-[10px] text-gray-300 font-semibold flex items-center gap-1.5">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                            Resident will receive a push notification on their mobile app
+                        </p>
+                        <span id="charCount" class="text-[10px] font-black text-gray-300">0 / 1000</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="submit"
+                            class="flex-1 bg-brgyGreen text-white font-black text-xs uppercase tracking-widest py-4 rounded-2xl shadow-lg shadow-brgyGreen/20 hover:shadow-xl hover:shadow-brgyGreen/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                        Send Message
+                    </button>
+                    <button type="button" onclick="closeMessageModal()"
+                            class="px-7 py-4 rounded-2xl border-2 border-gray-100 text-gray-400 text-xs font-black uppercase tracking-widest hover:border-gray-200 hover:text-gray-600 transition-all">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -307,15 +340,24 @@
 function openMessageModal(complaintId, email) {
     document.getElementById('modalRecipient').textContent = email;
     document.getElementById('messageForm').action = '/admin/complaints/' + complaintId + '/message';
-    document.getElementById('messageForm').querySelector('textarea').value = '';
+    const ta = document.getElementById('modalTextarea');
+    ta.value = '';
+    document.getElementById('charCount').textContent = '0 / 1000';
     const modal = document.getElementById('messageModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    setTimeout(() => ta.focus(), 100);
 }
 function closeMessageModal() {
     const modal = document.getElementById('messageModal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+}
+function updateCharCount(el) {
+    const count = el.value.length;
+    const el2 = document.getElementById('charCount');
+    el2.textContent = count + ' / 1000';
+    el2.className = 'text-[10px] font-black ' + (count > 900 ? 'text-red-400' : count > 700 ? 'text-amber-400' : 'text-gray-300');
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMessageModal(); });
 </script>
