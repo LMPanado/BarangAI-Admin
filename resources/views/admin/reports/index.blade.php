@@ -48,11 +48,208 @@
         </div>
     </div>
 
-    {{-- Print Header --}}
-    <div class="print-only hidden text-center border-b-2 border-gray-800 pb-4 mb-2">
-        <h1 class="text-xl font-black text-gray-900 uppercase tracking-widest">Barangay 419</h1>
-        <p class="text-sm font-bold text-gray-600 mt-0.5">Monthly Barangay Report — {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}</p>
-        <p class="text-[10px] text-gray-400 mt-0.5">Generated: {{ now()->format('F d, Y \a\t h:i A') }}</p>
+    {{-- Print-only full layout (replaces everything on print) --}}
+    @php
+        $reportMonth = \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y');
+        $resolvedPct = $totalComplaints > 0 ? round(($closedComplaints / $totalComplaints) * 100) : 0;
+        $posPct      = $totalFeedback    > 0 ? round(($positiveFeedback / $totalFeedback)    * 100) : 0;
+        $malePct     = $totalResidents   > 0 ? round(($maleCount        / $totalResidents)   * 100) : 0;
+        $femalePct   = 100 - $malePct;
+    @endphp
+    <div class="print-only hidden">
+        {{-- Cover Header --}}
+        <div style="border-bottom: 3px solid #1d4ed8; padding-bottom: 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 18px;">
+            <img src="{{ asset('images/brgy_logo.png') }}" style="width: 64px; height: 64px; object-fit: contain;">
+            <div>
+                <div style="font-size: 20px; font-weight: 900; color: #1e3a8a; letter-spacing: 0.05em; text-transform: uppercase;">Barangay 419</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px;">Zone 43, District IV · Sampaloc, Manila</div>
+                <div style="font-size: 13px; font-weight: 800; color: #1d4ed8; margin-top: 4px;">Monthly Barangay Report — {{ $reportMonth }}</div>
+            </div>
+            <div style="margin-left: auto; text-align: right;">
+                <div style="font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em;">Generated</div>
+                <div style="font-size: 10px; font-weight: 700; color: #475569;">{{ now()->format('F d, Y') }}</div>
+                <div style="font-size: 10px; color: #94a3b8;">{{ now()->format('h:i A') }}</div>
+            </div>
+        </div>
+
+        {{-- Summary Cards Row --}}
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;">
+            @foreach([
+                ['Total Residents',   $totalResidents,    $newResidents . ' new this month',        '#1e3a8a', '#eff6ff'],
+                ['Document Requests', $allTimeDocs,       $pendingDocs  . ' pending this month',    '#1d4d9a', '#eff6ff'],
+                ['Complaints',        $allTimeComplaints, $openComplaints . ' open this month',     '#92400e', '#fffbeb'],
+                ['Feedback',          $allTimeFeedback,   $positiveFeedback . ' positive this month','#166534','#f0fdf4'],
+            ] as [$lbl, $val, $sub, $clr, $bg])
+            <div style="background: {{ $bg }}; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px;">
+                <div style="font-size: 8px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px;">{{ $lbl }}</div>
+                <div style="font-size: 28px; font-weight: 900; color: {{ $clr }}; line-height: 1;">{{ $val }}</div>
+                <div style="font-size: 8px; color: #94a3b8; margin-top: 5px; font-weight: 600;">{{ $sub }}</div>
+            </div>
+            @endforeach
+        </div>
+
+        {{-- Two column detail grid --}}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+
+            {{-- Population --}}
+            <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;">
+                <div style="background: #1d4ed8; padding: 10px 16px;">
+                    <span style="font-size: 9px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.2em;">Population Overview</span>
+                    <span style="float: right; font-size: 9px; color: rgba(255,255,255,0.6); font-weight: 700;">{{ $totalResidents }} total residents</span>
+                </div>
+                <div style="padding: 14px 16px;">
+                    {{-- Gender --}}
+                    <table style="width: 100%; margin-bottom: 12px;">
+                        <tr>
+                            <td style="font-size: 9px; font-weight: 800; color: #3b82f6; text-transform: uppercase;">Male</td>
+                            <td style="font-size: 20px; font-weight: 900; color: #2563eb; text-align: center;">{{ $maleCount }}</td>
+                            <td style="font-size: 9px; color: #94a3b8; text-align: center;">{{ $malePct }}%</td>
+                            <td style="font-size: 20px; font-weight: 900; color: #ec4899; text-align: center;">{{ $femaleCount }}</td>
+                            <td style="font-size: 9px; color: #94a3b8; text-align: center;">{{ $femalePct }}%</td>
+                            <td style="font-size: 9px; font-weight: 800; color: #ec4899; text-transform: uppercase; text-align: right;">Female</td>
+                        </tr>
+                    </table>
+                    <div style="height: 1px; background: #f1f5f9; margin-bottom: 10px;"></div>
+                    {{-- Age Groups --}}
+                    <div style="font-size: 8px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px;">Age Distribution</div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        @foreach($ageGroups as $label => $count)
+                        @php $pct = $totalResidents > 0 ? round(($count / $totalResidents) * 100) : 0; @endphp
+                        <tr>
+                            <td style="font-size: 9px; color: #475569; font-weight: 600; padding: 3px 0; width: 110px;">{{ $label }}</td>
+                            <td style="padding: 3px 8px;">
+                                <div style="background: #f1f5f9; border-radius: 4px; height: 6px; width: 100%;">
+                                    <div style="background: #1d4ed8; border-radius: 4px; height: 6px; width: {{ $pct }}%;"></div>
+                                </div>
+                            </td>
+                            <td style="font-size: 9px; font-weight: 800; color: #334155; text-align: right; width: 24px;">{{ $count }}</td>
+                            <td style="font-size: 9px; color: #94a3b8; text-align: right; width: 36px;">{{ $pct }}%</td>
+                        </tr>
+                        @endforeach
+                    </table>
+                    @if($newResidents > 0)
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #f1f5f9; font-size: 9px; color: #64748b;">
+                        New registrations this month: <strong style="color: #1d4ed8;">{{ $newResidents }}</strong>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Document Requests --}}
+            <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;">
+                <div style="background: #1e40af; padding: 10px 16px;">
+                    <span style="font-size: 9px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.2em;">Document Requests</span>
+                    <span style="float: right; font-size: 9px; color: rgba(255,255,255,0.6); font-weight: 700;">{{ $totalDocs }} this month</span>
+                </div>
+                <div style="padding: 14px 16px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+                        <tr>
+                            @foreach([['Pending', $pendingDocs, '#d97706', '#fffbeb'], ['Approved', $approvedDocs, '#16a34a', '#f0fdf4'], ['Rejected', $rejectedDocs, '#dc2626', '#fef2f2']] as [$lbl, $val, $clr, $bg])
+                            <td style="text-align: center; padding: 10px 6px;">
+                                <div style="background: {{ $bg }}; border-radius: 8px; padding: 10px 8px;">
+                                    <div style="font-size: 22px; font-weight: 900; color: {{ $clr }};">{{ $val }}</div>
+                                    <div style="font-size: 8px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 3px;">{{ $lbl }}</div>
+                                </div>
+                            </td>
+                            @endforeach
+                        </tr>
+                    </table>
+                    @if($docsByType->isNotEmpty())
+                    <div style="height: 1px; background: #f1f5f9; margin-bottom: 10px;"></div>
+                    <div style="font-size: 8px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px;">By Document Type</div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        @foreach($docsByType as $doc)
+                        @php $pct = $totalDocs > 0 ? round(($doc->total / $totalDocs) * 100) : 0; @endphp
+                        <tr>
+                            <td style="font-size: 9px; color: #475569; font-weight: 600; padding: 3px 0; width: 130px; text-transform: capitalize;">{{ str_replace('_', ' ', $doc->document_type) }}</td>
+                            <td style="padding: 3px 8px;">
+                                <div style="background: #f1f5f9; border-radius: 4px; height: 6px;">
+                                    <div style="background: #3b82f6; border-radius: 4px; height: 6px; width: {{ $pct }}%;"></div>
+                                </div>
+                            </td>
+                            <td style="font-size: 9px; font-weight: 800; color: #334155; text-align: right; width: 24px;">{{ $doc->total }}</td>
+                            <td style="font-size: 9px; color: #94a3b8; text-align: right; width: 36px;">{{ $pct }}%</td>
+                        </tr>
+                        @endforeach
+                    </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- Bottom row --}}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+
+            {{-- Complaints --}}
+            <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;">
+                <div style="background: #92400e; padding: 10px 16px;">
+                    <span style="font-size: 9px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.2em;">Complaints</span>
+                    <span style="float: right; font-size: 9px; color: rgba(255,255,255,0.6); font-weight: 700;">{{ $totalComplaints }} this month</span>
+                </div>
+                <div style="padding: 14px 16px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+                        <tr>
+                            @foreach([['Open', $openComplaints, '#d97706', '#fffbeb'], ['Closed', $closedComplaints, '#16a34a', '#f0fdf4'], ['Critical', $criticalComplaints, '#dc2626', '#fef2f2']] as [$lbl, $val, $clr, $bg])
+                            <td style="text-align: center; padding: 10px 6px;">
+                                <div style="background: {{ $bg }}; border-radius: 8px; padding: 10px 8px;">
+                                    <div style="font-size: 22px; font-weight: 900; color: {{ $clr }};">{{ $val }}</div>
+                                    <div style="font-size: 8px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 3px;">{{ $lbl }}</div>
+                                </div>
+                            </td>
+                            @endforeach
+                        </tr>
+                    </table>
+                    @if($totalComplaints > 0)
+                    <div style="height: 1px; background: #f1f5f9; margin-bottom: 10px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="font-size: 9px; color: #64748b; font-weight: 600;">Resolution Rate</span>
+                        <span style="font-size: 11px; font-weight: 900; color: #16a34a;">{{ $resolvedPct }}%</span>
+                    </div>
+                    <div style="background: #f1f5f9; border-radius: 4px; height: 8px;">
+                        <div style="background: #22c55e; border-radius: 4px; height: 8px; width: {{ $resolvedPct }}%;"></div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Feedback --}}
+            <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;">
+                <div style="background: #166534; padding: 10px 16px;">
+                    <span style="font-size: 9px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.2em;">Resident Feedback</span>
+                    <span style="float: right; font-size: 9px; color: rgba(255,255,255,0.6); font-weight: 700;">{{ $totalFeedback }} this month</span>
+                </div>
+                <div style="padding: 14px 16px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">
+                        <tr>
+                            @foreach([['Positive', $positiveFeedback, '#16a34a', '#f0fdf4'], ['Negative', $negativeFeedback, '#dc2626', '#fef2f2']] as [$lbl, $val, $clr, $bg])
+                            <td style="text-align: center; padding: 10px 6px;">
+                                <div style="background: {{ $bg }}; border-radius: 8px; padding: 10px 8px;">
+                                    <div style="font-size: 22px; font-weight: 900; color: {{ $clr }};">{{ $val }}</div>
+                                    <div style="font-size: 8px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 3px;">{{ $lbl }}</div>
+                                </div>
+                            </td>
+                            @endforeach
+                        </tr>
+                    </table>
+                    @if($totalFeedback > 0)
+                    <div style="height: 1px; background: #f1f5f9; margin-bottom: 10px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="font-size: 9px; color: #64748b; font-weight: 600;">Satisfaction Rate</span>
+                        <span style="font-size: 11px; font-weight: 900; color: #16a34a;">{{ $posPct }}%</span>
+                    </div>
+                    <div style="background: #f1f5f9; border-radius: 4px; height: 8px;">
+                        <div style="background: #22c55e; border-radius: 4px; height: 8px; width: {{ $posPct }}%;"></div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <div style="border-top: 2px solid #e2e8f0; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <p style="font-size: 8px; color: #94a3b8; font-weight: 600;">Generated from the Barangay 419 Admin Portal</p>
+            <p style="font-size: 8px; color: #94a3b8; font-weight: 600;">{{ now()->format('F d, Y \a\t h:i A') }}</p>
+        </div>
     </div>
 
     {{-- Period Banner --}}
@@ -235,21 +432,20 @@
 
     </div>
 
-    {{-- Print Footer --}}
-    <div class="print-only hidden border-t-2 border-gray-200 pt-4 mt-4 text-center">
-        <p class="text-[10px] text-gray-400">Generated from the Barangay 419 Admin Portal · {{ now()->format('F d, Y') }}</p>
-    </div>
-
 </div>
 
 <style>
 @media print {
-    .no-print { display: none !important; }
-    .print-only { display: block !important; }
-    body { background: white !important; }
-    #report-content { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
-    .bg-white { box-shadow: none !important; }
-    @page { size: A4; margin: 20mm; }
+    @page { size: A4 portrait; margin: 15mm 18mm; }
+
+    body > * { display: none !important; }
+    body aside, body header { display: none !important; }
+
+    #report-content { display: block !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+    #report-content > *:not(.print-only) { display: none !important; }
+    #report-content .print-only { display: block !important; }
+
+    body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 @endsection
