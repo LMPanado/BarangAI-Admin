@@ -97,7 +97,6 @@
                 <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalResidents }} total</span>
             </div>
             <div class="p-7 space-y-4">
-                {{-- Gender --}}
                 <div class="flex items-center gap-6">
                     <div class="text-center">
                         <p class="text-2xl font-extrabold text-blue-600">{{ $maleCount }}</p>
@@ -112,7 +111,6 @@
                         <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Female</p>
                     </div>
                 </div>
-
                 <div class="border-t border-gray-50 pt-4 space-y-2.5">
                     @foreach($ageGroups as $label => $count)
                     @php $pct = $totalResidents > 0 ? round(($count / $totalResidents) * 100) : 0; @endphp
@@ -126,7 +124,6 @@
                     </div>
                     @endforeach
                 </div>
-
                 @if($newResidents > 0)
                 <div class="pt-3 border-t border-gray-50">
                     <p class="text-[10px] font-bold text-gray-400">New this month: <span class="text-brgyGreen font-black">{{ $newResidents }}</span></p>
@@ -142,7 +139,6 @@
                 <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalDocs }} total</span>
             </div>
             <div class="p-7 space-y-4">
-                {{-- Status row --}}
                 <div class="grid grid-cols-3 gap-3">
                     @foreach([['Pending', $pendingDocs, 'text-amber-600', 'bg-amber-50'], ['Approved', $approvedDocs, 'text-green-600', 'bg-green-50'], ['Rejected', $rejectedDocs, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
                     <div class="rounded-xl {{ $bg }} px-4 py-3 text-center">
@@ -151,7 +147,6 @@
                     </div>
                     @endforeach
                 </div>
-
                 @if($docsByType->isNotEmpty())
                 <div class="border-t border-gray-50 pt-4 space-y-2.5">
                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">By document type</p>
