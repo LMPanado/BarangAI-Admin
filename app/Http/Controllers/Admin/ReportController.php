@@ -121,16 +121,18 @@ class ReportController extends Controller
 
             // Document Requests
             fputcsv($out, ['=== DOCUMENT REQUESTS ===']);
-            fputcsv($out, ['ID', 'Resident Email', 'Document Type', 'Status', 'Purpose', 'Submitted At']);
+            fputcsv($out, ['ID', 'Full Name', 'Document Type', 'Status', 'Purpose', 'Pickup Date', 'Reference No', 'Submitted At']);
             $docs = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)
                 ->orderBy('created_at')->get();
             foreach ($docs as $d) {
                 fputcsv($out, [
                     $d->id,
-                    $d->user_email ?? '',
+                    $d->full_name ?? '',
                     $d->document_type ?? '',
                     $d->status ?? '',
                     $d->purpose ?? '',
+                    $d->pickup_date ?? '',
+                    $d->reference_no ?? '',
                     $d->created_at?->format('Y-m-d H:i:s') ?? '',
                 ]);
             }
@@ -139,16 +141,18 @@ class ReportController extends Controller
 
             // Complaints
             fputcsv($out, ['=== COMPLAINTS ===']);
-            fputcsv($out, ['ID', 'Resident Email', 'Subject', 'Status', 'Severity', 'Submitted At']);
+            fputcsv($out, ['ID', 'Resident Email', 'Message', 'Status', 'Severity', 'Severity Score', 'AI Summary', 'Submitted At']);
             $complaints = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)
                 ->orderBy('created_at')->get();
             foreach ($complaints as $c) {
                 fputcsv($out, [
                     $c->id,
                     $c->user_email ?? '',
-                    $c->subject ?? '',
+                    $c->message ?? '',
                     $c->status ?? '',
                     $c->severity ?? '',
+                    $c->severity_score ?? '',
+                    $c->ai_summary ?? '',
                     $c->created_at?->format('Y-m-d H:i:s') ?? '',
                 ]);
             }
@@ -157,7 +161,7 @@ class ReportController extends Controller
 
             // Feedback
             fputcsv($out, ['=== FEEDBACK ===']);
-            fputcsv($out, ['ID', 'Resident Email', 'Message', 'Sentiment', 'Submitted At']);
+            fputcsv($out, ['ID', 'Resident Email', 'Message', 'Category', 'Sentiment', 'Sentiment Score', 'AI Summary', 'Submitted At']);
             $feedbacks = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)
                 ->orderBy('created_at')->get();
             foreach ($feedbacks as $f) {
@@ -165,7 +169,10 @@ class ReportController extends Controller
                     $f->id,
                     $f->user_email ?? '',
                     $f->message ?? '',
+                    $f->category ?? '',
                     $f->sentiment ?? '',
+                    $f->sentiment_score ?? '',
+                    $f->ai_summary ?? '',
                     $f->created_at?->format('Y-m-d H:i:s') ?? '',
                 ]);
             }
