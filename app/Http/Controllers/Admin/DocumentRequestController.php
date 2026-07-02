@@ -32,6 +32,7 @@ class DocumentRequestController extends Controller
                 $q->where('purpose', 'ilike', "%{$search}%")
                   ->orWhere('document_type', 'ilike', "%{$search}%")
                   ->orWhere('full_name', 'ilike', "%{$search}%")
+                  ->orWhere('reference_no', 'ilike', "%{$search}%")
                   ->orWhereHas('resident', function($qr) use ($search) {
                       $qr->where('first_name', 'ilike', "%{$search}%")
                         ->orWhere('last_name', 'ilike', "%{$search}%");
