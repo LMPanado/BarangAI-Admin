@@ -115,6 +115,34 @@ class ComplaintController extends Controller
             'sender_name'     => $admin->first_name . ' ' . $admin->last_name,
         ]);
 
+        try {
+            $fcmToken = \Illuminate\Support\Facades\DB::selectOne(
+                'SELECT fcm_token FROM users WHERE supabase_uid = (SELECT supabase_uid FROM complaints WHERE id = ?)',
+                [$complaint->id]
+            )?->fcm_token;
+
+            if ($fcmToken) {
+                $body = mb_strlen($request->message) > 100
+                    ? mb_substr($request->message, 0, 97) . '...'
+                    : $request->message;
+
+                \Illuminate\Support\Facades\Http::withHeaders([
+                    'Authorization' => 'Bearer ' . env('SUPABASE_SERVICE_KEY'),
+                    'Content-Type'  => 'application/json',
+                ])->post('https://ypcumosboftjylrnmyih.supabase.co/functions/v1/send-notification', [
+                    'token' => $fcmToken,
+                    'title' => 'Barangay 419 replied to your complaint',
+                    'body'  => $body,
+                    'data'  => [
+                        'type'         => 'complaint_reply',
+                        'complaint_id' => (string) $complaint->id,
+                    ],
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('FCM notification failed for complaint #' . $complaint->id . ': ' . $e->getMessage());
+        }
+
         AuditLogger::log('message_sent', 'Complaint',
             'Message sent to ' . $complaint->user_email . ' re: Complaint #' . $id,
             $id
