@@ -80,7 +80,17 @@ class DocumentRequestController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $docRequest = DocumentRequest::findOrFail($id);
-        $docRequest->update(['status' => $request->status]);
+
+        $data = ['status' => $request->status];
+
+        if ($request->status === 'cancelled') {
+            $request->validate(['cancellation_reason' => 'required|string|max:500']);
+            $data['cancellation_reason'] = $request->cancellation_reason;
+        } else {
+            $data['cancellation_reason'] = null;
+        }
+
+        $docRequest->update($data);
 
         $residentName = optional($docRequest->resident)->last_name . ', ' . optional($docRequest->resident)->first_name;
         AuditLogger::log('status_changed', 'DocumentRequest',

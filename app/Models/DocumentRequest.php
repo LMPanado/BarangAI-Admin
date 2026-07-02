@@ -16,6 +16,7 @@ class DocumentRequest extends Model
         'purpose',
         'pickup_date',
         'status',
+        'cancellation_reason',
         'source',
         'reference_no',
     ];

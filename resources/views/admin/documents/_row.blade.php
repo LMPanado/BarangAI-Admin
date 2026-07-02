@@ -10,6 +10,17 @@
                 <span class="text-gray-300 italic text-xs font-medium">Unknown</span>
             @endif
         </div>
+        {{-- Email: mobile requests only --}}
+        @if($request->source === 'mobile' && $request->supabase_uid)
+        @php
+            $residentEmail = \Illuminate\Support\Facades\DB::selectOne(
+                'SELECT email FROM users WHERE supabase_uid = ?', [$request->supabase_uid]
+            )?->email;
+        @endphp
+        @if($residentEmail)
+        <div class="text-[10px] text-gray-400 font-medium mt-0.5 truncate">{{ $residentEmail }}</div>
+        @endif
+        @endif
         <div class="mt-1">
             @if($request->reference_no)
                 <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest font-mono">{{ $request->reference_no }}</span>
@@ -32,6 +43,11 @@
     {{-- Purpose --}}
     <td class="px-6 py-4 max-w-[180px]">
         <p class="text-xs text-gray-400 italic line-clamp-2 leading-relaxed">"{{ $request->purpose }}"</p>
+        @if($request->status === 'cancelled' && $request->cancellation_reason)
+        <p class="text-[10px] text-red-400 font-bold mt-1 line-clamp-2">
+            <span class="font-black uppercase tracking-wide">Reason:</span> {{ $request->cancellation_reason }}
+        </p>
+        @endif
     </td>
 
     {{-- Schedule --}}
@@ -43,8 +59,10 @@
 
     {{-- Status --}}
     <td class="px-6 py-4">
-        <form action="{{ route('admin.documents.updateStatus', $request->id) }}" method="POST">
+        <form action="{{ route('admin.documents.updateStatus', $request->id) }}" method="POST"
+              id="status-form-{{ $request->id }}">
             @csrf @method('PATCH')
+            <input type="hidden" name="cancellation_reason" id="cancel-reason-input-{{ $request->id }}">
             @php
                 $selectColor = match($request->status) {
                     'pending'          => 'bg-amber-50 text-amber-600 border-amber-100',
@@ -55,8 +73,9 @@
                     default            => 'bg-gray-50 text-gray-400 border-gray-100',
                 };
             @endphp
-            <select name="status" onchange="this.form.submit()"
-                class="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border cursor-pointer focus:ring-0 outline-none {{ $selectColor }}">
+            <select name="status"
+                    onchange="handleStatusChange(this, {{ $request->id }})"
+                    class="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border cursor-pointer focus:ring-0 outline-none {{ $selectColor }}">
                 <option value="pending"          {{ $request->status == 'pending'          ? 'selected' : '' }}>Pending</option>
                 <option value="processing"       {{ $request->status == 'processing'       ? 'selected' : '' }}>Processing</option>
                 <option value="ready_for_pickup" {{ $request->status == 'ready_for_pickup' ? 'selected' : '' }}>Ready for Pick-up</option>
@@ -69,7 +88,6 @@
     {{-- Actions --}}
     <td class="px-6 py-4">
         <div class="flex items-center justify-end gap-2">
-            {{-- Verify (kiosk unverified only) --}}
             @if($showVerify && !$request->reference_no)
             <form action="{{ route('admin.documents.verify', $request->id) }}" method="POST">
                 @csrf @method('PATCH')
@@ -81,13 +99,11 @@
             </form>
             @endif
 
-            {{-- Process --}}
             <a href="{{ route('admin.documents.issuance', $request->id) }}" title="Process Issuance"
                class="p-2 bg-brgyGreen/5 text-brgyGreen hover:bg-brgyGreen hover:text-white rounded-lg transition-all">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </a>
 
-            {{-- Delete --}}
             <form id="del-doc-{{ $request->id }}" action="{{ route('admin.documents.destroy', $request->id) }}" method="POST">
                 @csrf @method('DELETE')
             </form>
