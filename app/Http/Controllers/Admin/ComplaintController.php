@@ -42,7 +42,7 @@ class ComplaintController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $complaints = $query->paginate(10)->withQueryString();
+        $complaints = $query->with('residentUser')->paginate(10)->withQueryString();
 
         $messageCounts = ComplaintMessage::whereIn('complaint_id', $complaints->pluck('id'))
             ->selectRaw('complaint_id, COUNT(*) as cnt')

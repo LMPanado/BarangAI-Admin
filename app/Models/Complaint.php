@@ -19,4 +19,9 @@ class Complaint extends Model
     ];
 
     public $timestamps = false;
+
+    public function residentUser()
+    {
+        return $this->belongsTo(User::class, 'supabase_uid', 'supabase_uid');
+    }
 }

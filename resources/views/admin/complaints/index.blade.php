@@ -176,7 +176,10 @@
                             <p class="text-[10px] text-gray-400 mt-0.5">{{ $complaint->created_at->format('h:i A') }}</p>
                         </td>
                         <td class="px-6 py-5">
-                            <p class="text-xs font-bold text-gray-800">{{ $complaint->user_email }}</p>
+                            @if($complaint->residentUser)
+                                <p class="text-xs font-bold text-gray-800">{{ $complaint->residentUser->first_name }} {{ $complaint->residentUser->last_name }}</p>
+                            @endif
+                            <p class="text-[10px] {{ $complaint->residentUser ? 'text-gray-400 font-medium' : 'text-xs font-bold text-gray-800' }}">{{ $complaint->user_email }}</p>
                         </td>
                         <td class="px-6 py-5 max-w-xs">
                             <p class="text-xs text-gray-600 line-clamp-2" title="{{ $complaint->message }}">
