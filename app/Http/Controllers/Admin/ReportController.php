@@ -17,7 +17,7 @@ class ReportController extends Controller
         $month = $request->get('month', now()->format('Y-m'));
         [$year, $mon] = explode('-', $month);
 
-        // One query for all resident stats
+        // All-time resident stats
         $residentStats = Resident::selectRaw("
             COUNT(*) as total,
             COUNT(*) FILTER (WHERE gender = 'Male') as male,
@@ -42,7 +42,12 @@ class ReportController extends Controller
             'Seniors (60+)'    => $residentStats->seniors,
         ];
 
-        // One query for document request stats for the selected month
+        // All-time glance totals
+        $allTimeDocs      = DocumentRequest::count();
+        $allTimeComplaints = Complaint::count();
+        $allTimeFeedback  = Feedback::count();
+
+        // Monthly document request stats
         $docStats = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)
             ->selectRaw("
                 COUNT(*) as total,
@@ -63,7 +68,7 @@ class ReportController extends Controller
             ->orderByDesc('total')
             ->get();
 
-        // One query for complaint stats for the selected month
+        // Monthly complaint stats
         $complaintStats = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)
             ->selectRaw("
                 COUNT(*) as total,
@@ -77,7 +82,7 @@ class ReportController extends Controller
         $closedComplaints   = $complaintStats->closed;
         $criticalComplaints = $complaintStats->critical;
 
-        // One query for feedback stats for the selected month
+        // Monthly feedback stats
         $feedbackStats = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)
             ->selectRaw("
                 COUNT(*) as total,
@@ -92,10 +97,83 @@ class ReportController extends Controller
         return view('admin.reports.index', compact(
             'month', 'year', 'mon',
             'totalResidents', 'maleCount', 'femaleCount', 'voterCount', 'newResidents', 'ageGroups',
+            'allTimeDocs', 'allTimeComplaints', 'allTimeFeedback',
             'totalDocs', 'pendingDocs', 'approvedDocs', 'rejectedDocs', 'docsByType',
             'totalComplaints', 'openComplaints', 'closedComplaints', 'criticalComplaints',
             'totalFeedback', 'positiveFeedback', 'negativeFeedback'
         ));
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        [$year, $mon] = explode('-', $month);
+
+        $filename = 'barangay419-report-' . $month . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($year, $mon) {
+            $out = fopen('php://output', 'w');
+
+            // Document Requests
+            fputcsv($out, ['=== DOCUMENT REQUESTS ===']);
+            fputcsv($out, ['ID', 'Resident Email', 'Document Type', 'Status', 'Purpose', 'Submitted At']);
+            $docs = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+                ->orderBy('created_at')->get();
+            foreach ($docs as $d) {
+                fputcsv($out, [
+                    $d->id,
+                    $d->user_email ?? '',
+                    $d->document_type ?? '',
+                    $d->status ?? '',
+                    $d->purpose ?? '',
+                    $d->created_at?->format('Y-m-d H:i:s') ?? '',
+                ]);
+            }
+
+            fputcsv($out, []);
+
+            // Complaints
+            fputcsv($out, ['=== COMPLAINTS ===']);
+            fputcsv($out, ['ID', 'Resident Email', 'Subject', 'Status', 'Severity', 'Submitted At']);
+            $complaints = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+                ->orderBy('created_at')->get();
+            foreach ($complaints as $c) {
+                fputcsv($out, [
+                    $c->id,
+                    $c->user_email ?? '',
+                    $c->subject ?? '',
+                    $c->status ?? '',
+                    $c->severity ?? '',
+                    $c->created_at?->format('Y-m-d H:i:s') ?? '',
+                ]);
+            }
+
+            fputcsv($out, []);
+
+            // Feedback
+            fputcsv($out, ['=== FEEDBACK ===']);
+            fputcsv($out, ['ID', 'Resident Email', 'Message', 'Sentiment', 'Submitted At']);
+            $feedbacks = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+                ->orderBy('created_at')->get();
+            foreach ($feedbacks as $f) {
+                fputcsv($out, [
+                    $f->id,
+                    $f->user_email ?? '',
+                    $f->message ?? '',
+                    $f->sentiment ?? '',
+                    $f->created_at?->format('Y-m-d H:i:s') ?? '',
+                ]);
+            }
+
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function feedback(Request $request)

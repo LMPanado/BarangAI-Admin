@@ -190,6 +190,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::get('/reports', [ReportController::class, 'index'])
             ->middleware('role:1,2')
             ->name('admin.reports.index');
+        Route::get('/reports/export-csv', [ReportController::class, 'exportCsv'])
+            ->middleware('role:1,2')
+            ->name('admin.reports.export-csv');
 
         // Feedback: Visible to 2 and 3 only (Role 1 blocked)
         Route::get('/feedback', [ReportController::class, 'feedback'])->middleware('role:2,3')->name('admin.feedback.index');
