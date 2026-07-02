@@ -438,14 +438,39 @@
 @media print {
     @page { size: A4 portrait; margin: 15mm 18mm; }
 
-    body > * { display: none !important; }
-    body aside, body header { display: none !important; }
+    body, html {
+        background: white !important;
+        overflow: visible !important;
+        height: auto !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 
-    #report-content { display: block !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-    #report-content > *:not(.print-only) { display: none !important; }
-    #report-content .print-only { display: block !important; }
+    /* Hide sidebar, topbar, and all screen-only UI */
+    body > div > aside,
+    body > div > div > header,
+    body > div > div > main > div > div:not(.print-only),
+    .no-print { display: none !important; }
 
-    body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    /* Show the print layout */
+    body > div > div > main > div > .print-only { display: block !important; }
+
+    /* Reset layout wrappers so content fills the page */
+    body > div,
+    body > div > div,
+    body > div > div > main,
+    body > div > div > main > div {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        background: white !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
 }
 </style>
 @endsection
