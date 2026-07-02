@@ -41,6 +41,13 @@ class ServiceController extends Controller
                 'requirements' => ['Valid Government-Issued ID', 'Purpose of Request'],
                 'steps_new' => $commonSteps('Barangay Clearance'),
             ],
+            'certificate-of-indigency' => [
+                'title' => 'Certificate of Indigency',
+                'description' => 'An official document certifying that a resident belongs to an indigent or low-income household, used to access government assistance and social services.',
+                'uses' => ['Social Welfare Assistance', 'PhilHealth / 4Ps Application', 'Medical and Hospital Fee Discount', 'Scholarship Application', 'Free Legal Aid'],
+                'requirements' => ['Valid Government-Issued ID', 'Proof of Residency (Utility Bill or Lease)', 'Purpose of Request'],
+                'steps_new' => $commonSteps('Certificate of Indigency'),
+            ],
         ];
 
         if (!isset($services[$type])) {
