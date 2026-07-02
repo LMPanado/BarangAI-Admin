@@ -23,12 +23,23 @@ class DocumentRequestController extends Controller
         // Handle search functionality for the new search bar
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
-                $q->where('purpose', 'like', "%{$search}%")
-                  ->orWhere('document_type', 'like', "%{$search}%")
+
+            $matchedUids = \Illuminate\Support\Facades\DB::table('users')
+                ->where('email', 'ilike', "%{$search}%")
+                ->pluck('supabase_uid');
+
+            $query->where(function($q) use ($search, $matchedUids) {
+                $q->where('purpose', 'ilike', "%{$search}%")
+                  ->orWhere('document_type', 'ilike', "%{$search}%")
+                  ->orWhere('full_name', 'ilike', "%{$search}%")
                   ->orWhereHas('resident', function($qr) use ($search) {
-                      $qr->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%");
+                      $qr->where('first_name', 'ilike', "%{$search}%")
+                        ->orWhere('last_name', 'ilike', "%{$search}%");
+                  })
+                  ->orWhere(function($qr) use ($matchedUids) {
+                      if ($matchedUids->isNotEmpty()) {
+                          $qr->whereIn('supabase_uid', $matchedUids);
+                      }
                   });
             });
         }
