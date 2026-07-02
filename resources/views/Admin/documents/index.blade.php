@@ -253,6 +253,78 @@
 </div>
 @endif
 
+{{-- Cancellation Reason Modal --}}
+<div id="cancelModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);">
+    <div style="background:#fff;border-radius:1.5rem;padding:2rem;width:100%;max-width:440px;margin:1rem;box-shadow:0 25px 50px rgba(0,0,0,0.15);">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+            <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:#fef2f2;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:1.25rem;height:1.25rem;color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+            </div>
+            <div>
+                <p style="font-size:0.875rem;font-weight:800;color:#1e293b;">Cancel Request</p>
+                <p style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Please provide a reason for cancellation</p>
+            </div>
+        </div>
+        <textarea id="cancelReasonText" rows="4" placeholder="e.g. Incomplete requirements, duplicate request..."
+            style="width:100%;padding:0.875rem 1rem;border:2px solid #f1f5f9;border-radius:0.75rem;font-size:0.8125rem;font-weight:600;color:#334155;background:#f8fafc;resize:none;outline:none;box-sizing:border-box;"
+            onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff';"
+            onblur="this.style.borderColor='#f1f5f9';this.style.background='#f8fafc';"></textarea>
+        <p id="cancelReasonError" style="display:none;font-size:0.625rem;font-weight:800;color:#ef4444;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.5rem;">Reason is required.</p>
+        <div style="display:flex;gap:0.75rem;margin-top:1.25rem;">
+            <button onclick="closeCancelModal()"
+                style="flex:1;padding:0.75rem;border-radius:0.75rem;border:2px solid #f1f5f9;background:#fff;font-size:0.625rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;cursor:pointer;">
+                Go Back
+            </button>
+            <button onclick="submitCancellation()"
+                style="flex:1;padding:0.75rem;border-radius:0.75rem;border:none;background:#ef4444;color:#fff;font-size:0.625rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;">
+                Confirm Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+let _cancelFormId = null;
+let _cancelSelectEl = null;
+let _cancelPrevValue = null;
+
+function handleStatusChange(selectEl, formId) {
+    if (selectEl.value === 'cancelled') {
+        _cancelFormId = formId;
+        _cancelSelectEl = selectEl;
+        _cancelPrevValue = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+        document.getElementById('cancelReasonText').value = '';
+        document.getElementById('cancelReasonError').style.display = 'none';
+        document.getElementById('cancelModal').style.display = 'flex';
+    } else {
+        selectEl.form.submit();
+    }
+}
+
+function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';
+    if (_cancelSelectEl) {
+        _cancelSelectEl.value = _cancelPrevValue;
+    }
+    _cancelFormId = null;
+    _cancelSelectEl = null;
+}
+
+function submitCancellation() {
+    const reason = document.getElementById('cancelReasonText').value.trim();
+    if (!reason) {
+        document.getElementById('cancelReasonError').style.display = 'block';
+        return;
+    }
+    document.getElementById('cancelReasonError').style.display = 'none';
+    document.getElementById('cancel-reason-input-' + _cancelFormId).value = reason;
+    document.getElementById('status-form-' + _cancelFormId).submit();
+    document.getElementById('cancelModal').style.display = 'none';
+}
+
+// Close modal on backdrop click
+document.getElementById('cancelModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCancelModal();
+});
 </script>
 @endsection
