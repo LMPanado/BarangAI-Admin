@@ -121,12 +121,18 @@ class ComplaintController extends Controller
                 [$complaint->id]
             )?->fcm_token;
 
+            \Illuminate\Support\Facades\Log::info('FCM debug complaint #' . $complaint->id, [
+                'fcm_token'    => $fcmToken ?? 'NULL',
+                'complaint_id' => $complaint->id,
+                'supabase_uid' => $complaint->supabase_uid ?? 'not loaded',
+            ]);
+
             if ($fcmToken) {
                 $body = mb_strlen($request->message) > 100
                     ? mb_substr($request->message, 0, 97) . '...'
                     : $request->message;
 
-                \Illuminate\Support\Facades\Http::withHeaders([
+                $response = \Illuminate\Support\Facades\Http::withHeaders([
                     'Authorization' => 'Bearer ' . env('SUPABASE_SERVICE_KEY'),
                     'Content-Type'  => 'application/json',
                 ])->post('https://ypcumosboftjylrnmyih.supabase.co/functions/v1/send-notification', [
@@ -137,6 +143,11 @@ class ComplaintController extends Controller
                         'type'         => 'complaint_reply',
                         'complaint_id' => (string) $complaint->id,
                     ],
+                ]);
+
+                \Illuminate\Support\Facades\Log::info('FCM response complaint #' . $complaint->id, [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
                 ]);
             }
         } catch (\Throwable $e) {
