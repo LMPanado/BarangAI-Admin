@@ -58,17 +58,22 @@ class DocumentRequestController extends Controller
             $query->where('status', $request->status_filter);
         }
 
-        $allRequests    = $query->get();
-        $mobileRequests = $allRequests->filter(fn($r) => $r->source === 'mobile' || ($r->source !== 'kiosk'));
-        $kioskRequests  = $allRequests->filter(fn($r) => $r->source === 'kiosk');
-        $requests       = $allRequests;
+        $mobileQuery = clone $query;
+        $kioskQuery  = clone $query;
+
+        $mobileRequests = $mobileQuery->where(function ($q) {
+            $q->where('source', '!=', 'kiosk')->orWhereNull('source');
+        })->paginate(10, ['*'], 'mobile_page')->withQueryString();
+
+        $kioskRequests = $kioskQuery->where('source', 'kiosk')
+            ->paginate(10, ['*'], 'kiosk_page')->withQueryString();
 
         $docAuditLogs = auth()->user()->role == 1
             ? AuditLog::with('user')->where('subject_type', 'DocumentRequest')
                 ->latest('created_at')->limit(50)->get()
             : collect();
 
-        return view('admin.documents.index', compact('requests', 'mobileRequests', 'kioskRequests', 'sort', 'docAuditLogs'));
+        return view('admin.documents.index', compact('mobileRequests', 'kioskRequests', 'sort', 'docAuditLogs'));
     }
 
     /**
@@ -109,6 +114,10 @@ class DocumentRequestController extends Controller
             $docRequest->document_type . ' for ' . $residentName . ' → ' . $request->status,
             $docRequest->id
         );
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'status' => $request->status]);
+        }
 
         return redirect()->back()->with('success', 'Status updated!');
     }
