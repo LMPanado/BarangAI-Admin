@@ -42,9 +42,13 @@ class ComplaintController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $complaints = $query->with('residentUser')->paginate(10)->withQueryString();
+        $allComplaints = $query->with('residentUser')->get();
 
-        $messageCounts = ComplaintMessage::whereIn('complaint_id', $complaints->pluck('id'))
+        $openList   = $allComplaints->where('status', 'open')->values();
+        $closedList = $allComplaints->where('status', 'closed')->values();
+
+        $allIds = $allComplaints->pluck('id');
+        $messageCounts = ComplaintMessage::whereIn('complaint_id', $allIds)
             ->selectRaw('complaint_id, COUNT(*) as cnt')
             ->groupBy('complaint_id')
             ->pluck('cnt', 'complaint_id');
@@ -64,7 +68,7 @@ class ComplaintController extends Controller
         $bySeverity = ['critical' => $stats->critical, 'medium' => $stats->medium, 'low' => $stats->low];
 
         return view('admin.complaints.index', compact(
-            'complaints', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort', 'messageCounts'
+            'openList', 'closedList', 'totalComplaints', 'openComplaints', 'closedComplaints', 'bySeverity', 'sort', 'messageCounts'
         ));
     }
 
