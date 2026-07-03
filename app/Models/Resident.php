@@ -29,6 +29,11 @@ class Resident extends Model
         'weight_kg',
     ];
 
+    protected $casts = [
+        'is_voter'   => 'boolean',
+        'birth_date' => 'date',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
