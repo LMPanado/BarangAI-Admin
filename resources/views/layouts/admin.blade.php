@@ -9,7 +9,6 @@
     <link rel="icon" type="image/png" href="{{ asset('images/brgy_logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        html { min-width: 1280px; }
         .sidebar-gradient { background: linear-gradient(180deg, #1e3a8a 0%, #0f1f5c 100%); }
         .sidebar-black    { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
         .sidebar-red      { background: linear-gradient(180deg, #991b1b 0%, #5c0a0a 100%); }
@@ -24,9 +23,28 @@
             z-index: 0;
         }
         .sidebar-pattern > * { position: relative; z-index: 1; }
+
+        /* Sidebar responsive */
+        #admin-sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: 18rem;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            z-index: 40;
+        }
+        #admin-sidebar.open { transform: translateX(0); }
+        @media (min-width: 1024px) {
+            #admin-sidebar { position: relative; transform: translateX(0); flex-shrink: 0; }
+            #sidebar-overlay { display: none !important; }
+            #sidebar-toggle { display: none !important; }
+        }
     </style>
 </head>
 <body class="bg-[#f8fafc] flex h-screen overflow-hidden text-slate-900 font-sans antialiased">
+
+    {{-- Mobile overlay --}}
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden" onclick="closeSidebar()"></div>
     
     @php
         $role = Auth::user()->role;
@@ -34,7 +52,7 @@
         $activeIconColor = $role == 1 ? 'text-gray-900' : ($role == 2 ? 'text-red-800' : 'text-darkGreen');
         $hoverIconClass  = $role == 2 ? 'bg-white/5 text-white/40 group-hover:bg-white group-hover:text-red-700' : 'bg-white/5 text-white/40 group-hover:bg-brgyGold group-hover:text-brgyGreen';
     @endphp
-    <aside class="w-72 {{ $sidebarClass }} sidebar-pattern text-white flex-shrink-0 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30 relative overflow-hidden">
+    <aside id="admin-sidebar" class="w-72 {{ $sidebarClass }} sidebar-pattern text-white flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.1)] relative overflow-hidden overflow-y-auto">
         <div class="px-8 py-8">
             <div class="flex flex-col items-center text-center">
                 <div class="w-20 h-20 mb-3 transition-transform hover:scale-110 duration-300 ease-out">
@@ -202,7 +220,7 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-end px-12 z-20 shadow-sm">
+        <header class="h-16 lg:h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 lg:px-12 z-20 shadow-sm flex-shrink-0">
             {{-- Right: time + user info --}}
             @php
                 $roleLabel = match((int) Auth::user()->role) {
@@ -221,7 +239,12 @@
                 $lastName  = Auth::user()->last_name ?? '';
                 $initials  = strtoupper(substr($firstName, 0, 1) . substr($lastName, 0, 1));
             @endphp
-            <div class="hidden md:flex items-center gap-3">
+            {{-- Hamburger (mobile only) --}}
+            <button id="sidebar-toggle" onclick="openSidebar()" class="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+
+            <div class="flex items-center gap-3">
                 {{-- Live time --}}
                 <p id="header-time" class="text-[11px] font-semibold text-slate-400 tabular-nums leading-none whitespace-nowrap"></p>
                 <div class="w-px h-4 bg-slate-200"></div>
@@ -248,7 +271,7 @@
         })();
         </script>
 
-        <main class="flex-grow overflow-y-auto p-12">
+        <main class="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-12">
             @yield('content')
         </main>
     </div>
@@ -326,6 +349,22 @@
         });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
     }
+    </script>
+
+    {{-- Sidebar toggle --}}
+    <script>
+    function openSidebar() {
+        document.getElementById('admin-sidebar').classList.add('open');
+        document.getElementById('sidebar-overlay').classList.remove('hidden');
+    }
+    function closeSidebar() {
+        document.getElementById('admin-sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.add('hidden');
+    }
+    // Close sidebar on nav link click (mobile)
+    document.querySelectorAll('#admin-sidebar a').forEach(function(link) {
+        link.addEventListener('click', closeSidebar);
+    });
     </script>
 
     {{-- Tab-close session guard --}}
