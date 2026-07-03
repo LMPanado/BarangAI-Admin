@@ -381,5 +381,11 @@ function submitCancellation() {
 document.getElementById('cancelModal').addEventListener('click', function(e) {
     if (e.target === this) closeCancelModal();
 });
+
+// Auto-refresh: reload page every 10s when no modal is open
+setInterval(() => {
+    const modal = document.getElementById('cancelModal');
+    if (modal && modal.classList.contains('hidden')) location.reload();
+}, 10000);
 </script>
 @endsection

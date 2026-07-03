@@ -380,5 +380,10 @@ function handleChatKey(e) {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
+
+// Auto-refresh: reload page every 10s when no chat is open
+setInterval(() => {
+    if (!currentComplaintId) location.reload();
+}, 10000);
 </script>
 @endsection

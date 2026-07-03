@@ -408,5 +408,11 @@ new Chart(document.getElementById('sentimentChart'), {
     }
 });
 @endif
+
+// Auto-refresh: reload page every 10s when no reply form is open
+setInterval(() => {
+    const openReply = document.querySelector('[id^="reply-form-"]:not(.hidden)');
+    if (!openReply) location.reload();
+}, 10000);
 </script>
 @endsection
