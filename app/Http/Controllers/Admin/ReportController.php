@@ -52,14 +52,18 @@ class ReportController extends Controller
             ->selectRaw("
                 COUNT(*) as total,
                 COUNT(*) FILTER (WHERE status = 'pending') as pending,
-                COUNT(*) FILTER (WHERE status = 'approved') as approved,
-                COUNT(*) FILTER (WHERE status = 'rejected') as rejected
+                COUNT(*) FILTER (WHERE status = 'processing') as processing,
+                COUNT(*) FILTER (WHERE status = 'ready_for_pickup') as ready,
+                COUNT(*) FILTER (WHERE status = 'completed') as completed,
+                COUNT(*) FILTER (WHERE status = 'cancelled') as cancelled
             ")->first();
 
-        $totalDocs    = $docStats->total;
-        $pendingDocs  = $docStats->pending;
-        $approvedDocs = $docStats->approved;
-        $rejectedDocs = $docStats->rejected;
+        $totalDocs      = $docStats->total;
+        $pendingDocs    = $docStats->pending;
+        $processingDocs = $docStats->processing;
+        $readyDocs      = $docStats->ready;
+        $completedDocs  = $docStats->completed;
+        $cancelledDocs  = $docStats->cancelled;
 
         $docsByType = DocumentRequest::whereYear('created_at', $year)
             ->whereMonth('created_at', $mon)
@@ -98,7 +102,7 @@ class ReportController extends Controller
             'month', 'year', 'mon',
             'totalResidents', 'maleCount', 'femaleCount', 'voterCount', 'newResidents', 'ageGroups',
             'allTimeDocs', 'allTimeComplaints', 'allTimeFeedback',
-            'totalDocs', 'pendingDocs', 'approvedDocs', 'rejectedDocs', 'docsByType',
+            'totalDocs', 'pendingDocs', 'processingDocs', 'readyDocs', 'completedDocs', 'cancelledDocs', 'docsByType',
             'totalComplaints', 'openComplaints', 'closedComplaints', 'criticalComplaints',
             'totalFeedback', 'positiveFeedback', 'negativeFeedback'
         ));
@@ -140,14 +144,18 @@ class ReportController extends Controller
             ->selectRaw("
                 COUNT(*) as total,
                 COUNT(*) FILTER (WHERE status = 'pending') as pending,
-                COUNT(*) FILTER (WHERE status = 'approved') as approved,
-                COUNT(*) FILTER (WHERE status = 'rejected') as rejected
+                COUNT(*) FILTER (WHERE status = 'processing') as processing,
+                COUNT(*) FILTER (WHERE status = 'ready_for_pickup') as ready,
+                COUNT(*) FILTER (WHERE status = 'completed') as completed,
+                COUNT(*) FILTER (WHERE status = 'cancelled') as cancelled
             ")->first();
 
-        $totalDocs    = $docStats->total;
-        $pendingDocs  = $docStats->pending;
-        $approvedDocs = $docStats->approved;
-        $rejectedDocs = $docStats->rejected;
+        $totalDocs      = $docStats->total;
+        $pendingDocs    = $docStats->pending;
+        $processingDocs = $docStats->processing;
+        $readyDocs      = $docStats->ready;
+        $completedDocs  = $docStats->completed;
+        $cancelledDocs  = $docStats->cancelled;
 
         $docsByType = DocumentRequest::whereYear('created_at', $year)
             ->whereMonth('created_at', $mon)
@@ -180,11 +188,10 @@ class ReportController extends Controller
         $positiveFeedback = $feedbackStats->positive;
         $negativeFeedback = $feedbackStats->negative;
 
-        return view('Admin.reports.print', compact(
+        return view('admin.reports.print', compact(
             'month', 'year', 'mon',
             'totalResidents', 'maleCount', 'femaleCount', 'newResidents', 'ageGroups',
-            'allTimeDocs', 'allTimeComplaints', 'allTimeFeedback',
-            'totalDocs', 'pendingDocs', 'approvedDocs', 'rejectedDocs', 'docsByType',
+            'totalDocs', 'pendingDocs', 'processingDocs', 'readyDocs', 'completedDocs', 'cancelledDocs', 'docsByType',
             'totalComplaints', 'openComplaints', 'closedComplaints', 'criticalComplaints',
             'totalFeedback', 'positiveFeedback', 'negativeFeedback'
         ));

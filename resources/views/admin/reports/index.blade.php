@@ -133,11 +133,17 @@
             </div>
             <div class="p-7 space-y-4">
                 {{-- Status row --}}
-                <div class="grid grid-cols-3 gap-3">
-                    @foreach([['Pending', $pendingDocs, 'text-amber-600', 'bg-amber-50'], ['Approved', $approvedDocs, 'text-green-600', 'bg-green-50'], ['Rejected', $rejectedDocs, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
-                    <div class="rounded-xl {{ $bg }} px-4 py-3 text-center">
-                        <p class="text-xl font-extrabold {{ $clr }}">{{ $val }}</p>
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $lbl }}</p>
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach([
+                        ['Pending',    $pendingDocs,    'text-amber-600',  'bg-amber-50'],
+                        ['Processing', $processingDocs, 'text-blue-600',   'bg-blue-50'],
+                        ['Ready',      $readyDocs,      'text-indigo-600', 'bg-indigo-50'],
+                        ['Completed',  $completedDocs,  'text-green-600',  'bg-green-50'],
+                        ['Cancelled',  $cancelledDocs,  'text-red-600',    'bg-red-50'],
+                    ] as [$lbl, $val, $clr, $bg])
+                    <div class="rounded-xl {{ $bg }} px-2 py-3 text-center">
+                        <p class="text-lg font-extrabold {{ $clr }}">{{ $val }}</p>
+                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $lbl }}</p>
                     </div>
                     @endforeach
                 </div>
