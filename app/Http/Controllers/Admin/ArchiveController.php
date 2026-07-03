@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\DocumentRequest;
 use App\Models\Resident;
 use App\Models\Announcement;
 use App\Models\Feedback;
@@ -15,12 +16,13 @@ class ArchiveController extends Controller
     public function index(Request $request)
     {
         $search = trim($request->get('search', ''));
-        $filter = $request->get('filter', 'all'); // all, residents, announcements, events, feedback
+        $filter = $request->get('filter', 'all');
 
-        $residents     = collect();
-        $announcements = collect();
-        $feedback      = collect();
-        $events        = collect();
+        $residents        = collect();
+        $announcements    = collect();
+        $feedback         = collect();
+        $events           = collect();
+        $documentRequests = collect();
 
         if ($filter === 'all' || $filter === 'residents') {
             $q = Resident::onlyTrashed()->latest('deleted_at');
@@ -64,7 +66,19 @@ class ArchiveController extends Controller
             $feedback = $q->get();
         }
 
-        return view('admin.archive.index', compact('residents', 'announcements', 'feedback', 'events', 'search', 'filter'));
+        if ($filter === 'all' || $filter === 'requests') {
+            $q = DocumentRequest::onlyTrashed()->latest('deleted_at');
+            if ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('full_name',     'ilike', "%{$search}%")
+                          ->orWhere('document_type','ilike', "%{$search}%")
+                          ->orWhere('purpose',      'ilike', "%{$search}%");
+                });
+            }
+            $documentRequests = $q->get();
+        }
+
+        return view('admin.archive.index', compact('residents', 'announcements', 'feedback', 'events', 'documentRequests', 'search', 'filter'));
     }
 
     public function restore($type, $id)
@@ -92,6 +106,12 @@ class ArchiveController extends Controller
                 $model->restore();
                 AuditLogger::log('updated', 'Schedule', $model->title, $model->id);
                 $label = 'Event restored successfully.';
+                break;
+            case 'request':
+                $model = DocumentRequest::onlyTrashed()->findOrFail($id);
+                $model->restore();
+                AuditLogger::log('updated', 'DocumentRequest', $model->document_type . ' for ' . $model->full_name, $model->id);
+                $label = 'Document request restored successfully.';
                 break;
             default:
                 abort(404);
@@ -121,6 +141,11 @@ class ArchiveController extends Controller
                 $model = Schedule::onlyTrashed()->findOrFail($id);
                 if ($model->image) \Illuminate\Support\Facades\Storage::disk('public')->delete($model->image);
                 AuditLogger::log('deleted', 'Schedule', $model->title, $model->id);
+                $model->forceDelete();
+                break;
+            case 'request':
+                $model = DocumentRequest::onlyTrashed()->findOrFail($id);
+                AuditLogger::log('deleted', 'DocumentRequest', $model->document_type . ' for ' . $model->full_name, $model->id);
                 $model->forceDelete();
                 break;
             default:

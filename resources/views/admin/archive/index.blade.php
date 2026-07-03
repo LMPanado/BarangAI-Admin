@@ -28,14 +28,14 @@
 
     {{-- Stats Row --}}
     @php
-        $totalDeleted = $residents->count() + $announcements->count() + $feedback->count() + $events->count();
+        $totalDeleted = $residents->count() + $announcements->count() + $feedback->count() + $events->count() + $documentRequests->count();
         $expiringSoon = collect()
-            ->merge($residents)->merge($announcements)->merge($feedback)->merge($events)
+            ->merge($residents)->merge($announcements)->merge($feedback)->merge($events)->merge($documentRequests)
             ->filter(fn($r) => $r->deleted_at->diffInDays(now()) >= 25)
             ->count();
     @endphp
 
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+    <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
@@ -60,6 +60,12 @@
             </div>
             <div><p class="text-xl font-extrabold text-gray-800">{{ $events->count() }}</p><p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Events</p></div>
         </div>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div><p class="text-xl font-extrabold text-gray-800">{{ $documentRequests->count() }}</p><p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Requests</p></div>
+        </div>
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3 {{ $expiringSoon > 0 ? 'border-red-100 bg-red-50' : '' }}">
             <div class="w-9 h-9 rounded-xl {{ $expiringSoon > 0 ? 'bg-red-100' : 'bg-gray-100' }} flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4 {{ $expiringSoon > 0 ? 'text-red-500' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -83,7 +89,7 @@
 
         {{-- Filter Tabs --}}
         <div class="flex items-center gap-1 px-1">
-            @foreach(['all' => 'All', 'residents' => 'Residents', 'announcements' => 'Announcements', 'events' => 'Events', 'feedback' => 'Feedback'] as $val => $label)
+            @foreach(['all' => 'All', 'residents' => 'Residents', 'announcements' => 'Announcements', 'events' => 'Events', 'feedback' => 'Feedback', 'requests' => 'Requests'] as $val => $label)
                 <button type="submit" name="filter" value="{{ $val }}"
                         class="px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all
                         {{ $filter === $val ? 'bg-brgyGreen text-white shadow' : 'text-gray-400 hover:text-brgyGreen hover:bg-brgyGreen/5' }}">
@@ -111,7 +117,7 @@
     </div>
 
     @php
-        $totalDeleted = $residents->count() + $announcements->count() + $feedback->count() + $events->count();
+        $totalDeleted = $residents->count() + $announcements->count() + $feedback->count() + $events->count() + $documentRequests->count();
     @endphp
 
     @if($totalDeleted === 0)
@@ -342,6 +348,62 @@
                         @csrf @method('DELETE')
                     </form>
                     <button onclick="confirmDelete('perm-fb-{{ $item->id }}', 'Permanently delete this feedback? This cannot be undone.')"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-500 border border-red-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Delete Forever
+                    </button>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- ── DOCUMENT REQUESTS ── --}}
+    @if($documentRequests->isNotEmpty())
+    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-8 py-5 border-b border-gray-50">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                    <h2 class="text-sm font-extrabold text-gray-800 uppercase tracking-widest">Deleted Document Requests</h2>
+                    <p class="text-[10px] text-gray-400 font-bold">{{ $documentRequests->count() }} record(s)</p>
+                </div>
+            </div>
+        </div>
+        <div class="divide-y divide-gray-50">
+            @foreach($documentRequests as $item)
+            @php $badge = $daysLeft($item->deleted_at); @endphp
+            <div class="flex items-center gap-4 px-8 py-4 hover:bg-gray-50/50 transition-colors {{ $item->deleted_at->diffInDays(now()) >= 25 ? 'bg-red-50/30' : '' }}">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-extrabold text-gray-800 text-sm">{{ $item->full_name ?? 'Unknown' }}</p>
+                    <p class="text-[10px] text-gray-400 font-bold mt-0.5 uppercase tracking-widest">
+                        {{ str_replace('_', ' ', $item->document_type) }} · {{ $item->purpose }}
+                    </p>
+                </div>
+                <span class="inline-flex items-center px-2.5 py-1 border rounded-lg text-[9px] font-black uppercase tracking-widest
+                    {{ $item->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : ($item->status === 'cancelled' ? 'bg-red-50 text-red-500 border-red-100' : 'bg-gray-50 text-gray-500 border-gray-100') }} flex-shrink-0">
+                    {{ $item->status }}
+                </span>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest hidden sm:block">Deleted {{ $item->deleted_at->format('M d, Y') }}</span>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $badge['class'] }}">{{ $badge['label'] }}</span>
+                    <form action="{{ route('admin.archive.restore', ['type'=>'request','id'=>$item->id]) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Restore
+                        </button>
+                    </form>
+                    <form id="perm-req-{{ $item->id }}" action="{{ route('admin.archive.force-delete', ['type'=>'request','id'=>$item->id]) }}" method="POST">
+                        @csrf @method('DELETE')
+                    </form>
+                    <button onclick="confirmDelete('perm-req-{{ $item->id }}', 'Permanently delete this document request? This cannot be undone.')"
                             class="inline-flex items-center gap-1.5 px-3 py-2 bg-red-50 text-red-500 border border-red-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         Delete Forever

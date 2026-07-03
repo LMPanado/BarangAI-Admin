@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DocumentRequest extends Model
 {
+    use SoftDeletes;
     // Ensure this matches the table name seen in your admin database
     protected $table = 'document_requests'; 
 
