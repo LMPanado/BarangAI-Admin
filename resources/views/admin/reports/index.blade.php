@@ -29,23 +29,13 @@
                 View
             </button>
         </form>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.reports.export-csv', ['month' => $month]) }}"
-               class="flex items-center gap-2 text-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-sm"
-               style="background-color: #059669;">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
-                Export CSV
-            </a>
-            <button onclick="window.open('{{ route('admin.reports.print', ['month' => $month]) }}', '_blank')"
-                    class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all shadow-sm">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                </svg>
-                Print Report
-            </button>
-        </div>
+        <button onclick="window.print()"
+                class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            Print Report
+        </button>
     </div>
 
     {{-- Print Header --}}
@@ -69,10 +59,10 @@
     <div class="grid grid-cols-4 gap-4">
         @php
         $glance = [
-            ['label' => 'Total Residents',   'value' => $totalResidents,    'sub' => $newResidents . ' new this month',          'color' => 'text-gray-800',  'dot' => 'bg-gray-400'],
-            ['label' => 'Document Requests', 'value' => $allTimeDocs,       'sub' => $pendingDocs . ' pending this month',        'color' => 'text-blue-700',  'dot' => 'bg-blue-400'],
-            ['label' => 'Complaints',        'value' => $allTimeComplaints, 'sub' => $openComplaints . ' open this month',        'color' => 'text-amber-700', 'dot' => 'bg-amber-400'],
-            ['label' => 'Feedback',          'value' => $allTimeFeedback,   'sub' => $positiveFeedback . ' positive this month',  'color' => 'text-green-700', 'dot' => 'bg-green-400'],
+            ['label' => 'Total Residents',   'value' => $totalResidents,   'sub' => $newResidents . ' new this month', 'color' => 'text-gray-800',   'dot' => 'bg-gray-400'],
+            ['label' => 'Document Requests', 'value' => $totalDocs,        'sub' => $pendingDocs . ' still pending',   'color' => 'text-blue-700',   'dot' => 'bg-blue-400'],
+            ['label' => 'Complaints',        'value' => $totalComplaints,  'sub' => $openComplaints . ' open',         'color' => 'text-amber-700',  'dot' => 'bg-amber-400'],
+            ['label' => 'Feedback',          'value' => $totalFeedback,    'sub' => $positiveFeedback . ' positive',   'color' => 'text-green-700',  'dot' => 'bg-green-400'],
         ];
         @endphp
         @foreach($glance as $g)
@@ -97,6 +87,7 @@
                 <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalResidents }} total</span>
             </div>
             <div class="p-7 space-y-4">
+                {{-- Gender --}}
                 <div class="flex items-center gap-6">
                     <div class="text-center">
                         <p class="text-2xl font-extrabold text-blue-600">{{ $maleCount }}</p>
@@ -111,6 +102,7 @@
                         <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Female</p>
                     </div>
                 </div>
+
                 <div class="border-t border-gray-50 pt-4 space-y-2.5">
                     @foreach($ageGroups as $label => $count)
                     @php $pct = $totalResidents > 0 ? round(($count / $totalResidents) * 100) : 0; @endphp
@@ -124,6 +116,7 @@
                     </div>
                     @endforeach
                 </div>
+
                 @if($newResidents > 0)
                 <div class="pt-3 border-t border-gray-50">
                     <p class="text-[10px] font-bold text-gray-400">New this month: <span class="text-brgyGreen font-black">{{ $newResidents }}</span></p>
@@ -139,6 +132,7 @@
                 <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $totalDocs }} total</span>
             </div>
             <div class="p-7 space-y-4">
+                {{-- Status row --}}
                 <div class="grid grid-cols-3 gap-3">
                     @foreach([['Pending', $pendingDocs, 'text-amber-600', 'bg-amber-50'], ['Approved', $approvedDocs, 'text-green-600', 'bg-green-50'], ['Rejected', $rejectedDocs, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
                     <div class="rounded-xl {{ $bg }} px-4 py-3 text-center">
@@ -147,6 +141,7 @@
                     </div>
                     @endforeach
                 </div>
+
                 @if($docsByType->isNotEmpty())
                 <div class="border-t border-gray-50 pt-4 space-y-2.5">
                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">By document type</p>

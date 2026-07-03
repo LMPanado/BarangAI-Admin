@@ -261,12 +261,10 @@ new Chart(document.getElementById('complaintStatusChart'), {
         </div>
         @if(in_array(auth()->user()->role, [2, 3]))
         <div class="flex items-center gap-2 flex-shrink-0">
-            @if(auth()->user()->role == 2)
             <a href="{{ route('admin.residents.create') }}"
                class="px-4 py-2.5 rounded-xl bg-brgyGreen text-white text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-sm">
                 + Add Resident
             </a>
-            @endif
             <a href="{{ route('admin.schedules.create') }}"
                class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">
                 + New Event
