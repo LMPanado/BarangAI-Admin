@@ -137,8 +137,8 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
         Route::prefix('residents')->name('admin.residents.')->group(function() {
             Route::get('/', [ResidentController::class, 'index'])->name('index');
-            Route::get('/create', [ResidentController::class, 'create'])->name('create');
-            Route::post('/', [ResidentController::class, 'store'])->name('store');
+            Route::get('/create', [ResidentController::class, 'create'])->middleware('role:1,2')->name('create');
+            Route::post('/', [ResidentController::class, 'store'])->middleware('role:1,2')->name('store');
             Route::get('/{resident}/edit', [ResidentController::class, 'edit'])->name('edit');
             Route::put('/{resident}', [ResidentController::class, 'update'])->name('update');
             Route::delete('/{resident}', [ResidentController::class, 'destroy'])->middleware('role:1,2')->name('destroy');
