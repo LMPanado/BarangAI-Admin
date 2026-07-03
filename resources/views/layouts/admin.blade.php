@@ -389,7 +389,7 @@
             .catch(function() {});
         }
 
-        setInterval(poll, 10000);
+        setInterval(poll, 5000);
     })();
     </script>
 
