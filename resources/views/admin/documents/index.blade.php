@@ -107,13 +107,12 @@
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
             <table class="w-full text-left table-fixed">
                 <colgroup>
-                    <col class="w-[18%]">
-                    <col class="w-[14%]">
                     <col class="w-[20%]">
-                    <col class="w-[13%]">
+                    <col class="w-[16%]">
+                    <col class="w-[23%]">
+                    <col class="w-[16%]">
                     <col class="w-[13%]">
                     <col class="w-[12%]">
-                    <col class="w-[10%]">
                 </colgroup>
                 <thead>
                     <tr class="border-b border-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest">
@@ -121,7 +120,6 @@
                         <th class="px-6 py-3">Document</th>
                         <th class="px-6 py-3">Purpose</th>
                         <th class="px-6 py-3">Date Requested</th>
-                        <th class="px-6 py-3">Schedule</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
@@ -130,7 +128,7 @@
                     @forelse($mobileRequests as $req)
                     @include('admin.documents._row', ['request' => $req, 'showVerify' => false])
                     @empty
-                    <tr><td colspan="7" class="px-6 py-10 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">No mobile requests</td></tr>
+                    <tr><td colspan="6" class="px-6 py-10 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">No mobile requests</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -151,13 +149,12 @@
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
             <table class="w-full text-left table-fixed">
                 <colgroup>
-                    <col class="w-[18%]">
-                    <col class="w-[14%]">
                     <col class="w-[20%]">
-                    <col class="w-[13%]">
+                    <col class="w-[16%]">
+                    <col class="w-[23%]">
+                    <col class="w-[16%]">
                     <col class="w-[13%]">
                     <col class="w-[12%]">
-                    <col class="w-[10%]">
                 </colgroup>
                 <thead>
                     <tr class="border-b border-gray-50 text-gray-300 text-[10px] font-black uppercase tracking-widest">
@@ -165,7 +162,6 @@
                         <th class="px-6 py-3">Document</th>
                         <th class="px-6 py-3">Purpose</th>
                         <th class="px-6 py-3">Date Requested</th>
-                        <th class="px-6 py-3">Schedule</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
@@ -174,7 +170,7 @@
                     @forelse($kioskRequests as $req)
                     @include('admin.documents._row', ['request' => $req, 'showVerify' => true])
                     @empty
-                    <tr><td colspan="7" class="px-6 py-10 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">No kiosk requests</td></tr>
+                    <tr><td colspan="6" class="px-6 py-10 text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">No kiosk requests</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -61,12 +61,6 @@
         @endif
     </td>
 
-    {{-- Schedule --}}
-    <td class="px-6 py-4">
-        <span class="text-xs font-bold text-gray-500">
-            {{ $request->pickup_date ? \Carbon\Carbon::parse($request->pickup_date)->format('M d, Y') : '—' }}
-        </span>
-    </td>
 
     {{-- Status --}}
     <td class="px-6 py-4">
