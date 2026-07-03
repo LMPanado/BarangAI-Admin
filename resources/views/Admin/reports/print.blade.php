@@ -7,8 +7,8 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; font-size: 12px; color: #1e293b; background: white; padding: 32px 40px; }
-  @page { size: A4 portrait; margin: 12mm 15mm; }
-  @media print { body { padding: 0; } .no-print { display: none !important; } }
+  @@page { size: A4 portrait; margin: 12mm 15mm; }
+  @@media print { body { padding: 0; } .no-print { display: none !important; } }
 
   /* Print button */
   .no-print { text-align: center; margin-bottom: 24px; }
