@@ -169,7 +169,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             Route::get('/issuance/{id}', [DocumentRequestController::class, 'issuance'])->name('issuance');
             Route::patch('/{id}/status', [DocumentRequestController::class, 'updateStatus'])->name('updateStatus');
             Route::patch('/{id}/verify', [DocumentRequestController::class, 'verify'])->name('verify');
-            Route::delete('/{id}', [DocumentRequestController::class, 'destroy'])->middleware('role:1')->name('destroy');
+            Route::delete('/{id}', [DocumentRequestController::class, 'destroy'])->middleware('role:1,2')->name('destroy');
         });
 
         // Complaints: Visible to 1 and 2 (Role 3 Blocked)
