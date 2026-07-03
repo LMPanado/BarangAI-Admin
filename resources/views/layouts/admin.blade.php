@@ -220,7 +220,7 @@
     </aside>
 
     <div class="flex-grow flex flex-col min-w-0">
-        <header class="h-16 lg:h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 lg:px-12 z-20 shadow-sm flex-shrink-0">
+        <header class="h-16 lg:h-20 bg-white border-b border-slate-100 flex items-center justify-between px-6 lg:px-12 z-20 shadow-sm flex-shrink-0">
             {{-- Right: time + user info --}}
             @php
                 $roleLabel = match((int) Auth::user()->role) {
@@ -271,7 +271,7 @@
         })();
         </script>
 
-        <main class="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-12">
+        <main class="flex-grow overflow-y-auto p-6 sm:p-8 lg:p-12">
             @yield('content')
         </main>
     </div>
