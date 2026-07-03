@@ -45,26 +45,35 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
 
             if ($role === 1) {
                 // ── IT Admin dashboard ──────────────────────────────
-                $userStats     = \Illuminate\Support\Facades\Cache::remember('dash1_users', 60, fn() => User::selectRaw("COUNT(*) as total, COUNT(*) FILTER (WHERE role=0) as residents, COUNT(*) FILTER (WHERE role=1) as admins, COUNT(*) FILTER (WHERE role=2) as captains, COUNT(*) FILTER (WHERE role=3) as staff")->first());
-                $recentLogs    = AuditLog::with('user')->latest('created_at')->limit(20)->get();
-                $auditByAction = \Illuminate\Support\Facades\Cache::remember('dash1_audit_action', 60, fn() => AuditLog::selectRaw("action, COUNT(*) as count")->groupBy('action')->pluck('count', 'action'));
+                $userStats = User::selectRaw("
+                    COUNT(*) as total,
+                    COUNT(*) FILTER (WHERE role = 0) as residents,
+                    COUNT(*) FILTER (WHERE role = 1) as admins,
+                    COUNT(*) FILTER (WHERE role = 2) as captains,
+                    COUNT(*) FILTER (WHERE role = 3) as staff
+                ")->first();
 
-                // Single query for 7-day audit trend
-                $auditTrend = \Illuminate\Support\Facades\Cache::remember('dash1_audit_trend', 60, function () {
-                    $start    = \Carbon\Carbon::now()->subDays(6)->startOfDay();
-                    $rawTrend = AuditLog::selectRaw("DATE(created_at) as day, COUNT(*) as count")
-                        ->where('created_at', '>=', $start)->groupBy('day')->pluck('count', 'day');
-                    $trend = collect();
-                    for ($i = 6; $i >= 0; $i--) {
-                        $day = \Carbon\Carbon::now()->subDays($i);
-                        $trend[$day->format('D M d')] = $rawTrend[$day->toDateString()] ?? 0;
-                    }
-                    return $trend;
-                });
+                $recentLogs = AuditLog::with('user')->latest('created_at')->limit(20)->get();
 
-                $complaintStats = \Illuminate\Support\Facades\Cache::remember('dash1_complaints', 60, fn() => \App\Models\Complaint::selectRaw("COUNT(*) as total, COUNT(*) FILTER (WHERE status='open') as open, COUNT(*) FILTER (WHERE status='closed') as closed, COUNT(*) FILTER (WHERE severity='critical') as critical")->first());
-                $totalMessages  = \Illuminate\Support\Facades\Cache::remember('dash1_messages', 60, fn() => ComplaintMessage::count());
-                $totalArchived  = \Illuminate\Support\Facades\Cache::remember('dash1_archived', 60, fn() => \App\Models\Resident::onlyTrashed()->count());
+                $auditByAction = AuditLog::selectRaw("action, COUNT(*) as count")
+                    ->groupBy('action')
+                    ->pluck('count', 'action');
+
+                $auditTrend = collect();
+                for ($i = 6; $i >= 0; $i--) {
+                    $day = \Carbon\Carbon::now()->subDays($i);
+                    $auditTrend[$day->format('D M d')] = AuditLog::whereDate('created_at', $day->toDateString())->count();
+                }
+
+                $complaintStats = \App\Models\Complaint::selectRaw("
+                    COUNT(*) as total,
+                    COUNT(*) FILTER (WHERE status = 'open') as open,
+                    COUNT(*) FILTER (WHERE status = 'closed') as closed,
+                    COUNT(*) FILTER (WHERE severity = 'critical') as critical
+                ")->first();
+
+                $totalMessages  = ComplaintMessage::count();
+                $totalArchived  = \App\Models\Resident::onlyTrashed()->count();
 
                 return view('admin.dashboard', compact(
                     'userStats', 'recentLogs', 'auditByAction', 'auditTrend',
@@ -73,25 +82,36 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             }
 
             // ── Captain / Staff dashboard ───────────────────────────
-            $residentStats = \Illuminate\Support\Facades\Cache::remember('dash23_residents', 60, fn() => Resident::selectRaw("COUNT(*) as total, COUNT(*) FILTER (WHERE gender='Male') as male, COUNT(*) FILTER (WHERE gender='Female') as female, COUNT(*) FILTER (WHERE is_voter=true) as voters, COUNT(*) FILTER (WHERE age BETWEEN 0 AND 12) as children, COUNT(*) FILTER (WHERE age BETWEEN 13 AND 17) as teens, COUNT(*) FILTER (WHERE age BETWEEN 18 AND 59) as adults, COUNT(*) FILTER (WHERE age >= 60) as seniors")->first());
-            $docStats      = \Illuminate\Support\Facades\Cache::remember('dash23_docs', 60, fn() => DocumentRequest::selectRaw("COUNT(*) as total, COUNT(*) FILTER (WHERE status='pending') as pending")->first());
-            $civilStatusRaw = \Illuminate\Support\Facades\Cache::remember('dash23_civil', 60, fn() => Resident::selectRaw("civil_status, COUNT(*) as count")->whereNotNull('civil_status')->groupBy('civil_status')->pluck('count', 'civil_status'));
+            $residentStats = Resident::selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE gender = 'Male') as male,
+                COUNT(*) FILTER (WHERE gender = 'Female') as female,
+                COUNT(*) FILTER (WHERE is_voter = true) as voters,
+                COUNT(*) FILTER (WHERE age BETWEEN 0 AND 12) as children,
+                COUNT(*) FILTER (WHERE age BETWEEN 13 AND 17) as teens,
+                COUNT(*) FILTER (WHERE age BETWEEN 18 AND 59) as adults,
+                COUNT(*) FILTER (WHERE age >= 60) as seniors
+            ")->first();
 
-            // Single query for 6-month registration trend
-            $registrationTrend = \Illuminate\Support\Facades\Cache::remember('dash23_reg_trend', 60, function () {
-                $start  = \Carbon\Carbon::now()->subMonths(5)->startOfMonth();
-                $rawReg = Resident::selectRaw("TO_CHAR(created_at, 'YYYY-MM') as ym, COUNT(*) as count")
-                    ->where('created_at', '>=', $start)->groupBy('ym')->pluck('count', 'ym');
-                $trend = collect();
-                for ($i = 5; $i >= 0; $i--) {
-                    $month = \Carbon\Carbon::now()->subMonths($i);
-                    $trend[$month->format('M Y')] = $rawReg[$month->format('Y-m')] ?? 0;
-                }
-                return $trend;
-            });
+            $docStats = DocumentRequest::selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE status = 'pending') as pending
+            ")->first();
 
-            $docByType   = \Illuminate\Support\Facades\Cache::remember('dash23_doctype', 60, fn() => DocumentRequest::selectRaw("document_type, COUNT(*) as count")->groupBy('document_type')->pluck('count', 'document_type'));
-            $docByStatus = \Illuminate\Support\Facades\Cache::remember('dash23_docstatus', 60, fn() => DocumentRequest::selectRaw("status, COUNT(*) as count")->groupBy('status')->pluck('count', 'status'));
+            $civilStatusRaw = Resident::selectRaw("civil_status, COUNT(*) as count")
+                ->whereNotNull('civil_status')
+                ->groupBy('civil_status')
+                ->pluck('count', 'civil_status');
+
+            $registrationTrend = collect();
+            for ($i = 5; $i >= 0; $i--) {
+                $month = \Carbon\Carbon::now()->subMonths($i);
+                $registrationTrend[$month->format('M Y')] = Resident::whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)->count();
+            }
+
+            $docByType   = DocumentRequest::selectRaw("document_type, COUNT(*) as count")->groupBy('document_type')->pluck('count', 'document_type');
+            $docByStatus = DocumentRequest::selectRaw("status, COUNT(*) as count")->groupBy('status')->pluck('count', 'status');
 
             return view('admin.dashboard', [
                 'role'              => $role,
