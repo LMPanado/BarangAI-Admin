@@ -104,6 +104,92 @@ class ReportController extends Controller
         ));
     }
 
+    public function printReport(Request $request)
+    {
+        $month = $request->get('month', now()->format('Y-m'));
+        [$year, $mon] = explode('-', $month);
+
+        $residentStats = Resident::selectRaw("
+            COUNT(*) as total,
+            COUNT(*) FILTER (WHERE gender = 'Male') as male,
+            COUNT(*) FILTER (WHERE gender = 'Female') as female,
+            COUNT(*) FILTER (WHERE is_voter = true) as voters,
+            COUNT(*) FILTER (WHERE EXTRACT(YEAR FROM created_at) = ? AND EXTRACT(MONTH FROM created_at) = ?) as new_this_month,
+            COUNT(*) FILTER (WHERE age BETWEEN 0 AND 12) as children,
+            COUNT(*) FILTER (WHERE age BETWEEN 13 AND 17) as teens,
+            COUNT(*) FILTER (WHERE age BETWEEN 18 AND 59) as adults,
+            COUNT(*) FILTER (WHERE age >= 60) as seniors
+        ", [$year, $mon])->first();
+
+        $totalResidents = $residentStats->total;
+        $maleCount      = $residentStats->male;
+        $femaleCount    = $residentStats->female;
+        $newResidents   = $residentStats->new_this_month;
+        $ageGroups      = [
+            'Children (0–12)'  => $residentStats->children,
+            'Teens (13–17)'    => $residentStats->teens,
+            'Adults (18–59)'   => $residentStats->adults,
+            'Seniors (60+)'    => $residentStats->seniors,
+        ];
+
+        $allTimeDocs       = DocumentRequest::count();
+        $allTimeComplaints = Complaint::count();
+        $allTimeFeedback   = Feedback::count();
+
+        $docStats = DocumentRequest::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+            ->selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE status = 'pending') as pending,
+                COUNT(*) FILTER (WHERE status = 'approved') as approved,
+                COUNT(*) FILTER (WHERE status = 'rejected') as rejected
+            ")->first();
+
+        $totalDocs    = $docStats->total;
+        $pendingDocs  = $docStats->pending;
+        $approvedDocs = $docStats->approved;
+        $rejectedDocs = $docStats->rejected;
+
+        $docsByType = DocumentRequest::whereYear('created_at', $year)
+            ->whereMonth('created_at', $mon)
+            ->selectRaw('document_type, count(*) as total')
+            ->groupBy('document_type')
+            ->orderByDesc('total')
+            ->get();
+
+        $complaintStats = Complaint::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+            ->selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE status = 'open') as open,
+                COUNT(*) FILTER (WHERE status = 'closed') as closed,
+                COUNT(*) FILTER (WHERE severity = 'critical') as critical
+            ")->first();
+
+        $totalComplaints    = $complaintStats->total;
+        $openComplaints     = $complaintStats->open;
+        $closedComplaints   = $complaintStats->closed;
+        $criticalComplaints = $complaintStats->critical;
+
+        $feedbackStats = Feedback::whereYear('created_at', $year)->whereMonth('created_at', $mon)
+            ->selectRaw("
+                COUNT(*) as total,
+                COUNT(*) FILTER (WHERE sentiment = 'positive') as positive,
+                COUNT(*) FILTER (WHERE sentiment = 'negative') as negative
+            ")->first();
+
+        $totalFeedback    = $feedbackStats->total;
+        $positiveFeedback = $feedbackStats->positive;
+        $negativeFeedback = $feedbackStats->negative;
+
+        return view('admin.reports.print', compact(
+            'month', 'year', 'mon',
+            'totalResidents', 'maleCount', 'femaleCount', 'newResidents', 'ageGroups',
+            'allTimeDocs', 'allTimeComplaints', 'allTimeFeedback',
+            'totalDocs', 'pendingDocs', 'approvedDocs', 'rejectedDocs', 'docsByType',
+            'totalComplaints', 'openComplaints', 'closedComplaints', 'criticalComplaints',
+            'totalFeedback', 'positiveFeedback', 'negativeFeedback'
+        ));
+    }
+
     public function exportCsv(Request $request)
     {
         $month = $request->get('month', now()->format('Y-m'));
