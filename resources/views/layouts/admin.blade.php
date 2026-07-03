@@ -8,7 +8,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/brgy_logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
     <style>
+        #nprogress .bar { background: #60a5fa !important; height: 3px !important; }
+        #nprogress .peg  { box-shadow: 0 0 10px #60a5fa, 0 0 5px #60a5fa !important; }
         .sidebar-gradient { background: linear-gradient(180deg, #1e3a8a 0%, #0f1f5c 100%); }
         .sidebar-black    { background: linear-gradient(180deg, #111111 0%, #000000 100%); }
         .sidebar-red      { background: linear-gradient(180deg, #991b1b 0%, #5c0a0a 100%); }
@@ -408,6 +412,51 @@
     document.querySelectorAll('#admin-sidebar a').forEach(function(link) {
         link.addEventListener('click', closeSidebar);
     });
+    </script>
+
+    {{-- Fast navigation: progress bar + prefetch on hover --}}
+    <script>
+    (function () {
+        NProgress.configure({ showSpinner: false, speed: 200, minimum: 0.1 });
+
+        var prefetched = {};
+
+        function prefetch(url) {
+            if (prefetched[url]) return;
+            prefetched[url] = true;
+            var link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url;
+            document.head.appendChild(link);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Prefetch sidebar links on hover
+            document.querySelectorAll('#admin-sidebar a[href]').forEach(function (a) {
+                a.addEventListener('mouseenter', function () { prefetch(a.href); });
+                a.addEventListener('touchstart',  function () { prefetch(a.href); }, { passive: true });
+            });
+
+            // Show progress bar on any internal link click
+            document.addEventListener('click', function (e) {
+                var a = e.target.closest('a[href]');
+                if (!a) return;
+                var href = a.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
+                try {
+                    var url = new URL(href, location.origin);
+                    if (url.origin !== location.origin) return;
+                } catch (err) { return; }
+                NProgress.start();
+            });
+
+            // Stop bar when page finishes loading (back/forward or fast cache)
+            window.addEventListener('pageshow', function () { NProgress.done(); });
+        });
+
+        // Start bar immediately if page is already loaded
+        window.addEventListener('beforeunload', function () { NProgress.start(); });
+    })();
     </script>
 
     {{-- Tab-close session guard --}}
