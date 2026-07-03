@@ -128,10 +128,14 @@
                         </td>
                         <td class="px-8 py-5">
                             <div class="flex justify-end items-center gap-2">
-                                <form action="{{ route('admin.roles.update', $user->id) }}" method="POST" class="w-full max-w-[200px]">
+                                <form action="{{ route('admin.roles.update', $user->id) }}" method="POST" class="w-full max-w-[200px]" id="role-form-{{ $user->id }}">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="role" onchange="this.form.submit()"
+                                    <select name="role"
+                                        data-original="{{ $user->role }}"
+                                        data-user-id="{{ $user->id }}"
+                                        data-user-name="{{ addslashes(trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))) }}"
+                                        onchange="confirmRoleChange(this)"
                                         class="w-full text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer transition-all focus:border-brgyGreen focus:ring-0 outline-none hover:bg-white hover:border-slate-200 shadow-sm">
                                         <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Resident</option>
                                         <option value="2" {{ $user->role == 2 ? 'selected' : '' }}>Captain Level</option>
@@ -178,6 +182,47 @@
     @endif
 </div>
 
+{{-- Confirm Role Change Modal --}}
+<div id="confirmRoleModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md mx-4">
+        <div class="flex items-center gap-4 mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-extrabold text-slate-800 leading-tight">Confirm Role Change</h2>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5">This will change the user's system access level.</p>
+            </div>
+        </div>
+        <div class="bg-slate-50 rounded-2xl px-5 py-4 mb-6 space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">User</span>
+                <span id="confirmRoleName" class="text-xs font-extrabold text-slate-700"></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Current Role</span>
+                <span id="confirmRoleFrom" class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border"></span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">New Role</span>
+                <span id="confirmRoleTo" class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border"></span>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button type="button" onclick="cancelRoleChange()"
+                class="flex-1 px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-2xl border-2 border-slate-100 text-slate-500 hover:bg-slate-50 transition-all">
+                Cancel
+            </button>
+            <button type="button" onclick="applyRoleChange()"
+                class="flex-1 px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-2xl bg-brgyGreen hover:bg-brgyGreen/90 text-white shadow-sm transition-all">
+                Confirm Change
+            </button>
+        </div>
+    </div>
+</div>
+
 {{-- Reset Password Modal --}}
 <div id="resetPasswordModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
     <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md mx-4">
@@ -213,6 +258,58 @@
 </div>
 
 <script>
+const roleLabels = {
+    0: 'Resident',
+    2: 'Captain Level',
+    3: 'Brgy Staff',
+};
+const roleBadgeClass = {
+    0: 'bg-slate-50 text-slate-500 border-slate-200',
+    2: 'bg-amber-50 text-amber-600 border-amber-200',
+    3: 'bg-blue-50 text-blue-600 border-blue-200',
+};
+
+let _pendingSelect = null;
+
+function confirmRoleChange(select) {
+    const originalValue = select.dataset.original;
+    const newValue      = select.value;
+    if (newValue === originalValue) return;
+
+    _pendingSelect = select;
+
+    document.getElementById('confirmRoleName').textContent = select.dataset.userName;
+
+    const fromSpan = document.getElementById('confirmRoleFrom');
+    fromSpan.textContent  = roleLabels[originalValue] ?? originalValue;
+    fromSpan.className    = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ' + (roleBadgeClass[originalValue] ?? '');
+
+    const toSpan = document.getElementById('confirmRoleTo');
+    toSpan.textContent  = roleLabels[newValue] ?? newValue;
+    toSpan.className    = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ' + (roleBadgeClass[newValue] ?? '');
+
+    document.getElementById('confirmRoleModal').classList.remove('hidden');
+    document.getElementById('confirmRoleModal').classList.add('flex');
+}
+
+function cancelRoleChange() {
+    if (_pendingSelect) {
+        _pendingSelect.value = _pendingSelect.dataset.original;
+        _pendingSelect = null;
+    }
+    document.getElementById('confirmRoleModal').classList.add('hidden');
+    document.getElementById('confirmRoleModal').classList.remove('flex');
+}
+
+function applyRoleChange() {
+    if (_pendingSelect) {
+        document.getElementById('confirmRoleModal').classList.add('hidden');
+        document.getElementById('confirmRoleModal').classList.remove('flex');
+        document.getElementById('role-form-' + _pendingSelect.dataset.userId).submit();
+        _pendingSelect = null;
+    }
+}
+
 function openResetModal(userId, userName) {
     document.getElementById('resetModalSubtitle').textContent = 'Setting new password for: ' + userName;
     document.getElementById('resetPasswordForm').action = '/admin/roles/' + userId + '/reset-password';
