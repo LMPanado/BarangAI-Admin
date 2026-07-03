@@ -122,9 +122,9 @@
             {{-- Account Verification: Role 3 (Barangay Official) only --}}
             @if(Auth::user()->role == 3)
             @php
-                $verificationPending = \App\Models\User::where('role', 0)
-                    ->where('verification_status', 'pending')
-                    ->count();
+                $verificationPending = \Illuminate\Support\Facades\Cache::remember('verification_pending_count', 60, fn() =>
+                    \App\Models\User::where('role', 0)->where('verification_status', 'pending')->count()
+                );
             @endphp
             <a href="{{ route('admin.verification.index') }}"
                class="group flex items-center px-4 py-3 text-[10px] font-bold transition-all duration-300 rounded-xl mt-1
