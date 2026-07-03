@@ -53,7 +53,7 @@ class RoleController extends Controller
             // Use query builder directly to avoid pgBouncer prepared-statement issues
             \DB::table('users')->where('id', $user->id)->update([
                 'role'       => $newRole,
-                'is_admin'   => in_array($newRole, [2, 3]),
+                'is_admin'   => \DB::raw(in_array($newRole, [2, 3]) ? 'true' : 'false'),
                 'updated_at' => now(),
             ]);
 
