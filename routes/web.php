@@ -186,6 +186,29 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             ->middleware('role:1,2')
             ->name('admin.complaints.sendMessage');
 
+        // Real-time poll endpoint
+        Route::get('/poll', function (\Illuminate\Http\Request $request) {
+            $since = $request->get('since');
+            $role  = auth()->user()->role;
+            $data  = [];
+
+            if ($since) {
+                $ts = \Carbon\Carbon::createFromTimestamp($since);
+
+                if (in_array($role, [1, 2])) {
+                    $data['complaints']        = \App\Models\Complaint::where('created_at', '>', $ts)->count();
+                }
+                if (in_array($role, [1, 2, 3])) {
+                    $data['document_requests'] = \App\Models\DocumentRequest::where('created_at', '>', $ts)->count();
+                }
+                if (in_array($role, [2, 3])) {
+                    $data['feedback']          = \App\Models\Feedback::where('created_at', '>', $ts)->count();
+                }
+            }
+
+            return response()->json($data);
+        })->name('admin.poll');
+
         // Reports (Analytics): Visible to 1 and 2 (Role 3 Blocked)
         Route::get('/reports', [ReportController::class, 'index'])
             ->middleware('role:1,2')

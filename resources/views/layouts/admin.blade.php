@@ -351,6 +351,70 @@
     }
     </script>
 
+    {{-- Real-time polling --}}
+    <div id="rt-banner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:500;
+        background:#1d4ed8;color:white;padding:12px 24px;border-radius:12px;font-size:11px;font-weight:800;
+        letter-spacing:0.1em;text-transform:uppercase;box-shadow:0 8px 32px rgba(0,0,0,0.2);
+        cursor:pointer;display:none;align-items:center;gap:10px;white-space:nowrap;"
+         onclick="window.location.reload()">
+        <svg style="width:14px;height:14px;flex-shrink:0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span id="rt-banner-text">New updates available</span>
+        <span style="opacity:0.7;font-size:9px;">· click to refresh</span>
+    </div>
+    <script>
+    (function () {
+        var pollUrl   = '{{ route('admin.poll') }}';
+        var sinceTime = Math.floor(Date.now() / 1000);
+        var banner    = document.getElementById('rt-banner');
+        var bannerTxt = document.getElementById('rt-banner-text');
+
+        // Map route names to readable labels
+        var routeLabels = {
+            'admin.complaints.index':  'complaints',
+            'admin.documents.index':   'document requests',
+            'admin.feedback.index':    'feedback',
+            'dashboard':               null,
+        };
+
+        // Which data key applies to the current page
+        var pageKey = {
+            'admin.complaints.index':  'complaints',
+            'admin.documents.index':   'document_requests',
+            'admin.feedback.index':    'feedback',
+        };
+
+        @foreach(['admin.complaints.index','admin.documents.index','admin.feedback.index'] as $r)
+        @if(request()->routeIs($r))
+        var currentPageKey = '{{ $r }}';
+        @endif
+        @endforeach
+
+        if (typeof currentPageKey === 'undefined') return; // only poll on relevant pages
+
+        var dataKey = pageKey[currentPageKey];
+
+        function poll() {
+            fetch(pollUrl + '?since=' + sinceTime, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var count = data[dataKey] || 0;
+                if (count > 0) {
+                    bannerTxt.textContent = count + ' new ' + routeLabels[currentPageKey];
+                    banner.style.display = 'flex';
+                }
+                sinceTime = Math.floor(Date.now() / 1000);
+            })
+            .catch(function() {});
+        }
+
+        setInterval(poll, 10000);
+    })();
+    </script>
+
     {{-- Sidebar toggle --}}
     <script>
     function openSidebar() {
