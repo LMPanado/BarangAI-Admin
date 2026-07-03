@@ -128,12 +128,11 @@
                         </td>
                         <td class="px-8 py-5">
                             <div class="flex justify-end items-center gap-2">
-                                <form action="{{ route('admin.roles.update', $user->id) }}" method="POST" class="w-full max-w-[200px]" id="role-form-{{ $user->id }}">
+                                <form action="{{ route('admin.roles.update', $user->id) }}" method="POST" class="w-full max-w-[200px]">
                                     @csrf
                                     @method('PATCH')
                                     <select name="role"
                                         data-original="{{ $user->role }}"
-                                        data-user-id="{{ $user->id }}"
                                         data-user-name="{{ addslashes(trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''))) }}"
                                         onchange="confirmRoleChange(this)"
                                         class="w-full text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer transition-all focus:border-brgyGreen focus:ring-0 outline-none hover:bg-white hover:border-slate-200 shadow-sm">
@@ -281,12 +280,12 @@ function confirmRoleChange(select) {
     document.getElementById('confirmRoleName').textContent = select.dataset.userName;
 
     const fromSpan = document.getElementById('confirmRoleFrom');
-    fromSpan.textContent  = roleLabels[originalValue] ?? originalValue;
-    fromSpan.className    = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ' + (roleBadgeClass[originalValue] ?? '');
+    fromSpan.textContent = roleLabels[originalValue] ?? originalValue;
+    fromSpan.className   = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ' + (roleBadgeClass[originalValue] ?? '');
 
     const toSpan = document.getElementById('confirmRoleTo');
-    toSpan.textContent  = roleLabels[newValue] ?? newValue;
-    toSpan.className    = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ' + (roleBadgeClass[newValue] ?? '');
+    toSpan.textContent = roleLabels[newValue] ?? newValue;
+    toSpan.className   = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ' + (roleBadgeClass[newValue] ?? '');
 
     document.getElementById('confirmRoleModal').classList.remove('hidden');
     document.getElementById('confirmRoleModal').classList.add('flex');
@@ -305,7 +304,7 @@ function applyRoleChange() {
     if (_pendingSelect) {
         document.getElementById('confirmRoleModal').classList.add('hidden');
         document.getElementById('confirmRoleModal').classList.remove('flex');
-        document.getElementById('role-form-' + _pendingSelect.dataset.userId).submit();
+        _pendingSelect.form.submit(); // same as original this.form.submit()
         _pendingSelect = null;
     }
 }
