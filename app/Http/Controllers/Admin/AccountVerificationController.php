@@ -71,10 +71,15 @@ class AccountVerificationController extends Controller
         return response()->json(['success' => true, 'status' => 'verified']);
     }
 
-    public function reject($id)
+    public function reject(Request $request, $id)
     {
+        $request->validate(['rejection_reason' => 'required|string|max:500']);
+
         $user = User::findOrFail($id);
-        $user->update(['verification_status' => 'rejected']);
+        $user->update([
+            'verification_status' => 'rejected',
+            'rejection_reason'    => $request->rejection_reason,
+        ]);
 
         AuditLogger::log(
             'status_changed',

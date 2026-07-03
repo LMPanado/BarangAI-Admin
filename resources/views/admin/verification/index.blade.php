@@ -185,7 +185,7 @@
                         </svg>
                         Verify Account
                     </button>
-                    <button onclick="verifyUser({{ $user->id }}, 'reject', '{{ route('admin.verification.reject', $user->id) }}')"
+                    <button onclick="openRejectModal({{ $user->id }}, '{{ route('admin.verification.reject', $user->id) }}')"
                             id="reject-btn-{{ $user->id }}"
                             class="flex items-center justify-center gap-2 px-5 py-3 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-2xl border-2 border-red-100 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,7 +225,71 @@
     </div>
 </div>
 
+{{-- Rejection Reason Modal --}}
+<div id="rejectModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);">
+    <div style="background:#fff;border-radius:1.5rem;padding:2rem;width:100%;max-width:440px;margin:1rem;box-shadow:0 25px 50px rgba(0,0,0,0.15);">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+            <div style="width:2.5rem;height:2.5rem;border-radius:0.75rem;background:#fef2f2;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:1.25rem;height:1.25rem;color:#ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <div>
+                <p style="font-size:0.875rem;font-weight:800;color:#1e293b;">Reject Verification</p>
+                <p style="font-size:0.625rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.1em;">Please provide a reason for rejection</p>
+            </div>
+        </div>
+        <textarea id="rejectReasonText" rows="4" placeholder="e.g. Blurry ID photo, selfie does not match ID, incomplete submission..."
+            style="width:100%;padding:0.875rem 1rem;border:2px solid #f1f5f9;border-radius:0.75rem;font-size:0.8125rem;font-weight:600;color:#334155;background:#f8fafc;resize:none;outline:none;box-sizing:border-box;"
+            onfocus="this.style.borderColor='#ef4444';this.style.background='#fff';"
+            onblur="this.style.borderColor='#f1f5f9';this.style.background='#f8fafc';"></textarea>
+        <p id="rejectReasonError" style="display:none;font-size:0.625rem;font-weight:800;color:#ef4444;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.5rem;">Reason is required.</p>
+        <div style="display:flex;gap:0.75rem;margin-top:1.25rem;">
+            <button onclick="closeRejectModal()"
+                style="flex:1;padding:0.75rem;border-radius:0.75rem;border:2px solid #f1f5f9;background:#fff;font-size:0.625rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;cursor:pointer;">
+                Go Back
+            </button>
+            <button onclick="submitRejection()"
+                style="flex:1;padding:0.75rem;border-radius:0.75rem;border:none;background:#ef4444;color:#fff;font-size:0.625rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;">
+                Confirm Reject
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+let _rejectUserId  = null;
+let _rejectUrl     = null;
+
+function openRejectModal(id, url) {
+    _rejectUserId = id;
+    _rejectUrl    = url;
+    document.getElementById('rejectReasonText').value = '';
+    document.getElementById('rejectReasonError').style.display = 'none';
+    document.getElementById('rejectModal').style.display = 'flex';
+}
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+    _rejectUserId = null;
+    _rejectUrl    = null;
+}
+
+function submitRejection() {
+    const reason = document.getElementById('rejectReasonText').value.trim();
+    if (!reason) {
+        document.getElementById('rejectReasonError').style.display = 'block';
+        return;
+    }
+    document.getElementById('rejectReasonError').style.display = 'none';
+    closeRejectModal();
+    performVerification(_rejectUserId, 'reject', _rejectUrl, reason);
+}
+
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) closeRejectModal();
+});
+
+function openRejectModalWrapper(id, url) { openRejectModal(id, url); }
+
 function openLightbox(src, title) {
     document.getElementById('lightbox-img').src = src;
     document.getElementById('lightbox-title').innerText = title;
@@ -246,15 +310,19 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
 });
 
 function verifyUser(id, action, url) {
-    const label  = action === 'verify' ? 'verify this account?' : 'reject this account?';
-    if (!confirm('Are you sure you want to ' + label)) return;
+    if (!confirm('Are you sure you want to verify this account?')) return;
+    performVerification(id, action, url, null);
+}
 
+function performVerification(id, action, url, reason) {
     const verifyBtn = document.getElementById('verify-btn-' + id);
     const rejectBtn = document.getElementById('reject-btn-' + id);
     verifyBtn.disabled = true;
     rejectBtn.disabled = true;
     verifyBtn.innerText = action === 'verify' ? 'Verifying...' : 'Verify Account';
     if (action === 'reject') rejectBtn.innerText = 'Rejecting...';
+
+    const body = action === 'reject' ? { rejection_reason: reason } : {};
 
     fetch(url, {
         method: 'POST',
@@ -263,7 +331,7 @@ function verifyUser(id, action, url) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Accept': 'application/json',
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(body),
     })
     .then(r => { if (!r.ok) return r.text().then(t => { throw new Error(t); }); return r.json(); })
     .then(data => {
