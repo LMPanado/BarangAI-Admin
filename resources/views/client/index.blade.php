@@ -140,6 +140,8 @@
     <div class="absolute -right-32 -top-32 w-[500px] h-[500px] rounded-full bg-brgyGreen/10 blur-[120px]"></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+
+        {{-- Section header --}}
         <div class="text-center mb-10 md:mb-16">
             <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-white/15 rounded-full text-[10px] font-black text-white/60 uppercase tracking-[0.25em] mb-5">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -148,76 +150,177 @@
             <h2 class="text-4xl font-extrabold text-white tracking-tight">Elected Officials</h2>
         </div>
 
-        {{-- Punong Barangay --}}
-        <div class="flex justify-center mb-14">
-            <div class="flex flex-col items-center gap-4">
-                <div class="relative">
-                    <div class="absolute inset-0 bg-white/20 rounded-full blur-2xl scale-125"></div>
-                    <div class="relative w-28 h-28 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center">
-                        <span class="text-white font-extrabold text-3xl">EM</span>
+        {{-- ── ORG CHART ── --}}
+        <div id="org-chart-wrap" class="overflow-x-auto pb-2" style="position:relative;">
+            {{-- SVG connector lines (drawn by JS after layout) --}}
+            <svg id="org-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;" xmlns="http://www.w3.org/2000/svg"></svg>
+
+            <div style="min-width:900px; position:relative;">
+
+                {{-- ── LEVEL 1: Punong Barangay ── --}}
+                <div style="display:flex;justify-content:center;margin-bottom:0;">
+                    <div id="onode-erwin" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 24px;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.25);border-radius:16px;min-width:160px;">
+                        <div style="width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+                            <span style="font-size:15px;font-weight:900;color:rgba(255,255,255,0.85);">EM</span>
+                        </div>
+                        <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 5px;line-height:1.3;">Erwin R. Molina</p>
+                        <p style="font-size:8.5px;font-weight:900;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.14em;margin:0;">Punong Barangay</p>
                     </div>
                 </div>
-                <div class="text-center">
-                    <h3 class="text-white font-extrabold text-xl tracking-tight">Erwin R. Molina</h3>
-                    <span class="inline-block mt-2 px-4 py-1 bg-white/15 border border-white/20 rounded-full text-white/70 text-[9px] font-black uppercase tracking-[0.2em]">Punong Barangay</span>
-                </div>
-            </div>
-        </div>
 
-        {{-- Divider --}}
-        <div class="flex items-center gap-4 max-w-xs mx-auto mb-14">
-            <div class="flex-1 h-px bg-white/10"></div>
-            <p class="text-white/25 text-[9px] font-black uppercase tracking-widest">Council Members</p>
-            <div class="flex-1 h-px bg-white/10"></div>
-        </div>
+                {{-- spacer for connector lines --}}
+                <div style="height:48px;"></div>
 
-        {{-- Council Members --}}
-        @php $officials = [
-            ['name'=>'Victoria S. Burlaos',      'role'=>'Secretary',                    'initials'=>'VB'],
-            ['name'=>'Romeo R. De Leon',          'role'=>'Treasurer',                    'initials'=>'RL'],
-            ['name'=>'John Carlo C. Solomon',     'role'=>'Kagawad (Appropriations)',     'initials'=>'JS'],
-            ['name'=>'Reynaldo J. Dauz Jr.',      'role'=>'Kagawad (Peace & Order)',      'initials'=>'RD'],
-            ['name'=>'Jesus C. Anunciacion',      'role'=>'Kagawad (Rules & Education)',  'initials'=>'JA'],
-            ['name'=>'Claudine A. Dizon',         'role'=>'Kagawad (Livelihood)',         'initials'=>'CD'],
-            ['name'=>'Ian M. Perez',              'role'=>'Kagawad (Health)',             'initials'=>'IP'],
-            ['name'=>'Ma. Teresita G. Quintana',  'role'=>'Kagawad (Environment)',        'initials'=>'TQ'],
-            ['name'=>'Enerson R. Molina',         'role'=>'Kagawad (Entrepreneurship)',   'initials'=>'EM'],
-            ['name'=>'Alaine Joy T. Ambito',      'role'=>'SK Chairperson',              'initials'=>'AA'],
-            ['name'=>'Rustico B. Cuevas Jr.',     'role'=>'Executive Officer (BSG)',      'initials'=>'RC'],
-        ]; @endphp
-        @php $topRow = array_slice($officials, 0, 8); $bottomRow = array_slice($officials, 8); @endphp
+                {{-- ── LEVEL 2: Secretary + Treasurer ── --}}
+                <div style="display:flex;justify-content:center;gap:80px;margin-bottom:0;">
+                    <div id="onode-victoria" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 16px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;min-width:140px;">
+                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">
+                            <span style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.7);">VB</span>
+                        </div>
+                        <p style="font-size:11px;font-weight:800;color:#fff;margin:0 0 4px;line-height:1.3;">Victoria S. Burlaos</p>
+                        <p style="font-size:8px;font-weight:900;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin:0;">Secretary</p>
+                    </div>
+                    <div id="onode-romeo" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 16px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;min-width:140px;">
+                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">
+                            <span style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.7);">RL</span>
+                        </div>
+                        <p style="font-size:11px;font-weight:800;color:#fff;margin:0 0 4px;line-height:1.3;">Romeo R. De Leon</p>
+                        <p style="font-size:8px;font-weight:900;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin:0;">Treasurer</p>
+                    </div>
+                </div>
 
-        {{-- Top 8: 1 col on mobile, 2 cols on sm, 4 cols on desktop --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
-            @foreach($topRow as $off)
-            <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
-                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
-                    <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
-                </div>
-                <div>
-                    <p class="text-white font-bold text-xs leading-snug">{{ $off['name'] }}</p>
-                    <p class="text-white/35 text-[9px] font-black uppercase tracking-widest mt-1">{{ $off['role'] }}</p>
-                </div>
-            </div>
-            @endforeach
-        </div>
+                {{-- spacer for connector lines --}}
+                <div style="height:48px;"></div>
 
-        {{-- Bottom 3: 1 col on mobile, centered on desktop --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-4xl mx-auto mt-3 md:mt-4 sm:max-w-[calc(75%-0.5rem)] md:max-w-[calc(75%-0.75rem)]">
-            @foreach($bottomRow as $off)
-            <div class="flex flex-col items-center gap-3 p-4 md:p-5 bg-white/5 border border-white/8 rounded-2xl hover:bg-white/10 transition-all text-center">
-                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
-                    <span class="text-white/60 font-extrabold text-sm">{{ $off['initials'] }}</span>
+                {{-- ── LEVEL 3: 8 Kagawads + SK Chair ── --}}
+                <div style="display:flex;justify-content:center;gap:8px;">
+                    @php
+                    $kagawads = [
+                        ['id'=>'john',      'initials'=>'JS', 'name'=>'John Carlo C. Solomon',    'role'=>"Kagawad\nAppropriations"],
+                        ['id'=>'reynaldo',  'initials'=>'RD', 'name'=>'Reynaldo J. Dauz Jr.',     'role'=>"Kagawad\nPeace & Order"],
+                        ['id'=>'jesus',     'initials'=>'JA', 'name'=>'Jesus C. Anunciacion',     'role'=>"Kagawad\nRules & Ethics"],
+                        ['id'=>'claudine',  'initials'=>'CD', 'name'=>'Claudine A. Dizon',        'role'=>"Kagawad\nLivelihood"],
+                        ['id'=>'ian',       'initials'=>'IP', 'name'=>'Ian M. Perez',             'role'=>"Kagawad\nHealth & Well-Being"],
+                        ['id'=>'teresita',  'initials'=>'TQ', 'name'=>'Ma. Teresita G. Quintana', 'role'=>"Kagawad\nEnvironmental Mgmt."],
+                        ['id'=>'enerson',   'initials'=>'EM', 'name'=>'Enerson R. Molina',        'role'=>"Kagawad\nEntrepreneurship"],
+                        ['id'=>'alaine',    'initials'=>'AA', 'name'=>'Alaine Joy T. Ambito',     'role'=>"SK Chairperson\nSangguniang Kabataan"],
+                    ];
+                    @endphp
+                    @foreach($kagawads as $k)
+                    <div id="onode-{{ $k['id'] }}" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;width:103px;flex-shrink:0;">
+                        <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 7px;">
+                            <span style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.65);">{{ $k['initials'] }}</span>
+                        </div>
+                        <p style="font-size:9.5px;font-weight:800;color:#fff;margin:0 0 4px;line-height:1.3;">{{ $k['name'] }}</p>
+                        <p style="font-size:7.5px;font-weight:900;color:rgba(255,255,255,0.38);text-transform:uppercase;letter-spacing:0.1em;margin:0;line-height:1.4;white-space:pre-line;">{{ $k['role'] }}</p>
+                    </div>
+                    @endforeach
                 </div>
-                <div>
-                    <p class="text-white font-bold text-xs leading-snug">{{ $off['name'] }}</p>
-                    <p class="text-white/35 text-[9px] font-black uppercase tracking-widest mt-1">{{ $off['role'] }}</p>
+
+                {{-- spacer for connector lines --}}
+                <div style="height:48px;"></div>
+
+                {{-- ── LEVEL 4: Executive Officer (BSG) ── --}}
+                <div style="display:flex;justify-content:center;">
+                    <div id="onode-rustico" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 20px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;min-width:160px;">
+                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">
+                            <span style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.7);">RC</span>
+                        </div>
+                        <p style="font-size:11px;font-weight:800;color:#fff;margin:0 0 4px;line-height:1.3;">Rustico B. Cuevas Jr.</p>
+                        <p style="font-size:8px;font-weight:900;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin:0;line-height:1.5;">Executive Officer<br>Barangay Security Group</p>
+                    </div>
                 </div>
-            </div>
-            @endforeach
-        </div>
+
+            </div>{{-- end min-width wrapper --}}
+        </div>{{-- end org-chart-wrap --}}
+
     </div>
 </section>
+
+<script>
+(function() {
+    function drawOrgChart() {
+        const wrap = document.getElementById('org-chart-wrap');
+        const svg  = document.getElementById('org-svg');
+        if (!wrap || !svg) return;
+        svg.innerHTML = '';
+
+        const wRect = wrap.getBoundingClientRect();
+
+        function r(id) {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const b = el.getBoundingClientRect();
+            return {
+                top:    b.top    - wRect.top  + wrap.scrollTop,
+                bottom: b.bottom - wRect.top  + wrap.scrollTop,
+                left:   b.left   - wRect.left + wrap.scrollLeft,
+                right:  b.right  - wRect.left + wrap.scrollLeft,
+                cx:     b.left   - wRect.left + wrap.scrollLeft + b.width  / 2,
+                cy:     b.top    - wRect.top  + wrap.scrollTop  + b.height / 2,
+            };
+        }
+
+        function seg(x1, y1, x2, y2) {
+            const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+            l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+            l.setAttribute('stroke', 'rgba(255,255,255,0.28)');
+            l.setAttribute('stroke-width', '2');
+            l.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(l);
+        }
+
+        const erwin    = r('onode-erwin');
+        const victoria = r('onode-victoria');
+        const romeo    = r('onode-romeo');
+        const john     = r('onode-john');
+        const alaine   = r('onode-alaine');
+        const rustico  = r('onode-rustico');
+        if (!erwin || !victoria || !romeo || !john || !alaine || !rustico) return;
+
+        const kagawadIds = ['john','reynaldo','jesus','claudine','ian','teresita','enerson','alaine'];
+
+        // ── Erwin → Level 2 mid-junction ──
+        const jY1 = (erwin.bottom + victoria.top) / 2;
+        seg(erwin.cx, erwin.bottom, erwin.cx, jY1);          // vertical down from Erwin
+        seg(victoria.cx, jY1, romeo.cx, jY1);                // horizontal bar spanning Victoria↔Romeo
+        seg(victoria.cx, jY1, victoria.cx, victoria.top);    // down to Victoria
+        seg(romeo.cx,    jY1, romeo.cx,    romeo.top);       // down to Romeo
+
+        // ── Level 2 → Level 3 mid-junction ──
+        const jY2 = (victoria.bottom + john.top) / 2;
+        seg(erwin.cx, jY1, erwin.cx, jY2);                   // vertical continues from Erwin through L2
+
+        // horizontal bar spanning all kagawads
+        const kLeft  = r('onode-' + kagawadIds[0]).cx;
+        const kRight = r('onode-' + kagawadIds[kagawadIds.length - 1]).cx;
+        seg(kLeft, jY2, kRight, jY2);
+
+        // stalks up to each kagawad
+        for (const kid of kagawadIds) {
+            const kn = r('onode-' + kid);
+            if (kn) { seg(kn.cx, jY2, kn.cx, kn.top); }
+        }
+
+        // center vertical from L2 junction down to L3 h-bar
+        seg(erwin.cx, jY2, erwin.cx, jY2);                   // dot (already covered by h-bar)
+
+        // ── Level 3 → Rustico ──
+        const jY3 = (john.bottom + rustico.top) / 2;
+        seg(erwin.cx, jY2, erwin.cx, jY3);                   // vertical down from center
+        seg(erwin.cx, jY3, rustico.cx, jY3);                 // horizontal to Rustico center
+        seg(rustico.cx, jY3, rustico.cx, rustico.top);       // down into Rustico
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', drawOrgChart);
+    } else {
+        drawOrgChart();
+    }
+    window.addEventListener('resize', drawOrgChart);
+})();
+</script>
 
 {{-- ═══════════════════════════════════════════
      ANNOUNCEMENTS
