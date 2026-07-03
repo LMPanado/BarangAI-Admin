@@ -219,7 +219,7 @@
                         </td>
                         <td class="px-6 py-5">
                             <button
-                                onclick="openChat({{ $complaint->id }}, '{{ addslashes($complaint->user_email) }}')"
+                                onclick="openChat({{ $complaint->id }}, '{{ addslashes($complaint->user_email) }}', '{{ $complaint->status }}')"
                                 class="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brgyGreen/5 text-brgyGreen hover:bg-brgyGreen hover:text-white transition-all text-[10px] font-black uppercase tracking-widest group">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -288,7 +288,7 @@
     </div>
 
     {{-- Input --}}
-    <div style="padding:10px 12px;background:#fff;border-top:1px solid #f1f5f9;flex-shrink:0;">
+    <div id="chatInputArea" style="padding:10px 12px;background:#fff;border-top:1px solid #f1f5f9;flex-shrink:0;">
         <div style="display:flex;align-items:flex-end;gap:8px;">
             <textarea id="chatInput" rows="2" maxlength="1000" placeholder="Type a message…" onkeydown="handleChatKey(event)"
                       style="flex:1;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:8px 12px;font-size:12px;color:#334155;resize:none;outline:none;line-height:1.5;font-family:inherit;transition:border-color .15s;"
@@ -300,6 +300,9 @@
             </button>
         </div>
         <p style="font-size:9px;color:#cbd5e1;text-align:center;margin:6px 0 0;">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
+    </div>
+    <div id="chatClosedBanner" style="display:none;padding:12px;background:#f1f5f9;border-top:1px solid #e2e8f0;flex-shrink:0;text-align:center;">
+        <p style="font-size:11px;font-weight:600;color:#94a3b8;margin:0;">This complaint is closed. Messaging is disabled.</p>
     </div>
 </div>
 
@@ -313,7 +316,7 @@ let lastMessageId = 0;
 let pollTimer = null;
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-function openChat(complaintId, email) {
+function openChat(complaintId, email, status) {
     currentComplaintId = complaintId;
     lastMessageId = 0;
     document.getElementById('chatEmail').textContent = email;
@@ -322,6 +325,11 @@ function openChat(complaintId, email) {
     document.getElementById('chatLoading').style.display = 'flex';
     document.getElementById('chatEmpty').style.display = 'none';
     document.getElementById('chatInput').value = '';
+
+    const isClosed = status === 'closed';
+    document.getElementById('chatInputArea').style.display = isClosed ? 'none' : 'block';
+    document.getElementById('chatClosedBanner').style.display = isClosed ? 'block' : 'none';
+
     const modal = document.getElementById('chatModal');
     modal.style.display = 'flex';
     modal.style.flexDirection = 'column';
