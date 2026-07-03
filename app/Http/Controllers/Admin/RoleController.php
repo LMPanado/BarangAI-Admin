@@ -49,21 +49,32 @@ class RoleController extends Controller
 
         $newRole = (int) $request->role;
 
-        // Explicitly assign and save to force the SQL UPDATE
-        // (using update() can skip the query if Eloquent thinks nothing changed)
-        $user->role     = $newRole;
-        $user->is_admin = in_array($newRole, [2, 3]);
-        $user->saveQuietly(); // bypass observer so Resident sync doesn't run on a role-only change
+        try {
+            // Use query builder directly to avoid pgBouncer prepared-statement issues
+            \DB::table('users')->where('id', $user->id)->update([
+                'role'       => $newRole,
+                'is_admin'   => in_array($newRole, [2, 3]),
+                'updated_at' => now(),
+            ]);
 
-        // Confirm the value persisted by reading fresh from DB
-        $user->refresh();
+            try {
+                AuditLogger::log('role_changed', 'User',
+                    ($user->last_name ?? $user->name) . ' → ' . $this->getRoleLabel($newRole),
+                    $user->id
+                );
+            } catch (\Exception $e) {
+                \Log::warning('AuditLogger failed on role_changed: ' . $e->getMessage());
+            }
 
-        AuditLogger::log('role_changed', 'User',
-            ($user->last_name ?? $user->name) . ' → ' . $this->getRoleLabel($user->role),
-            $user->id
-        );
+            $name = trim("{$user->first_name} {$user->last_name}");
+            return redirect()->route('admin.roles.index')
+                ->with('success', "Role for {$name} has been updated to " . $this->getRoleLabel($newRole));
 
-        return back()->with('success', "Role for {$user->first_name} {$user->last_name} has been updated to " . $this->getRoleLabel($user->role));
+        } catch (\Exception $e) {
+            \Log::error('Role update failed: ' . $e->getMessage());
+            return redirect()->route('admin.roles.index')
+                ->with('error', 'Failed to update role. Please try again.');
+        }
     }
 
     public function resetPassword(Request $request, User $user)
