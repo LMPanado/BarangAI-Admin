@@ -117,7 +117,7 @@
                                 };
                                 $roleLabel = match((int)$user->role) {
                                     1 => 'I.T. Administrator',
-                                    2 => 'Barangay Captain',
+                                    2 => 'Captain Level',
                                     3 => 'Barangay Staff',
                                     default => 'Resident User',
                                 };
