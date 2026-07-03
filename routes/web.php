@@ -198,6 +198,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
                 if (in_array($role, [1, 2])) {
                     $data['complaints']        = \App\Models\Complaint::where('created_at', '>', $ts)->count();
                 }
+                if ($role === 1) {
+                    $data['archive']           = \App\Models\Resident::onlyTrashed()->where('deleted_at', '>', $ts)->count();
+                }
                 if (in_array($role, [1, 2, 3])) {
                     $data['document_requests'] = \App\Models\DocumentRequest::where('created_at', '>', $ts)->count();
                 }

@@ -362,9 +362,10 @@
             'admin.documents.index':    'document_requests',
             'admin.feedback.index':     'feedback',
             'admin.verification.index': 'verification',
+            'admin.archive.index':      'archive',
         };
 
-        @foreach(['admin.complaints.index','admin.documents.index','admin.feedback.index','admin.verification.index'] as $r)
+        @foreach(['admin.complaints.index','admin.documents.index','admin.feedback.index','admin.verification.index','admin.archive.index'] as $r)
         @if(request()->routeIs($r))
         var currentPageKey = '{{ $r }}';
         @endif
