@@ -381,9 +381,22 @@ function handleChatKey(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
 
-// Auto-refresh: reload page every 10s when no chat is open
-setInterval(() => {
-    if (!currentComplaintId) location.reload();
-}, 10000);
+// Smart auto-refresh: only reload when new complaints arrive
+(function () {
+    let since = Math.floor(Date.now() / 1000);
+    setInterval(() => {
+        if (currentComplaintId) return; // don't interrupt an open chat
+        fetch('/admin/poll?since=' + since, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.complaints > 0) location.reload();
+            else since = Math.floor(Date.now() / 1000);
+        })
+        .catch(() => {}); // silently ignore network errors
+    }, 10000);
+})();
 </script>
 @endsection

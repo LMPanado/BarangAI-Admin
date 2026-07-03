@@ -382,10 +382,23 @@ document.getElementById('cancelModal').addEventListener('click', function(e) {
     if (e.target === this) closeCancelModal();
 });
 
-// Auto-refresh: reload page every 10s when no modal is open
-setInterval(() => {
-    const modal = document.getElementById('cancelModal');
-    if (modal && modal.classList.contains('hidden')) location.reload();
-}, 10000);
+// Smart auto-refresh: only reload when new document requests arrive
+(function () {
+    let since = Math.floor(Date.now() / 1000);
+    setInterval(() => {
+        const modal = document.getElementById('cancelModal');
+        if (modal && !modal.classList.contains('hidden')) return; // don't interrupt open modal
+        fetch('/admin/poll?since=' + since, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.document_requests > 0) location.reload();
+            else since = Math.floor(Date.now() / 1000);
+        })
+        .catch(() => {});
+    }, 10000);
+})();
 </script>
 @endsection

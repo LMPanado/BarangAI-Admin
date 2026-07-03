@@ -409,10 +409,23 @@ new Chart(document.getElementById('sentimentChart'), {
 });
 @endif
 
-// Auto-refresh: reload page every 10s when no reply form is open
-setInterval(() => {
-    const openReply = document.querySelector('[id^="reply-form-"]:not(.hidden)');
-    if (!openReply) location.reload();
-}, 10000);
+// Smart auto-refresh: only reload when new feedback arrives
+(function () {
+    let since = Math.floor(Date.now() / 1000);
+    setInterval(() => {
+        const openReply = document.querySelector('[id^="reply-form-"]:not(.hidden)');
+        if (openReply) return; // don't interrupt an open reply form
+        fetch('/admin/poll?since=' + since, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.feedback > 0) location.reload();
+            else since = Math.floor(Date.now() / 1000);
+        })
+        .catch(() => {});
+    }, 10000);
+})();
 </script>
 @endsection
