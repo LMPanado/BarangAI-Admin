@@ -154,51 +154,46 @@ class ResidentController extends Controller
 
         $filename = 'residents_' . now()->format('Ymd_His') . '.csv';
 
-        $headers = [
-            'Content-Type'        => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
+        $out = fopen('php://temp', 'r+');
 
-        $callback = function () use ($residents) {
-            $handle = fopen('php://output', 'w');
+        fputcsv($out, [
+            'ID', 'Last Name', 'First Name', 'Middle Name', 'Suffix',
+            'Email', 'Phone', 'Age', 'Gender', 'Civil Status',
+            'Birth Date', 'Place of Birth', 'Height (cm)', 'Weight (kg)',
+            'Address', 'Voter', 'Date Added',
+        ]);
 
-            // BOM for Excel UTF-8 detection
-            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
-
-            fputcsv($handle, [
-                'ID', 'Last Name', 'First Name', 'Middle Name', 'Suffix',
-                'Email', 'Phone', 'Age', 'Gender', 'Civil Status',
-                'Birth Date', 'Place of Birth', 'Height (cm)', 'Weight (kg)',
-                'Address', 'Voter', 'Date Added',
+        foreach ($residents as $r) {
+            fputcsv($out, [
+                $r->id,
+                $r->last_name,
+                $r->first_name,
+                $r->middle_name,
+                $r->suffix,
+                $r->email,
+                $r->phone,
+                $r->age,
+                $r->gender,
+                $r->civil_status,
+                $r->birth_date,
+                $r->place_birth,
+                $r->height_cm,
+                $r->weight_kg,
+                $r->address,
+                $r->is_voter ? 'Yes' : 'No',
+                $r->created_at?->format('Y-m-d'),
             ]);
+        }
 
-            foreach ($residents as $r) {
-                fputcsv($handle, [
-                    $r->id,
-                    $r->last_name,
-                    $r->first_name,
-                    $r->middle_name,
-                    $r->suffix,
-                    $r->email,
-                    $r->phone,
-                    $r->age,
-                    $r->gender,
-                    $r->civil_status,
-                    $r->birth_date,
-                    $r->place_birth,
-                    $r->height_cm,
-                    $r->weight_kg,
-                    $r->address,
-                    $r->is_voter ? 'Yes' : 'No',
-                    $r->created_at?->format('Y-m-d'),
-                ]);
-            }
-
-            fclose($handle);
-        };
+        rewind($out);
+        $csv = stream_get_contents($out);
+        fclose($out);
 
         AuditLogger::log('exported', 'Resident', 'Resident list exported to CSV');
 
-        return response()->stream($callback, 200, $headers);
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }
