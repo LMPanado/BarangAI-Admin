@@ -40,16 +40,6 @@
         </span>
     </td>
 
-    {{-- Date Requested --}}
-    <td class="px-6 py-4 whitespace-nowrap">
-        @if($request->created_at)
-            <p class="text-xs font-bold text-gray-700">{{ $request->created_at->format('M d, Y') }}</p>
-            <p class="text-[10px] text-gray-400 mt-0.5">{{ $request->created_at->format('h:i A') }}</p>
-        @else
-            <span class="text-[10px] text-gray-300 font-bold">—</span>
-        @endif
-    </td>
-
     {{-- Purpose --}}
     <td class="px-6 py-4 max-w-[180px]">
         <p class="text-xs text-gray-400 italic line-clamp-2 leading-relaxed">"{{ $request->purpose }}"</p>
@@ -57,6 +47,16 @@
         <p class="text-[10px] text-red-400 font-bold mt-1 line-clamp-2">
             <span class="font-black uppercase tracking-wide">Reason:</span> {{ $request->cancellation_reason }}
         </p>
+        @endif
+    </td>
+
+    {{-- Date Requested --}}
+    <td class="px-6 py-4 whitespace-nowrap">
+        @if($request->created_at)
+            <p class="text-xs font-bold text-gray-700">{{ $request->created_at->format('M d, Y') }}</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">{{ $request->created_at->format('h:i A') }}</p>
+        @else
+            <span class="text-[10px] text-gray-300 font-bold">—</span>
         @endif
     </td>
 
