@@ -204,6 +204,11 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
                 if (in_array($role, [2, 3])) {
                     $data['feedback']          = \App\Models\Feedback::where('created_at', '>', $ts)->count();
                 }
+                if ($role === 3) {
+                    $data['verification']      = \App\Models\User::where('role', 0)
+                        ->where('verification_status', 'pending')
+                        ->where('created_at', '>', $ts)->count();
+                }
             }
 
             return response()->json($data);

@@ -358,12 +358,13 @@
         var sinceTime = Math.floor(Date.now() / 1000);
 
         var pageKey = {
-            'admin.complaints.index':  'complaints',
-            'admin.documents.index':   'document_requests',
-            'admin.feedback.index':    'feedback',
+            'admin.complaints.index':   'complaints',
+            'admin.documents.index':    'document_requests',
+            'admin.feedback.index':     'feedback',
+            'admin.verification.index': 'verification',
         };
 
-        @foreach(['admin.complaints.index','admin.documents.index','admin.feedback.index'] as $r)
+        @foreach(['admin.complaints.index','admin.documents.index','admin.feedback.index','admin.verification.index'] as $r)
         @if(request()->routeIs($r))
         var currentPageKey = '{{ $r }}';
         @endif
