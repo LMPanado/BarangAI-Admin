@@ -80,7 +80,7 @@
         $statTotal   = $residents->total();
         $statMale    = \App\Models\Resident::where('gender', 'Male')->count();
         $statFemale  = \App\Models\Resident::where('gender', 'Female')->count();
-        $statVoters  = \App\Models\Resident::where('is_voter', true)->count();
+        $statVoters  = \App\Models\Resident::whereRaw('is_voter = true')->count();
     @endphp
     <div class="grid grid-cols-4 gap-4">
         @foreach([
