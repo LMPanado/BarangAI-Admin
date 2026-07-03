@@ -190,6 +190,9 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::get('/reports', [ReportController::class, 'index'])
             ->middleware('role:1,2')
             ->name('admin.reports.index');
+        Route::get('/reports/print', [ReportController::class, 'printReport'])
+            ->middleware('role:1,2')
+            ->name('admin.reports.print');
         Route::get('/reports/export-csv', [ReportController::class, 'exportCsv'])
             ->middleware('role:1,2')
             ->name('admin.reports.export-csv');
