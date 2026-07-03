@@ -180,7 +180,7 @@ class ReportController extends Controller
         $positiveFeedback = $feedbackStats->positive;
         $negativeFeedback = $feedbackStats->negative;
 
-        return view('admin.reports.print', compact(
+        return view('Admin.reports.print', compact(
             'month', 'year', 'mon',
             'totalResidents', 'maleCount', 'femaleCount', 'newResidents', 'ageGroups',
             'allTimeDocs', 'allTimeComplaints', 'allTimeFeedback',
