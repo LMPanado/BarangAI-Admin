@@ -42,8 +42,12 @@
 
     {{-- Date Requested --}}
     <td class="px-6 py-4 whitespace-nowrap">
-        <p class="text-xs font-bold text-gray-700">{{ $request->created_at->format('M d, Y') }}</p>
-        <p class="text-[10px] text-gray-400 mt-0.5">{{ $request->created_at->format('h:i A') }}</p>
+        @if($request->created_at)
+            <p class="text-xs font-bold text-gray-700">{{ $request->created_at->format('M d, Y') }}</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">{{ $request->created_at->format('h:i A') }}</p>
+        @else
+            <span class="text-[10px] text-gray-300 font-bold">—</span>
+        @endif
     </td>
 
     {{-- Purpose --}}
