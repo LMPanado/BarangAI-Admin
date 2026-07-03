@@ -155,7 +155,7 @@
             {{-- SVG connector lines (drawn by JS after layout) --}}
             <svg id="org-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;" xmlns="http://www.w3.org/2000/svg"></svg>
 
-            <div style="min-width:900px; position:relative;">
+            <div style="min-width:1100px; position:relative;">
 
                 {{-- ── LEVEL 1: Punong Barangay ── --}}
                 <div style="display:flex;justify-content:center;margin-bottom:0;">
@@ -169,10 +169,10 @@
                 </div>
 
                 {{-- spacer for connector lines --}}
-                <div style="height:48px;"></div>
+                <div style="height:72px;"></div>
 
                 {{-- ── LEVEL 2: Secretary + Treasurer ── --}}
-                <div style="display:flex;justify-content:center;gap:80px;margin-bottom:0;">
+                <div style="display:flex;justify-content:center;gap:160px;margin-bottom:0;">
                     <div id="onode-victoria" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 16px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;min-width:140px;">
                         <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;">
                             <span style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.7);">VB</span>
@@ -190,10 +190,10 @@
                 </div>
 
                 {{-- spacer for connector lines --}}
-                <div style="height:48px;"></div>
+                <div style="height:72px;"></div>
 
                 {{-- ── LEVEL 3: 8 Kagawads + SK Chair ── --}}
-                <div style="display:flex;justify-content:center;gap:8px;">
+                <div style="display:flex;justify-content:center;gap:16px;">
                     @php
                     $kagawads = [
                         ['id'=>'john',      'initials'=>'JS', 'name'=>'John Carlo C. Solomon',    'role'=>"Kagawad\nAppropriations"],
@@ -207,7 +207,7 @@
                     ];
                     @endphp
                     @foreach($kagawads as $k)
-                    <div id="onode-{{ $k['id'] }}" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;width:103px;flex-shrink:0;">
+                    <div id="onode-{{ $k['id'] }}" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;width:116px;flex-shrink:0;">
                         <div style="width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 7px;">
                             <span style="font-size:10px;font-weight:900;color:rgba(255,255,255,0.65);">{{ $k['initials'] }}</span>
                         </div>
@@ -218,7 +218,7 @@
                 </div>
 
                 {{-- spacer for connector lines --}}
-                <div style="height:48px;"></div>
+                <div style="height:72px;"></div>
 
                 {{-- ── LEVEL 4: Executive Officer (BSG) ── --}}
                 <div style="display:flex;justify-content:center;">
