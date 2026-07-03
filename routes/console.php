@@ -54,3 +54,5 @@ Artisan::command('archive:purge', function () {
 })->purpose('Permanently delete archived records older than 30 days');
 
 Cron::command('archive:purge')->dailyAt('00:10');
+
+Cron::command('users:purge-unverified')->dailyAt('00:15');
