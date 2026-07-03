@@ -52,9 +52,10 @@
 
     {{-- Date Requested --}}
     <td class="px-6 py-4 whitespace-nowrap">
-        @if($request->created_at)
-            <p class="text-xs font-bold text-gray-700">{{ $request->created_at->format('M d, Y') }}</p>
-            <p class="text-[10px] text-gray-400 mt-0.5">{{ $request->created_at->format('h:i A') }}</p>
+        @php $requestDate = $request->created_at ?? $request->updated_at; @endphp
+        @if($requestDate)
+            <p class="text-xs font-bold text-gray-700">{{ $requestDate->format('M d, Y') }}</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">{{ $requestDate->format('h:i A') }}</p>
         @else
             <span class="text-[10px] text-gray-300 font-bold">—</span>
         @endif
