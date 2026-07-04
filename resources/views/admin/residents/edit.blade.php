@@ -85,7 +85,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Birth Date</label>
-                            <input type="date" name="birth_date" id="birth_date" value="{{ old('birth_date', $resident->birth_date) }}" 
+                            <input type="date" name="birth_date" id="birth_date" value="{{ old('birth_date', $resident->birth_date ? \Carbon\Carbon::parse($resident->birth_date)->format('Y-m-d') : '') }}"
                                    class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all" required>
                         </div>
                         <div>
