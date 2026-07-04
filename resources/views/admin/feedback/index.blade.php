@@ -409,14 +409,20 @@ new Chart(document.getElementById('sentimentChart'), {
 });
 @endif
 
-// Smart auto-refresh: only reload when new feedback arrives and admin is idle
+// Smart auto-refresh: only reload when new feedback arrives and admin has been idle 60s
 (function () {
     let since = Math.floor(Date.now() / 1000);
+    let lastActivity = Date.now();
+    const IDLE_MS = 60000; // must be idle for 60 seconds before refresh triggers
+
+    ['keydown', 'mousedown', 'input', 'focus'].forEach(evt =>
+        document.addEventListener(evt, () => { lastActivity = Date.now(); }, true)
+    );
+
     setInterval(() => {
         const openReply = document.querySelector('[id^="reply-form-"]:not(.hidden)');
         if (openReply) return; // reply form is open
-        const active = document.activeElement;
-        if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) return; // admin is typing
+        if (Date.now() - lastActivity < IDLE_MS) return; // admin was recently active
         fetch('/admin/poll?since=' + since, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             credentials: 'same-origin'
