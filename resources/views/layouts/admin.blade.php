@@ -361,15 +361,20 @@
         var pollUrl   = '{{ route('admin.poll') }}';
         var sinceTime = Math.floor(Date.now() / 1000);
 
-        var pageKey = {
-            'admin.complaints.index':   'complaints',
+        // Pages that auto-reload (no typing involved)
+        var reloadPages = {
             'admin.documents.index':    'document_requests',
-            'admin.feedback.index':     'feedback',
             'admin.verification.index': 'verification',
             'admin.archive.index':      'archive',
         };
 
-        @foreach(['admin.complaints.index','admin.documents.index','admin.feedback.index','admin.verification.index','admin.archive.index'] as $r)
+        // Pages that show a banner instead of reloading (admin may be typing)
+        var bannerPages = {
+            'admin.complaints.index': { key: 'complaints', color: '#1d4ed8', shadow: 'rgba(29,78,216,.4)', text: '🔔 New complaints — click to refresh' },
+            'admin.feedback.index':   { key: 'feedback',   color: '#16a34a', shadow: 'rgba(22,163,74,.4)',  text: '🔔 New feedback — click to refresh' },
+        };
+
+        @foreach(array_merge(['admin.complaints.index','admin.documents.index','admin.feedback.index','admin.verification.index','admin.archive.index']) as $r)
         @if(request()->routeIs($r))
         var currentPageKey = '{{ $r }}';
         @endif
@@ -377,7 +382,17 @@
 
         if (typeof currentPageKey === 'undefined') return;
 
-        var dataKey = pageKey[currentPageKey];
+        var banner = null;
+        if (bannerPages[currentPageKey]) {
+            var cfg = bannerPages[currentPageKey];
+            banner = document.createElement('div');
+            banner.style.cssText = 'display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;' +
+                'background:' + cfg.color + ';color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;' +
+                'text-transform:uppercase;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 20px ' + cfg.shadow + ';white-space:nowrap;';
+            banner.textContent = cfg.text;
+            banner.addEventListener('click', function() { window.location.reload(); });
+            document.body.appendChild(banner);
+        }
 
         function poll() {
             fetch(pollUrl + '?since=' + sinceTime, {
@@ -385,16 +400,26 @@
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if ((data[dataKey] || 0) > 0) {
-                    window.location.reload();
-                } else {
-                    sinceTime = Math.floor(Date.now() / 1000);
+                if (bannerPages[currentPageKey]) {
+                    var count = (data[bannerPages[currentPageKey].key] || 0);
+                    if (count > 0) {
+                        if (banner) banner.style.display = 'block';
+                    } else {
+                        sinceTime = Math.floor(Date.now() / 1000);
+                    }
+                } else if (reloadPages[currentPageKey]) {
+                    var count = (data[reloadPages[currentPageKey]] || 0);
+                    if (count > 0) {
+                        window.location.reload();
+                    } else {
+                        sinceTime = Math.floor(Date.now() / 1000);
+                    }
                 }
             })
             .catch(function() {});
         }
 
-        setInterval(poll, 5000);
+        setInterval(poll, 30000);
     })();
     </script>
 

@@ -381,35 +381,5 @@ function handleChatKey(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
 
-// New complaint notifier — shows a banner instead of reloading the page
-(function () {
-    let since = Math.floor(Date.now() / 1000);
-
-    const banner = document.createElement('div');
-    banner.id = 'new-complaint-banner';
-    banner.style.cssText = 'display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;' +
-        'background:#1d4ed8;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;' +
-        'text-transform:uppercase;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 20px rgba(29,78,216,.4);' +
-        'transition:opacity .2s;';
-    banner.textContent = '🔔 New complaints received — click to refresh';
-    banner.addEventListener('click', () => location.reload());
-    document.body.appendChild(banner);
-
-    setInterval(() => {
-        fetch('/admin/poll?since=' + since, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-            credentials: 'same-origin'
-        })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-            if (data && data.complaints > 0) {
-                banner.style.display = 'block';
-            } else {
-                since = Math.floor(Date.now() / 1000);
-            }
-        })
-        .catch(() => {});
-    }, 30000);
-})();
 </script>
 @endsection

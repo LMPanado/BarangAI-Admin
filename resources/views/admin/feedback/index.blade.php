@@ -409,35 +409,5 @@ new Chart(document.getElementById('sentimentChart'), {
 });
 @endif
 
-// New feedback notifier — shows a banner instead of reloading the page
-(function () {
-    let since = Math.floor(Date.now() / 1000);
-
-    const banner = document.createElement('div');
-    banner.id = 'new-feedback-banner';
-    banner.style.cssText = 'display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;' +
-        'background:#16a34a;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;' +
-        'text-transform:uppercase;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 20px rgba(22,163,74,.4);' +
-        'transition:opacity .2s;';
-    banner.textContent = '🔔 New feedback received — click to refresh';
-    banner.addEventListener('click', () => location.reload());
-    document.body.appendChild(banner);
-
-    setInterval(() => {
-        fetch('/admin/poll?since=' + since, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-            credentials: 'same-origin'
-        })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-            if (data && data.feedback > 0) {
-                banner.style.display = 'block';
-            } else {
-                since = Math.floor(Date.now() / 1000);
-            }
-        })
-        .catch(() => {});
-    }, 30000);
-})();
 </script>
 @endsection
