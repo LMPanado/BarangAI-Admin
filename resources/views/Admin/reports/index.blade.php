@@ -29,13 +29,13 @@
                 View
             </button>
         </form>
-        <button onclick="window.print()"
-                class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all shadow-sm">
+        <a href="{{ route('admin.reports.print', ['month' => $month]) }}" target="_blank"
+           class="flex items-center gap-2 bg-gray-800 text-white px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-900 transition-all shadow-sm">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
             </svg>
             Print Report
-        </button>
+        </a>
     </div>
 
     {{-- Print Header --}}
@@ -133,11 +133,17 @@
             </div>
             <div class="p-7 space-y-4">
                 {{-- Status row --}}
-                <div class="grid grid-cols-3 gap-3">
-                    @foreach([['Pending', $pendingDocs, 'text-amber-600', 'bg-amber-50'], ['Approved', $approvedDocs, 'text-green-600', 'bg-green-50'], ['Rejected', $rejectedDocs, 'text-red-600', 'bg-red-50']] as [$lbl, $val, $clr, $bg])
-                    <div class="rounded-xl {{ $bg }} px-4 py-3 text-center">
-                        <p class="text-xl font-extrabold {{ $clr }}">{{ $val }}</p>
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $lbl }}</p>
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach([
+                        ['Pending',    $pendingDocs,    'text-amber-600',  'bg-amber-50'],
+                        ['Processing', $processingDocs, 'text-blue-600',   'bg-blue-50'],
+                        ['Ready',      $readyDocs,      'text-indigo-600', 'bg-indigo-50'],
+                        ['Completed',  $completedDocs,  'text-green-600',  'bg-green-50'],
+                        ['Cancelled',  $cancelledDocs,  'text-red-600',    'bg-red-50'],
+                    ] as [$lbl, $val, $clr, $bg])
+                    <div class="rounded-xl {{ $bg }} px-2 py-3 text-center">
+                        <p class="text-lg font-extrabold {{ $clr }}">{{ $val }}</p>
+                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{{ $lbl }}</p>
                     </div>
                     @endforeach
                 </div>

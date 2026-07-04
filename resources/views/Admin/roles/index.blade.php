@@ -117,7 +117,7 @@
                                 };
                                 $roleLabel = match((int)$user->role) {
                                     1 => 'I.T. Administrator',
-                                    2 => 'Barangay Captain',
+                                    2 => 'Captain Level',
                                     3 => 'Barangay Staff',
                                     default => 'Resident User',
                                 };
@@ -134,7 +134,7 @@
                                     <select name="role" onchange="this.form.submit()"
                                         class="w-full text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer transition-all focus:border-brgyGreen focus:ring-0 outline-none hover:bg-white hover:border-slate-200 shadow-sm">
                                         <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Resident</option>
-                                        <option value="2" {{ $user->role == 2 ? 'selected' : '' }}>Brgy Captain</option>
+                                        <option value="2" {{ $user->role == 2 ? 'selected' : '' }}>Captain Level</option>
                                         <option value="3" {{ $user->role == 3 ? 'selected' : '' }}>Brgy Staff</option>
                                     </select>
                                 </form>

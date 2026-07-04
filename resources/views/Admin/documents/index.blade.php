@@ -102,16 +102,16 @@
     <div>
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Mobile App Requests</h2>
-            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->count() }} {{ Str::plural('entry', $mobileRequests->count()) }}</span>
+            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $mobileRequests->total() }} {{ Str::plural('entry', $mobileRequests->total()) }}</span>
         </div>
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
             <table class="w-full text-left table-fixed">
                 <colgroup>
-                    <col class="w-[22%]">
+                    <col class="w-[20%]">
                     <col class="w-[16%]">
-                    <col class="w-[24%]">
-                    <col class="w-[12%]">
-                    <col class="w-[14%]">
+                    <col class="w-[23%]">
+                    <col class="w-[16%]">
+                    <col class="w-[13%]">
                     <col class="w-[12%]">
                 </colgroup>
                 <thead>
@@ -119,7 +119,7 @@
                         <th class="px-6 py-3">Resident</th>
                         <th class="px-6 py-3">Document</th>
                         <th class="px-6 py-3">Purpose</th>
-                        <th class="px-6 py-3">Schedule</th>
+                        <th class="px-6 py-3">Date Requested</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
@@ -133,22 +133,27 @@
                 </tbody>
             </table>
         </div>
+        @if($mobileRequests->hasPages())
+        <div class="mt-4 flex justify-end">
+            {{ $mobileRequests->links() }}
+        </div>
+        @endif
     </div>
 
     {{-- WALK-IN / KIOSK REQUESTS --}}
     <div>
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Walk-in / Kiosk Requests</h2>
-            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->count() }} {{ Str::plural('entry', $kioskRequests->count()) }}</span>
+            <span class="text-[10px] font-black text-gray-300 uppercase tracking-widest">{{ $kioskRequests->total() }} {{ Str::plural('entry', $kioskRequests->total()) }}</span>
         </div>
         <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
             <table class="w-full text-left table-fixed">
                 <colgroup>
-                    <col class="w-[22%]">
+                    <col class="w-[20%]">
                     <col class="w-[16%]">
-                    <col class="w-[24%]">
-                    <col class="w-[12%]">
-                    <col class="w-[14%]">
+                    <col class="w-[23%]">
+                    <col class="w-[16%]">
+                    <col class="w-[13%]">
                     <col class="w-[12%]">
                 </colgroup>
                 <thead>
@@ -156,7 +161,7 @@
                         <th class="px-6 py-3">Resident</th>
                         <th class="px-6 py-3">Document</th>
                         <th class="px-6 py-3">Purpose</th>
-                        <th class="px-6 py-3">Schedule</th>
+                        <th class="px-6 py-3">Date Requested</th>
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
@@ -170,6 +175,11 @@
                 </tbody>
             </table>
         </div>
+        @if($kioskRequests->hasPages())
+        <div class="mt-4 flex justify-end">
+            {{ $kioskRequests->links() }}
+        </div>
+        @endif
     </div>
 
 </div>
@@ -288,6 +298,22 @@ let _cancelFormId = null;
 let _cancelSelectEl = null;
 let _cancelPrevValue = null;
 
+const statusColors = {
+    pending:          'bg-amber-50 text-amber-600 border-amber-100',
+    processing:       'bg-blue-50 text-blue-600 border-blue-100',
+    ready_for_pickup: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+    completed:        'bg-green-50 text-green-600 border-green-100',
+    cancelled:        'bg-red-50 text-red-600 border-red-100',
+};
+const allStatusClasses = Object.values(statusColors).join(' ').split(' ').filter((v, i, a) => a.indexOf(v) === i);
+
+function applyStatusColor(selectEl, status) {
+    selectEl.classList.remove(...allStatusClasses);
+    const classes = (statusColors[status] || 'bg-gray-50 text-gray-400 border-gray-100').split(' ');
+    selectEl.classList.add(...classes);
+    Array.from(selectEl.options).forEach(o => { o.defaultSelected = (o.value === status); });
+}
+
 function handleStatusChange(selectEl, formId) {
     if (selectEl.value === 'cancelled') {
         _cancelFormId = formId;
@@ -297,7 +323,32 @@ function handleStatusChange(selectEl, formId) {
         document.getElementById('cancelReasonError').style.display = 'none';
         document.getElementById('cancelModal').style.display = 'flex';
     } else {
-        selectEl.form.submit();
+        const form = document.getElementById('status-form-' + formId);
+        const url  = form.action;
+        const csrf = form.querySelector('[name=_token]').value;
+        const newStatus = selectEl.value;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': csrf,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: '_method=PATCH&status=' + encodeURIComponent(newStatus),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                applyStatusColor(selectEl, newStatus);
+            } else {
+                selectEl.value = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+            }
+        })
+        .catch(() => {
+            selectEl.value = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+        });
     }
 }
 
@@ -326,5 +377,24 @@ function submitCancellation() {
 document.getElementById('cancelModal').addEventListener('click', function(e) {
     if (e.target === this) closeCancelModal();
 });
+
+// Smart auto-refresh: only reload when new document requests arrive
+(function () {
+    let since = Math.floor(Date.now() / 1000);
+    setInterval(() => {
+        const modal = document.getElementById('cancelModal');
+        if (modal && !modal.classList.contains('hidden')) return; // don't interrupt open modal
+        fetch('/admin/poll?since=' + since, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.document_requests > 0) location.reload();
+            else since = Math.floor(Date.now() / 1000);
+        })
+        .catch(() => {});
+    }, 10000);
+})();
 </script>
 @endsection
