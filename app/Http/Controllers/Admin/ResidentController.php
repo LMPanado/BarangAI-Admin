@@ -61,8 +61,17 @@ class ResidentController extends Controller
         ]);
 
         $isVoter = !empty($validated['is_voter']);
-        $validated['is_voter'] = DB::raw($isVoter ? 'true' : 'false');
-        $resident = Resident::create($validated);
+
+        // Use DB::table directly so boolean is_voter is cast correctly for PostgreSQL
+        $id = DB::table('residents')->insertGetId(array_merge(
+            array_diff_key($validated, ['is_voter' => '']),
+            [
+                'is_voter'   => DB::raw($isVoter ? 'true' : 'false'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ));
+        $resident = Resident::find($id);
 
         AuditLogger::log('created', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
 
@@ -118,8 +127,15 @@ class ResidentController extends Controller
         ]);
 
         $isVoter = !empty($validated['is_voter']);
-        $validated['is_voter'] = DB::raw($isVoter ? 'true' : 'false');
-        $resident->update($validated);
+
+        // Use DB::table directly so boolean is_voter is cast correctly for PostgreSQL
+        DB::table('residents')->where('id', $resident->id)->update(array_merge(
+            array_diff_key($validated, ['is_voter' => '']),
+            [
+                'is_voter'   => DB::raw($isVoter ? 'true' : 'false'),
+                'updated_at' => now(),
+            ]
+        ));
 
         // Sync back to the linked user account if one exists
         if ($resident->user_id) {
