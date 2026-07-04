@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
@@ -45,7 +46,7 @@ class AnnouncementController extends Controller
             'content'    => $request->content,
             'category'   => $request->category,
             'image_url'  => $imagePath,
-            'is_pinned'  => $request->has('is_pinned'),
+            'is_pinned'  => DB::raw($request->has('is_pinned') ? 'true' : 'false'),
             'expires_at' => $expiresAt,
         ]);
 
@@ -101,7 +102,7 @@ class AnnouncementController extends Controller
             'content'    => $request->content,
             'category'   => $request->category,
             'image_url'  => $imagePath,
-            'is_pinned'  => $request->has('is_pinned'),
+            'is_pinned'  => DB::raw($request->has('is_pinned') ? 'true' : 'false'),
             'expires_at' => $expiresAt,
         ]);
 
