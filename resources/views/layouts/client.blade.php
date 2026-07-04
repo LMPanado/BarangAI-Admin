@@ -161,6 +161,12 @@
                 </div>
             </div>
 
+            {{-- QR Code --}}
+            <div class="pt-10 pb-6 border-t border-white/5 flex flex-col items-center gap-4">
+                <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" class="w-28 h-28 object-contain bg-white rounded-xl p-2">
+                <p class="text-[11px] font-bold text-white/40 uppercase tracking-widest text-center">Scan the QR Code to Download the Barangay 419 Mobile App</p>
+            </div>
+
             <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-3">
                 <p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.25em]">&copy; 2026 Barangay 419, Zone 43. All Rights Reserved.</p>
                 <p class="text-[10px] font-bold text-white/15 uppercase tracking-widest">BarangAI System</p>

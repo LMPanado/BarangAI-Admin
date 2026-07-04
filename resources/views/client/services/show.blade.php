@@ -65,13 +65,13 @@
                         @endforeach
                     </div>
 
-                    {{-- CTA Footer --}}
-                    <div class="mt-16 p-8 bg-brgyGreen/5 rounded-[2.5rem] border border-brgyGreen/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div>
-                            <p class="text-brgyGreen font-black text-sm uppercase tracking-widest">Ready to apply?</p>
-                            <p class="text-slate-500 text-xs font-medium">Download the mobile app to start your digital application.</p>
+                    {{-- QR Code CTA --}}
+                    <div class="mt-16 p-8 bg-brgyGreen/5 rounded-[2.5rem] border border-brgyGreen/10 flex flex-col md:flex-row items-center justify-center gap-8">
+                        <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" class="w-28 h-28 object-contain bg-white rounded-xl p-2 shadow">
+                        <div class="text-center md:text-left">
+                            <p class="text-brgyGreen font-black text-sm uppercase tracking-widest">Download the App</p>
+                            <p class="text-slate-500 text-xs font-medium mt-1">Scan the QR Code to Download the Barangay 419 Mobile App</p>
                         </div>
-                        <a href= class="px-8 py-3 bg-brgyGreen text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-darkGreen transition shadow-lg">View Mobile Guide</a>
                     </div>
                 </div>
             </div>
