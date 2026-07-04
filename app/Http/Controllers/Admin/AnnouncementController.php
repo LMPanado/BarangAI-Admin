@@ -41,14 +41,17 @@ class AnnouncementController extends Controller
             $expiresAt = now()->addDays((int) $request->duration_days);
         }
 
-        $announcement = Announcement::create([
+        $announcementId = DB::table('announcements')->insertGetId([
             'title'      => $request->title,
             'content'    => $request->content,
             'category'   => $request->category,
             'image_url'  => $imagePath,
             'is_pinned'  => DB::raw($request->has('is_pinned') ? 'true' : 'false'),
             'expires_at' => $expiresAt,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
+        $announcement = Announcement::find($announcementId);
 
         AuditLogger::log('created', 'Announcement', $announcement->title, $announcement->id);
 
@@ -97,13 +100,14 @@ class AnnouncementController extends Controller
             $expiresAt = null;
         }
 
-        $announcement->update([
+        DB::table('announcements')->where('id', $id)->update([
             'title'      => $request->title,
             'content'    => $request->content,
             'category'   => $request->category,
             'image_url'  => $imagePath,
             'is_pinned'  => DB::raw($request->has('is_pinned') ? 'true' : 'false'),
             'expires_at' => $expiresAt,
+            'updated_at' => now(),
         ]);
 
         AuditLogger::log('updated', 'Announcement', $announcement->title, $announcement->id);
