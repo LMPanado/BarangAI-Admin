@@ -7,6 +7,7 @@ use App\Models\Resident;
 use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ResidentController extends Controller
 {
@@ -59,6 +60,8 @@ class ResidentController extends Controller
             'address'      => 'required|string',
         ]);
 
+        $isVoter = !empty($validated['is_voter']);
+        $validated['is_voter'] = DB::raw($isVoter ? 'true' : 'false');
         $resident = Resident::create($validated);
 
         AuditLogger::log('created', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
@@ -114,11 +117,13 @@ class ResidentController extends Controller
             'address'      => 'required|string',
         ]);
 
+        $isVoter = !empty($validated['is_voter']);
+        $validated['is_voter'] = DB::raw($isVoter ? 'true' : 'false');
         $resident->update($validated);
 
         // Sync back to the linked user account if one exists
         if ($resident->user_id) {
-            User::where('id', $resident->user_id)->update([
+            DB::table('users')->where('id', $resident->user_id)->update([
                 'first_name'   => $validated['first_name'],
                 'last_name'    => $validated['last_name'],
                 'middle_name'  => $validated['middle_name'] ?? null,
@@ -128,11 +133,12 @@ class ResidentController extends Controller
                 'gender'       => $validated['gender'],
                 'civil_status' => $validated['civil_status'] ?? null,
                 'address'      => $validated['address'],
-                'is_voter'     => $validated['is_voter'],
+                'is_voter'     => DB::raw($isVoter ? 'true' : 'false'),
                 'birth_date'   => $validated['birth_date'] ?? null,
                 'place_birth'  => $validated['place_birth'] ?? null,
                 'height_cm'    => $validated['height_cm'] ?? null,
                 'weight_kg'    => $validated['weight_kg'] ?? null,
+                'updated_at'   => now(),
             ]);
         }
 
