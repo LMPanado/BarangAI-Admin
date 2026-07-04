@@ -102,7 +102,7 @@
 
     <footer class="bg-darkGreen text-white pt-20 pb-10 rounded-t-[2.5rem] mt-10">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-14">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-14">
                 <div class="space-y-5 md:col-span-1">
                     <div class="flex items-center gap-3">
                         <img src="{{ asset('images/brgy_logo.png') }}" alt="Barangay 419 Logo" class="w-12 h-12 object-contain rounded-full border border-white/10">
@@ -159,12 +159,13 @@
                         </a>
                     </div>
                 </div>
-            </div>
 
-            {{-- QR Code --}}
-            <div class="pt-10 pb-6 border-t border-white/5 flex flex-col items-center gap-4">
-                <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" class="w-28 h-28 object-contain bg-white rounded-xl p-2">
-                <p class="text-[11px] font-bold text-white/40 uppercase tracking-widest text-center">Scan the QR Code to Download the Barangay 419 Mobile App</p>
+                {{-- QR Code --}}
+                <div class="space-y-4 flex flex-col items-center md:items-start">
+                    <h4 class="text-[9px] font-black uppercase tracking-[0.25em] text-white/25">Download the App</h4>
+                    <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" class="w-24 h-24 object-contain bg-white rounded-xl p-2">
+                    <p class="text-[10px] font-medium text-white/40 leading-relaxed max-w-[120px]">Scan the QR Code to Download the Barangay 419 Mobile App</p>
+                </div>
             </div>
 
             <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-3">
