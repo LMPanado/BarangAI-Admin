@@ -165,7 +165,7 @@
                                 <div>
                                     <p class="text-xs font-bold text-gray-800">{{ $item->user_email }}</p>
                                     <p class="text-[10px] text-gray-400 font-medium mt-0.5">
-                                        {{ $item->created_at ? $item->created_at->format('M d, Y · h:i A') : '—' }}
+                                        {{ $item->created_at ? $item->created_at->timezone('Asia/Manila')->format('M d, Y · h:i A') : '—' }}
                                         @if($item->category)
                                             · <span class="text-brgyGreen font-bold uppercase">{{ $item->category }}</span>
                                         @endif
@@ -239,7 +239,7 @@
                                     <div class="flex items-center justify-between gap-2 mb-1">
                                         <p class="text-[9px] font-black text-brgyGreen uppercase tracking-widest">Barangay 419 Reply</p>
                                         <p class="text-[9px] text-gray-400 font-medium">
-                                            {{ $item->replied_by ?? 'Admin' }} · {{ $item->replied_at ? $item->replied_at->format('M d, Y · h:i A') : '' }}
+                                            {{ $item->replied_by ?? 'Admin' }} · {{ $item->replied_at ? $item->replied_at->timezone('Asia/Manila')->format('M d, Y · h:i A') : '' }}
                                         </p>
                                     </div>
                                     <p class="text-sm text-gray-700 leading-relaxed" id="reply-text-{{ $item->id }}">{{ $item->admin_reply }}</p>

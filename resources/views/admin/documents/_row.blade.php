@@ -54,8 +54,8 @@
     <td class="px-6 py-4 whitespace-nowrap">
         @php $requestDate = $request->created_at ?? $request->updated_at; @endphp
         @if($requestDate)
-            <p class="text-xs font-bold text-gray-700">{{ $requestDate->format('M d, Y') }}</p>
-            <p class="text-[10px] text-gray-400 mt-0.5">{{ $requestDate->format('h:i A') }}</p>
+            <p class="text-xs font-bold text-gray-700">{{ $requestDate->timezone('Asia/Manila')->format('M d, Y') }}</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">{{ $requestDate->timezone('Asia/Manila')->format('h:i A') }}</p>
         @else
             <span class="text-[10px] text-gray-300 font-bold">—</span>
         @endif
