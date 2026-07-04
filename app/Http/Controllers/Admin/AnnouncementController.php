@@ -95,7 +95,11 @@ class AnnouncementController extends Controller
 
         $expiresAt = $announcement->expires_at;
         if ($request->filled('duration_days')) {
-            $expiresAt = now()->addDays((int) $request->duration_days);
+            // Extend from current expiry if it's in the future, otherwise extend from now
+            $base = ($announcement->expires_at && $announcement->expires_at->isFuture())
+                ? $announcement->expires_at
+                : now();
+            $expiresAt = $base->addDays((int) $request->duration_days);
         } elseif ($request->has('no_expiry')) {
             $expiresAt = null;
         }
