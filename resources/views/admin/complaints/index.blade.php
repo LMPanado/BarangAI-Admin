@@ -381,11 +381,13 @@ function handleChatKey(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
 
-// Smart auto-refresh: only reload when new complaints arrive
+// Smart auto-refresh: only reload when new complaints arrive and admin is idle
 (function () {
     let since = Math.floor(Date.now() / 1000);
     setInterval(() => {
-        if (currentComplaintId) return; // don't interrupt an open chat
+        if (currentComplaintId) return; // chat is open
+        const active = document.activeElement;
+        if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) return; // admin is typing
         fetch('/admin/poll?since=' + since, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             credentials: 'same-origin'
@@ -395,8 +397,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
             if (data && data.complaints > 0) location.reload();
             else since = Math.floor(Date.now() / 1000);
         })
-        .catch(() => {}); // silently ignore network errors
-    }, 10000);
+        .catch(() => {});
+    }, 30000);
 })();
 </script>
 @endsection

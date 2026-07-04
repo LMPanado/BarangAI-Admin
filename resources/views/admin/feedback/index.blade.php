@@ -409,12 +409,14 @@ new Chart(document.getElementById('sentimentChart'), {
 });
 @endif
 
-// Smart auto-refresh: only reload when new feedback arrives
+// Smart auto-refresh: only reload when new feedback arrives and admin is idle
 (function () {
     let since = Math.floor(Date.now() / 1000);
     setInterval(() => {
         const openReply = document.querySelector('[id^="reply-form-"]:not(.hidden)');
-        if (openReply) return; // don't interrupt an open reply form
+        if (openReply) return; // reply form is open
+        const active = document.activeElement;
+        if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) return; // admin is typing
         fetch('/admin/poll?since=' + since, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             credentials: 'same-origin'
@@ -425,7 +427,7 @@ new Chart(document.getElementById('sentimentChart'), {
             else since = Math.floor(Date.now() / 1000);
         })
         .catch(() => {});
-    }, 10000);
+    }, 30000);
 })();
 </script>
 @endsection
