@@ -163,8 +163,8 @@
                 {{-- QR Code --}}
                 <div class="space-y-4 flex flex-col items-center md:items-start">
                     <h4 class="text-[9px] font-black uppercase tracking-[0.25em] text-white/25">Download the App</h4>
-                    <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" class="w-24 h-24 object-contain bg-white rounded-xl p-2">
-                    <p class="text-[10px] font-medium text-white/40 leading-relaxed max-w-[120px]">Scan the QR Code to Download the Barangay 419 Mobile App</p>
+                    <img src="{{ asset('images/qr-code.png') }}" alt="QR Code" class="w-16 h-16 object-contain bg-white rounded-lg p-1.5">
+                    <p class="text-[10px] font-medium text-white/40 leading-relaxed max-w-[100px]">Scan the QR Code to Download the Barangay 419 Mobile App</p>
                 </div>
             </div>
 
