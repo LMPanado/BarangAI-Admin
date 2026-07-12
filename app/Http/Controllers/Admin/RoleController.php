@@ -19,6 +19,7 @@ class RoleController extends Controller
         $sort   = $request->input('sort', 'latest');
 
         $query = User::where('id', '!=', auth()->id())
+            ->where('role', '!=', 1)
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($q2) use ($search) {
                     $q2->where('first_name', 'ilike', "%{$search}%")
