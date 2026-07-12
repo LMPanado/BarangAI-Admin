@@ -330,15 +330,15 @@ new Chart(document.getElementById('complaintStatusChart'), {
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
             <div class="mb-4">
                 <h3 class="text-sm font-extrabold text-slate-700">Civil Status</h3>
                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Single, Married, Widowed, etc.</p>
             </div>
             <div class="h-[220px]"><canvas id="civilStatusChart"></canvas></div>
         </div>
-<div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
             <div class="mb-5">
                 <h3 class="text-sm font-extrabold text-slate-700">Population by Age Group</h3>
                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Distribution across life stages</p>
