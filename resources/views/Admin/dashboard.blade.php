@@ -276,7 +276,7 @@ new Chart(document.getElementById('complaintStatusChart'), {
     </div>
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         @php
             $statCards = [
                 ['Total Residents','value'=>$totalPopulation, 'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z','bg'=>'bg-blue-50','icon_bg'=>'bg-blue-100','color'=>'text-blue-600','border'=>'border-blue-100','bar'=>'bg-blue-500'],
