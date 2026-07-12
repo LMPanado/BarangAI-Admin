@@ -133,11 +133,9 @@
                 </tbody>
             </table>
         </div>
-        @if($mobileRequests->hasPages())
         <div class="mt-4 flex justify-end">
             {{ $mobileRequests->links() }}
         </div>
-        @endif
     </div>
 
     {{-- WALK-IN / KIOSK REQUESTS --}}
@@ -175,11 +173,9 @@
                 </tbody>
             </table>
         </div>
-        @if($kioskRequests->hasPages())
         <div class="mt-4 flex justify-end">
             {{ $kioskRequests->links() }}
         </div>
-        @endif
     </div>
 
 </div>

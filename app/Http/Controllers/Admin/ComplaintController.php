@@ -42,12 +42,10 @@ class ComplaintController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $allComplaints = $query->with('residentUser')->get();
+        $openList   = (clone $query)->where('status', 'open')->with('residentUser')->paginate(10, ['*'], 'open_page')->withQueryString();
+        $closedList = (clone $query)->where('status', 'closed')->with('residentUser')->paginate(10, ['*'], 'closed_page')->withQueryString();
 
-        $openList   = $allComplaints->where('status', 'open')->values();
-        $closedList = $allComplaints->where('status', 'closed')->values();
-
-        $allIds = $allComplaints->pluck('id');
+        $allIds = $openList->pluck('id')->merge($closedList->pluck('id'));
         $messageCounts = ComplaintMessage::whereIn('complaint_id', $allIds)
             ->selectRaw('complaint_id, COUNT(*) as cnt')
             ->groupBy('complaint_id')

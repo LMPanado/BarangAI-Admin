@@ -114,7 +114,7 @@
                     Latest
                 </a>
                 <span class="pl-2 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                    {{ $openList->count() + $closedList->count() }} {{ Str::plural('complaint', $openList->count() + $closedList->count()) }}
+                    {{ $openList->total() + $closedList->total() }} {{ Str::plural('complaint', $openList->total() + $closedList->total()) }}
                 </span>
             </div>
         </div>
@@ -135,7 +135,7 @@
         <div class="flex items-center gap-3 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
             <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Open Complaints</h2>
-            <span class="text-[10px] font-black text-amber-500 bg-amber-50 px-2.5 py-0.5 rounded-full">{{ $openList->count() }}</span>
+            <span class="text-[10px] font-black text-amber-500 bg-amber-50 px-2.5 py-0.5 rounded-full">{{ $openList->total() }}</span>
         </div>
         <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
             @if($openList->isEmpty())
@@ -145,6 +145,9 @@
             @else
                 @include('admin.complaints._table', ['complaints' => $openList, 'messageCounts' => $messageCounts, 'tbodyId' => 'open'])
             @endif
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $openList->links() }}
+            </div>
         </div>
     </div>
 
@@ -153,7 +156,7 @@
         <div class="flex items-center gap-3 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>
             <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Closed Complaints</h2>
-            <span class="text-[10px] font-black text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">{{ $closedList->count() }}</span>
+            <span class="text-[10px] font-black text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">{{ $closedList->total() }}</span>
         </div>
         <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
             @if($closedList->isEmpty())
@@ -163,6 +166,9 @@
             @else
                 @include('admin.complaints._table', ['complaints' => $closedList, 'messageCounts' => $messageCounts, 'tbodyId' => 'closed'])
             @endif
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $closedList->links() }}
+            </div>
         </div>
     </div>
 </div>
