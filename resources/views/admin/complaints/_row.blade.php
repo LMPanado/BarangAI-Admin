@@ -42,7 +42,7 @@
         @if(auth()->user()->isCaptain() || auth()->user()->isAdmin())
         <form action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST">
             @csrf @method('PATCH')
-            <select name="status" onchange="this.form.submit()"
+            <select name="status" onchange="confirmAction(this.form, 'Change this complaint status to \'' + this.options[this.selectedIndex].text + '\'?')"
                     class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 cursor-pointer focus:ring-2 focus:ring-brgyGreen/20 outline-none
                            {{ ($complaint->status ?? 'open') === 'open' ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700' }}">
                 <option value="open"   {{ ($complaint->status ?? 'open') === 'open'   ? 'selected' : '' }}>Open</option>

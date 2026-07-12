@@ -34,7 +34,7 @@
         </div>
         @endif
 
-        <form action="{{ route('admin.residents.update', $resident->id) }}" method="POST" class="p-8">
+        <form action="{{ route('admin.residents.update', $resident->id) }}" method="POST" class="p-8" id="edit-resident-form">
             @csrf
             @method('PUT')
             
@@ -149,8 +149,9 @@
                 <a href="{{ route('admin.residents.index') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-all">
                     Discard Changes
                 </a>
-                <button type="submit" 
-                        style="background-color: #1d4ed8;" 
+                <button type="button"
+                        onclick="confirmAction(document.getElementById('edit-resident-form'), 'Are you sure you want to save changes to this resident record?')"
+                        style="background-color: #1d4ed8;"
                         class="w-full sm:w-auto text-white text-[11px] font-black uppercase tracking-[0.2em] px-12 py-5 rounded-2xl shadow-xl shadow-green-900/20 hover:scale-[1.02] transition-all active:scale-95">
                     Save Changes
                 </button>

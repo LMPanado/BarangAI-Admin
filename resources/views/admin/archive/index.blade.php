@@ -174,7 +174,7 @@
                     <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                     <form action="{{ route('admin.archive.restore', ['type'=>'resident','id'=>$item->id]) }}" method="POST">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                        <button type="button" onclick="confirmAction(this.closest('form'), 'Are you sure you want to restore this record?')" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             Restore
                         </button>
@@ -228,7 +228,7 @@
                     <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                     <form action="{{ route('admin.archive.restore', ['type'=>'announcement','id'=>$item->id]) }}" method="POST">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                        <button type="button" onclick="confirmAction(this.closest('form'), 'Are you sure you want to restore this record?')" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             Restore
                         </button>
@@ -279,7 +279,7 @@
                     <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                     <form action="{{ route('admin.archive.restore', ['type'=>'event','id'=>$item->id]) }}" method="POST">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                        <button type="button" onclick="confirmAction(this.closest('form'), 'Are you sure you want to restore this record?')" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             Restore
                         </button>
@@ -339,7 +339,7 @@
                     <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                     <form action="{{ route('admin.archive.restore', ['type'=>'feedback','id'=>$item->id]) }}" method="POST">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                        <button type="button" onclick="confirmAction(this.closest('form'), 'Are you sure you want to restore this record?')" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             Restore
                         </button>
@@ -395,7 +395,7 @@
                     <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                     <form action="{{ route('admin.archive.restore', ['type'=>'request','id'=>$item->id]) }}" method="POST">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
+                        <button type="button" onclick="confirmAction(this.closest('form'), 'Are you sure you want to restore this record?')" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             Restore
                         </button>

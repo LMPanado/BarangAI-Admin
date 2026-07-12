@@ -355,6 +355,64 @@
     }
     </script>
 
+    {{-- Global Confirm Action Modal (for edits, status changes, role changes, restores) --}}
+    <div id="confirm-action-modal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center">
+            <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <svg class="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-base font-extrabold text-gray-800 mb-2">Confirm Action</h3>
+            <p id="confirm-action-message" class="text-sm text-gray-400 font-medium mb-8">Are you sure you want to proceed?</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()"
+                        class="flex-1 py-3 border-2 border-gray-100 text-gray-500 text-xs font-black uppercase tracking-widest rounded-2xl hover:border-gray-200 hover:text-gray-700 transition-all">
+                    Cancel
+                </button>
+                <button id="confirm-action-btn"
+                        class="flex-1 py-3 bg-brgyGreen text-white text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-darkGreen transition-all shadow-lg shadow-brgyGreen/20">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    window._confirmAction = null;
+
+    function confirmAction(formOrFn, message) {
+        window._confirmAction = formOrFn;
+        document.getElementById('confirm-action-message').textContent = message || 'Are you sure you want to proceed?';
+        const modal = document.getElementById('confirm-action-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeConfirmModal() {
+        const modal = document.getElementById('confirm-action-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        window._confirmAction = null;
+    }
+
+    if (!window._confirmModalBound) {
+        window._confirmModalBound = true;
+        document.getElementById('confirm-action-btn').addEventListener('click', function () {
+            if (!window._confirmAction) return;
+            if (typeof window._confirmAction === 'function') {
+                window._confirmAction();
+            } else {
+                window._confirmAction.submit();
+            }
+            closeConfirmModal();
+        });
+        document.getElementById('confirm-action-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeConfirmModal();
+        });
+    }
+    </script>
+
     {{-- Real-time polling --}}
     <script>
     (function () {

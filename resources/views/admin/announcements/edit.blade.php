@@ -18,7 +18,7 @@
         </nav>
     </div>
 
-    <form action="{{ route('admin.announcements.update', $announcement->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.announcements.update', $announcement->id) }}" method="POST" enctype="multipart/form-data" id="edit-announcement-form">
         @csrf
         @method('PUT')
         <input type="hidden" name="remove_image" id="remove_image_input" value="0">
@@ -144,7 +144,8 @@
 
                 {{-- Actions --}}
                 <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 space-y-3">
-                    <button type="submit"
+                    <button type="button"
+                            onclick="confirmAction(document.getElementById('edit-announcement-form'), 'Are you sure you want to save changes to this announcement?')"
                             class="w-full bg-brgyGreen text-white py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:shadow-lg hover:shadow-brgyGreen/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         Save Changes

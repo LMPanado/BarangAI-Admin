@@ -282,8 +282,7 @@ new Chart(document.getElementById('complaintStatusChart'), {
                 ['Total Residents','value'=>$totalPopulation, 'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z','bg'=>'bg-blue-50','icon_bg'=>'bg-blue-100','color'=>'text-blue-600','border'=>'border-blue-100','bar'=>'bg-blue-500'],
                 ['Male',           'value'=>$maleCount,       'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',                                          'bg'=>'bg-sky-50',  'icon_bg'=>'bg-sky-100',  'color'=>'text-sky-600',  'border'=>'border-sky-100',  'bar'=>'bg-sky-500'],
                 ['Female',         'value'=>$femaleCount,     'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',                                          'bg'=>'bg-pink-50', 'icon_bg'=>'bg-pink-100', 'color'=>'text-pink-500', 'border'=>'border-pink-100', 'bar'=>'bg-pink-500'],
-                ['Voters',         'value'=>$voterCount,      'icon'=>'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',                                                                'bg'=>'bg-amber-50','icon_bg'=>'bg-amber-100','color'=>'text-amber-600','border'=>'border-amber-100','bar'=>'bg-amber-500'],
-                ['Pending Docs',   'value'=>$pendingRequests, 'icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z','bg'=>'bg-orange-50','icon_bg'=>'bg-orange-100','color'=>'text-orange-600','border'=>'border-orange-100','bar'=>'bg-orange-500'],
+['Pending Docs',   'value'=>$pendingRequests, 'icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z','bg'=>'bg-orange-50','icon_bg'=>'bg-orange-100','color'=>'text-orange-600','border'=>'border-orange-100','bar'=>'bg-orange-500'],
                 ['Open Complaints','value'=>\App\Models\Complaint::where('status','open')->count(),'icon'=>'M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z','bg'=>'bg-red-50','icon_bg'=>'bg-red-100','color'=>'text-red-500','border'=>'border-red-100','bar'=>'bg-red-500'],
             ];
         @endphp
@@ -339,14 +338,7 @@ new Chart(document.getElementById('complaintStatusChart'), {
             </div>
             <div class="h-[220px]"><canvas id="civilStatusChart"></canvas></div>
         </div>
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
-            <div class="mb-4">
-                <h3 class="text-sm font-extrabold text-slate-700">Voting Eligibility</h3>
-                <p class="text-[10px] text-slate-400 font-medium mt-0.5">Registered voters vs non-voters</p>
-            </div>
-            <div class="h-[220px]"><canvas id="voterChart"></canvas></div>
-        </div>
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+<div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
             <div class="mb-5">
                 <h3 class="text-sm font-extrabold text-slate-700">Population by Age Group</h3>
                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Distribution across life stages</p>
@@ -452,7 +444,6 @@ new Chart(document.getElementById('registrationTrendChart'), {
     options:{ maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1, font:{ size:10, weight:'bold' }, color:'#94a3b8' }, grid:{ color:'#f1f5f9' }, border:{ display:false } }, x:{ ticks:{ font:{ size:10, weight:'bold' }, color:'#94a3b8' }, grid:{ display:false }, border:{ display:false } } } }
 });
 new Chart(document.getElementById('genderChart'), { type:'doughnut', data:{ labels:['Male','Female'], datasets:[{ data:[{{ $maleCount }},{{ $femaleCount }}], backgroundColor:['#38bdf8','#f472b6'], borderWidth:0, hoverOffset:5 }] }, options:{ ...chartDefaults, cutout:'68%' } });
-new Chart(document.getElementById('voterChart'), { type:'doughnut', data:{ labels:['Registered Voters','Non-Voters'], datasets:[{ data:[{{ $voterCount }},{{ $totalPopulation - $voterCount }}], backgroundColor:['#f59e0b','#e2e8f0'], borderWidth:0, hoverOffset:5 }] }, options:{ ...chartDefaults, cutout:'68%' } });
 new Chart(document.getElementById('civilStatusChart'), { type:'doughnut', data:{ labels:{!! json_encode($civilStatusData->keys()) !!}, datasets:[{ data:{!! json_encode($civilStatusData->values()) !!}, backgroundColor:['#6366f1','#f59e0b','#10b981','#f43f5e','#8b5cf6'], borderWidth:0, hoverOffset:5 }] }, options:{ ...chartDefaults, cutout:'68%' } });
 new Chart(document.getElementById('docTypeChart'), { type:'bar', data:{ labels:{!! json_encode($docByType->keys()) !!}, datasets:[{ label:'Requests', data:{!! json_encode($docByType->values()) !!}, backgroundColor:'rgba(29,78,216,0.15)', borderColor:'#1d4ed8', borderWidth:1.5, borderRadius:6, borderSkipped:false }] }, options:{ maintainAspectRatio:false, indexAxis:'y', plugins:{ legend:{ display:false } }, scales:{ x:{ beginAtZero:true, ticks:{ stepSize:1, font:{ size:10, weight:'bold' }, color:'#94a3b8' }, grid:{ color:'#f1f5f9' }, border:{ display:false } }, y:{ ticks:{ font:{ size:10, weight:'bold' }, color:'#64748b' }, grid:{ display:false }, border:{ display:false } } } } });
 const statusColors={ 'pending':'#f59e0b','approved':'#10b981','rejected':'#f43f5e','released':'#6366f1','cancelled':'#94a3b8' };

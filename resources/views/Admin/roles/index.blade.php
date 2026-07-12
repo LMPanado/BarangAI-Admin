@@ -131,7 +131,7 @@
                                 <form action="{{ route('admin.roles.update', $user->id) }}" method="POST" class="w-full max-w-[200px]">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="role" onchange="this.form.submit()"
+                                    <select name="role" onchange="confirmAction(this.form, 'Change role for this user to \'' + this.options[this.selectedIndex].text + '\'?')"
                                         class="w-full text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-2 border-slate-100 bg-slate-50/50 cursor-pointer transition-all focus:border-brgyGreen focus:ring-0 outline-none hover:bg-white hover:border-slate-200 shadow-sm">
                                         <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Resident</option>
                                         <option value="2" {{ $user->role == 2 ? 'selected' : '' }}>Captain Level</option>

@@ -80,14 +80,12 @@
         $statTotal   = $residents->total();
         $statMale    = \App\Models\Resident::where('gender', 'Male')->count();
         $statFemale  = \App\Models\Resident::where('gender', 'Female')->count();
-        $statVoters  = \App\Models\Resident::whereRaw('is_voter = true')->count();
     @endphp
-    <div class="grid grid-cols-4 gap-4">
+    <div class="grid grid-cols-3 gap-4">
         @foreach([
             ['Total Residents', $statTotal,  'text-gray-700',  'bg-gray-50',   'border-gray-100'],
             ['Male',            $statMale,   'text-blue-600',  'bg-blue-50',   'border-blue-100'],
             ['Female',          $statFemale, 'text-pink-600',  'bg-pink-50',   'border-pink-100'],
-            ['Registered Voters',$statVoters,'text-green-600', 'bg-green-50',  'border-green-100'],
         ] as [$lbl, $val, $clr, $bg, $border])
         <div class="rounded-2xl {{ $bg }} border {{ $border }} px-5 py-4 flex items-center gap-3">
             <p class="text-2xl font-extrabold {{ $clr }}">{{ $val }}</p>
@@ -104,7 +102,6 @@
                     <tr class="text-gray-400 text-[10px] uppercase font-black tracking-[0.2em] border-b border-gray-100">
                         <th class="px-8 py-4 font-black">Profile Information</th>
                         <th class="px-8 py-4 font-black">Contact Details</th>
-                        <th class="px-8 py-4 font-black">Voter Status</th>
                         @if(auth()->user()->isAdmin() || auth()->user()->isCaptain())
                             <th class="px-8 py-4 text-right font-black">Actions</th>
                         @endif
@@ -145,19 +142,6 @@
                                     {{ $resident->email }}
                                 </div>
                             </div>
-                        </td>
-                        <td class="px-8 py-3">
-                            @if($resident->is_voter)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 text-[9px] font-black rounded-lg border border-green-100 uppercase tracking-widest">
-                                    <span class="w-1 h-1 bg-green-500 rounded-full"></span>
-                                    Registered
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 text-gray-400 text-[9px] font-black rounded-lg border border-gray-100 uppercase tracking-widest">
-                                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                    Non-Voter
-                                </span>
-                            @endif
                         </td>
                         
                         @if(auth()->user()->isAdmin() || auth()->user()->isCaptain())

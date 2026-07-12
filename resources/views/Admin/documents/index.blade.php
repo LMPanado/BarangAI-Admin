@@ -323,10 +323,12 @@ function handleStatusChange(selectEl, formId) {
         document.getElementById('cancelReasonError').style.display = 'none';
         document.getElementById('cancelModal').style.display = 'flex';
     } else {
-        const form = document.getElementById('status-form-' + formId);
-        const url  = form.action;
-        const csrf = form.querySelector('[name=_token]').value;
         const newStatus = selectEl.value;
+        const prevValue = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+        confirmAction(function () {
+            const form = document.getElementById('status-form-' + formId);
+            const url  = form.action;
+            const csrf = form.querySelector('[name=_token]').value;
 
         fetch(url, {
             method: 'POST',
@@ -343,12 +345,13 @@ function handleStatusChange(selectEl, formId) {
             if (data.success) {
                 applyStatusColor(selectEl, newStatus);
             } else {
-                selectEl.value = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+                selectEl.value = prevValue;
             }
         })
-        .catch(() => {
-            selectEl.value = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
-        });
+        .catch(() => { selectEl.value = prevValue; });
+        }, 'Change document status to \'' + selectEl.options[selectEl.selectedIndex].text + '\'?');
+        // revert select visually while waiting for confirmation
+        selectEl.value = prevValue;
     }
 }
 

@@ -68,30 +68,14 @@
             <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">All caught up! No pending verifications.</p>
         </div>
     @else
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="verification-grid">
             @foreach($pendingUsers as $user)
-            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden"
-                 id="verification-card-{{ $user->id }}">
+                @include('admin.verification._card', ['user' => $user])
+            @endforeach
+        </div>
 
-                {{-- Card Header --}}
-                <div class="px-6 py-5 border-b border-gray-50 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center font-black text-amber-600 text-sm">
-                            {{ strtoupper(substr($user->first_name ?? $user->email, 0, 1)) }}
-                        </div>
-                        <div>
-                            <p class="text-sm font-extrabold text-gray-800">
-                                {{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'Unknown Name' }}
-                            </p>
-                            <p class="text-[10px] text-gray-400 font-medium mt-0.5">{{ $user->email }}</p>
-                        </div>
-                    </div>
-                    <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-50 text-amber-600">
-                        Pending
-                    </span>
-                </div>
-
-                {{-- Resident Details --}}
+        @php /* old inline content removed */ @endphp
+        @if(false)
                 <div class="px-6 py-4 grid grid-cols-3 gap-3 border-b border-gray-50">
                     @foreach([
                         ['label' => 'Age',    'value' => $user->age ?? '—'],
@@ -194,9 +178,7 @@
                         Reject
                     </button>
                 </div>
-            </div>
-            @endforeach
-        </div>
+        @endif
 
         @if($pendingUsers->hasPages())
             <div class="bg-white px-6 py-4 rounded-3xl border border-gray-100 shadow-sm">
@@ -380,4 +362,48 @@ function performVerification(id, action, url, reason) {
     });
 }
 </script>
+
+<script>
+// AJAX real-time polling for new verification requests
+(function () {
+    var lastTs = Math.floor(Date.now() / 1000);
+    var toastTimeout;
+
+    function showToast(msg) {
+        var toast = document.getElementById('ajax-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(function () {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-8px)';
+        }, 3000);
+    }
+
+    function pollVerification() {
+        fetch('/admin/verification/new?since=' + lastTs, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            lastTs = Math.floor(Date.now() / 1000);
+            if (data.html) {
+                var grid = document.getElementById('verification-grid');
+                if (grid) {
+                    grid.insertAdjacentHTML('afterbegin', data.html);
+                    showToast('🔔 ' + data.count + ' new verification request(s)');
+                }
+            }
+        })
+        .catch(function () {});
+    }
+
+    setInterval(pollVerification, 10000);
+})();
+</script>
+
+<div id="ajax-toast" style="position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:9999;background:#d97706;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 4px 20px rgba(217,119,6,.4);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;"></div>
+
 @endsection

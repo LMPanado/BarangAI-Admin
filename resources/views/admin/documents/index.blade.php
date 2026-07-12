@@ -124,7 +124,7 @@
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-gray-50" id="mobile-requests-tbody">
                     @forelse($mobileRequests as $req)
                     @include('admin.documents._row', ['request' => $req, 'showVerify' => false])
                     @empty
@@ -166,7 +166,7 @@
                         <th class="px-6 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-gray-50" id="kiosk-requests-tbody">
                     @forelse($kioskRequests as $req)
                     @include('admin.documents._row', ['request' => $req, 'showVerify' => true])
                     @empty
@@ -323,10 +323,12 @@ function handleStatusChange(selectEl, formId) {
         document.getElementById('cancelReasonError').style.display = 'none';
         document.getElementById('cancelModal').style.display = 'flex';
     } else {
-        const form = document.getElementById('status-form-' + formId);
-        const url  = form.action;
-        const csrf = form.querySelector('[name=_token]').value;
         const newStatus = selectEl.value;
+        const prevValue = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+        confirmAction(function () {
+            const form = document.getElementById('status-form-' + formId);
+            const url  = form.action;
+            const csrf = form.querySelector('[name=_token]').value;
 
         fetch(url, {
             method: 'POST',
@@ -343,12 +345,13 @@ function handleStatusChange(selectEl, formId) {
             if (data.success) {
                 applyStatusColor(selectEl, newStatus);
             } else {
-                selectEl.value = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
+                selectEl.value = prevValue;
             }
         })
-        .catch(() => {
-            selectEl.value = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
-        });
+        .catch(() => { selectEl.value = prevValue; });
+        }, 'Change document status to \'' + selectEl.options[selectEl.selectedIndex].text + '\'?');
+        // revert select visually while waiting for confirmation
+        selectEl.value = prevValue;
     }
 }
 
@@ -378,23 +381,51 @@ document.getElementById('cancelModal').addEventListener('click', function(e) {
     if (e.target === this) closeCancelModal();
 });
 
-// Smart auto-refresh: only reload when new document requests arrive
+// AJAX real-time polling for new document requests
 (function () {
-    let since = Math.floor(Date.now() / 1000);
-    setInterval(() => {
-        const modal = document.getElementById('cancelModal');
-        if (modal && !modal.classList.contains('hidden')) return; // don't interrupt open modal
-        fetch('/admin/poll?since=' + since, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-            credentials: 'same-origin'
+    var lastTs = Math.floor(Date.now() / 1000);
+    var toastTimeout;
+
+    function showToast(msg) {
+        var toast = document.getElementById('ajax-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(function () {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-8px)';
+        }, 3000);
+    }
+
+    function pollDocuments() {
+        var modal = document.getElementById('cancelModal');
+        if (modal && !modal.classList.contains('hidden')) return;
+        fetch('/admin/documents/new?since=' + lastTs, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-            if (data && data.document_requests > 0) location.reload();
-            else since = Math.floor(Date.now() / 1000);
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            lastTs = Math.floor(Date.now() / 1000);
+            var count = 0;
+            if (data.mobile_html) {
+                var tbody = document.getElementById('mobile-requests-tbody');
+                if (tbody) { tbody.insertAdjacentHTML('afterbegin', data.mobile_html); count += data.mobile_count; }
+            }
+            if (data.kiosk_html) {
+                var tbody2 = document.getElementById('kiosk-requests-tbody');
+                if (tbody2) { tbody2.insertAdjacentHTML('afterbegin', data.kiosk_html); count += data.kiosk_count; }
+            }
+            if (count > 0) showToast('🔔 ' + count + ' new document request(s)');
         })
-        .catch(() => {});
-    }, 10000);
+        .catch(function () {});
+    }
+
+    setInterval(pollDocuments, 10000);
 })();
 </script>
+
+<div id="ajax-toast" style="position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:9999;background:#0369a1;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 4px 20px rgba(3,105,161,.4);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;"></div>
+
 @endsection
