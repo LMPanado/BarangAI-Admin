@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -276,7 +276,7 @@ new Chart(document.getElementById('complaintStatusChart'), {
     </div>
 
     {{-- Stat Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         @php
             $statCards = [
                 ['Total Residents','value'=>$totalPopulation, 'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z','bg'=>'bg-blue-50','icon_bg'=>'bg-blue-100','color'=>'text-blue-600','border'=>'border-blue-100','bar'=>'bg-blue-500'],
@@ -331,14 +331,14 @@ new Chart(document.getElementById('complaintStatusChart'), {
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
             <div class="mb-4">
                 <h3 class="text-sm font-extrabold text-slate-700">Civil Status</h3>
                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Single, Married, Widowed, etc.</p>
             </div>
             <div class="h-[220px]"><canvas id="civilStatusChart"></canvas></div>
         </div>
-<div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
             <div class="mb-5">
                 <h3 class="text-sm font-extrabold text-slate-700">Population by Age Group</h3>
                 <p class="text-[10px] text-slate-400 font-medium mt-0.5">Distribution across life stages</p>
