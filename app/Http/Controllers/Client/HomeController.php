@@ -24,8 +24,11 @@ class HomeController extends Controller
                                       ->take(5)
                                       ->get();
 
-        // 2. Fetch the original events calendar list (kept completely intact)
-        $events = Schedule::orderBy('schedule_date', 'asc')->take(6)->get();
+        // 2. Fetch upcoming/ongoing events — exclude those whose end time has already passed
+        $events = Schedule::orderBy('schedule_date', 'asc')
+            ->whereRaw("(schedule_date::date + schedule_time_to::time) > (NOW() AT TIME ZONE 'Asia/Manila')")
+            ->take(6)
+            ->get();
 
         // 3. Return the view, cleanly compacting both datasets
         return view('client.index', compact('announcements', 'events'));

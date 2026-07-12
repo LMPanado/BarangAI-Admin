@@ -435,14 +435,16 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($events as $event)
             @php
-                $imgUrl = $event->image ? asset('storage/' . $event->image) : '';
-                $day    = \Carbon\Carbon::parse($event->schedule_date)->format('d');
-                $mon    = \Carbon\Carbon::parse($event->schedule_date)->format('M');
-                $dateF  = \Carbon\Carbon::parse($event->schedule_date)->format('M d, Y');
-                $timeF  = \Carbon\Carbon::parse($event->schedule_time)->format('h:i A').' - '.\Carbon\Carbon::parse($event->schedule_time_to)->format('h:i A');
+                $imgUrl  = $event->image ? asset('storage/' . $event->image) : '';
+                $day     = \Carbon\Carbon::parse($event->schedule_date)->format('d');
+                $mon     = \Carbon\Carbon::parse($event->schedule_date)->format('M');
+                $dateF   = \Carbon\Carbon::parse($event->schedule_date)->format('M d, Y');
+                $timeF   = \Carbon\Carbon::parse($event->schedule_time)->format('h:i A').' - '.\Carbon\Carbon::parse($event->schedule_time_to)->format('h:i A');
+                $expires = \Carbon\Carbon::parse($event->schedule_date . ' ' . $event->schedule_time_to)->timezone('Asia/Manila')->toIso8601String();
             @endphp
             <div onclick="openEventModal('{{ addslashes($event->title) }}','{{ $imgUrl }}','{{ $dateF }}','{{ $timeF }}')"
-                 class="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 cursor-pointer flex flex-col">
+                 data-expires="{{ $expires }}"
+                 class="event-card group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:border-brgyGreen/20 transition-all duration-300 cursor-pointer flex flex-col">
                 <div class="h-48 relative overflow-hidden bg-slate-50">
                     @if($event->image)
                         <img src="{{ $imgUrl }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $event->title }}">
@@ -482,6 +484,22 @@
         @endforelse
     </div>
 </section>
+
+<script>
+(function () {
+    function removeExpiredEvents() {
+        const now = new Date();
+        document.querySelectorAll('.event-card[data-expires]').forEach(function (card) {
+            const expires = new Date(card.dataset.expires);
+            if (now >= expires) {
+                card.remove();
+            }
+        });
+    }
+    removeExpiredEvents();
+    setInterval(removeExpiredEvents, 30000);
+})();
+</script>
 
 {{-- ═══════════════════════════════════════════
      EVENT MODAL
