@@ -18,11 +18,11 @@ class ArchiveController extends Controller
         $search = trim($request->get('search', ''));
         $filter = $request->get('filter', 'all');
 
-        $residents        = collect();
-        $announcements    = collect();
-        $feedback         = collect();
-        $events           = collect();
-        $documentRequests = collect();
+        $residents        = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+        $announcements    = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+        $feedback         = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+        $events           = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+        $documentRequests = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
 
         if ($filter === 'all' || $filter === 'residents') {
             $q = Resident::onlyTrashed()->latest('deleted_at');
@@ -33,7 +33,7 @@ class ArchiveController extends Controller
                           ->orWhere('email',       'ilike', "%{$search}%");
                 });
             }
-            $residents = $q->get();
+            $residents = $q->paginate(10, ['*'], 'residents_page')->withQueryString();
         }
 
         if ($filter === 'all' || $filter === 'announcements') {
@@ -44,7 +44,7 @@ class ArchiveController extends Controller
                           ->orWhere('content', 'ilike', "%{$search}%");
                 });
             }
-            $announcements = $q->get();
+            $announcements = $q->paginate(10, ['*'], 'announcements_page')->withQueryString();
         }
 
         if ($filter === 'all' || $filter === 'events') {
@@ -52,7 +52,7 @@ class ArchiveController extends Controller
             if ($search) {
                 $q->where('title', 'ilike', "%{$search}%");
             }
-            $events = $q->get();
+            $events = $q->paginate(10, ['*'], 'events_page')->withQueryString();
         }
 
         if ($filter === 'all' || $filter === 'feedback') {
@@ -63,7 +63,7 @@ class ArchiveController extends Controller
                           ->orWhere('user_email','ilike', "%{$search}%");
                 });
             }
-            $feedback = $q->get();
+            $feedback = $q->paginate(10, ['*'], 'feedback_page')->withQueryString();
         }
 
         if ($filter === 'all' || $filter === 'requests') {
@@ -75,10 +75,16 @@ class ArchiveController extends Controller
                           ->orWhere('purpose',      'ilike', "%{$search}%");
                 });
             }
-            $documentRequests = $q->get();
+            $documentRequests = $q->paginate(10, ['*'], 'requests_page')->withQueryString();
         }
 
-        return view('admin.archive.index', compact('residents', 'announcements', 'feedback', 'events', 'documentRequests', 'search', 'filter'));
+        $expiringSoon = Resident::onlyTrashed()->where('deleted_at', '<', now()->subDays(25))->count()
+            + Announcement::onlyTrashed()->where('deleted_at', '<', now()->subDays(25))->count()
+            + Schedule::onlyTrashed()->where('deleted_at', '<', now()->subDays(25))->count()
+            + Feedback::onlyTrashed()->where('deleted_at', '<', now()->subDays(25))->count()
+            + DocumentRequest::onlyTrashed()->where('deleted_at', '<', now()->subDays(25))->count();
+
+        return view('admin.archive.index', compact('residents', 'announcements', 'feedback', 'events', 'documentRequests', 'search', 'filter', 'expiringSoon'));
     }
 
     public function restore($type, $id)

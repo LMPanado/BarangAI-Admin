@@ -169,13 +169,11 @@
     </div>
 
     {{-- Pagination --}}
-    @if(method_exists($users, 'hasPages') && $users->hasPages())
     <div class="pt-6 pb-10">
         <div class="bg-white px-6 py-4 rounded-3xl border border-slate-100 shadow-sm">
             {{ $users->appends(request()->query())->links() }}
         </div>
     </div>
-    @endif
 </div>
 
 {{-- Reset Password Modal --}}

@@ -159,9 +159,7 @@
         </div>
 
         {{-- Pagination --}}
-        @if($announcements->hasPages())
-            <div class="mt-4">{{ $announcements->links() }}</div>
-        @endif
+        <div class="mt-4">{{ $announcements->links() }}</div>
     @endif
 
 </div>

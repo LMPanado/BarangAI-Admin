@@ -180,11 +180,9 @@
                 </div>
         @endif
 
-        @if($pendingUsers->hasPages())
-            <div class="bg-white px-6 py-4 rounded-3xl border border-gray-100 shadow-sm">
-                {{ $pendingUsers->links() }}
-            </div>
-        @endif
+        <div class="bg-white px-6 py-4 rounded-3xl border border-gray-100 shadow-sm">
+            {{ $pendingUsers->links() }}
+        </div>
     @endif
 </div>
 
