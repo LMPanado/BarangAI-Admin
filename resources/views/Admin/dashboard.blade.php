@@ -330,7 +330,7 @@ new Chart(document.getElementById('complaintStatusChart'), {
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-7">
             <div class="mb-4">
                 <h3 class="text-sm font-extrabold text-slate-700">Civil Status</h3>
