@@ -117,14 +117,6 @@
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Voter Status</label>
-                        <select name="is_voter" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-extrabold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all appearance-none">
-                            <option value="0" {{ old('is_voter') == 0 ? 'selected' : '' }}>NOT REGISTERED</option>
-                            <option value="1" {{ old('is_voter') == 1 ? 'selected' : '' }}>REGISTERED VOTER</option>
-                        </select>
-                    </div>
-
-                    <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Resident Address</label>
                         <textarea name="address" rows="4" class="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] px-6 py-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all resize-none" placeholder="Full residential address..." required>{{ old('address') }}</textarea>
                     </div>
