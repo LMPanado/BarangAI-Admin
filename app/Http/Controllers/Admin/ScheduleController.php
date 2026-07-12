@@ -25,7 +25,7 @@ class ScheduleController extends Controller
             ->get()
             ->groupBy('schedule_date');
 
-        $upcomingActivities = Schedule::where('schedule_date', '>=', Carbon::today())
+        $upcomingActivities = Schedule::whereRaw("(schedule_date::date + schedule_time_to::time) > NOW() AT TIME ZONE 'Asia/Manila'")
             ->orderBy('schedule_date', 'asc')
             ->orderBy('schedule_time', 'asc')
             ->take(5)
