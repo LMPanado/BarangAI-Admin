@@ -56,17 +56,13 @@ class ResidentController extends Controller
             'place_birth'  => 'nullable|string|max:255',
             'height_cm'    => 'nullable|numeric|min:0',
             'weight_kg'    => 'nullable|numeric|min:0',
-            'is_voter'     => 'required|boolean',
             'address'      => 'required|string',
         ]);
 
-        $isVoter = !empty($validated['is_voter']);
-
-        // Use DB::table directly so boolean is_voter is cast correctly for PostgreSQL
         $id = DB::table('residents')->insertGetId(array_merge(
-            array_diff_key($validated, ['is_voter' => '']),
+            $validated,
             [
-                'is_voter'   => DB::raw($isVoter ? 'true' : 'false'),
+                'is_voter'   => DB::raw('false'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
