@@ -143,7 +143,7 @@
                     <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No open complaints</p>
                 </div>
             @else
-                @include('admin.complaints._table', ['complaints' => $openList, 'messageCounts' => $messageCounts])
+                @include('admin.complaints._table', ['complaints' => $openList, 'messageCounts' => $messageCounts, 'tbodyId' => 'open'])
             @endif
         </div>
     </div>
@@ -161,7 +161,7 @@
                     <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No closed complaints</p>
                 </div>
             @else
-                @include('admin.complaints._table', ['complaints' => $closedList, 'messageCounts' => $messageCounts])
+                @include('admin.complaints._table', ['complaints' => $closedList, 'messageCounts' => $messageCounts, 'tbodyId' => 'closed'])
             @endif
         </div>
     </div>
@@ -381,5 +381,46 @@ function handleChatKey(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
 
+// AJAX real-time polling for new complaints
+(function () {
+    var lastTs = Math.floor(Date.now() / 1000);
+    var toastTimeout;
+
+    function showToast(msg) {
+        var toast = document.getElementById('ajax-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(function () {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-8px)';
+        }, 3000);
+    }
+
+    function pollComplaints() {
+        fetch('/admin/complaints/new?since=' + lastTs, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            lastTs = Math.floor(Date.now() / 1000);
+            if (data.open_html) {
+                var tbody = document.getElementById('complaints-tbody-open');
+                if (tbody) {
+                    tbody.insertAdjacentHTML('afterbegin', data.open_html);
+                    showToast('🔔 ' + data.open_count + ' new complaint(s) received');
+                }
+            }
+        })
+        .catch(function () {});
+    }
+
+    setInterval(pollComplaints, 10000);
+})();
 </script>
+
+<div id="ajax-toast" style="position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:9999;background:#1d4ed8;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 4px 20px rgba(29,78,216,.4);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;"></div>
+
 @endsection

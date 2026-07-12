@@ -361,20 +361,14 @@
         var pollUrl   = '{{ route('admin.poll') }}';
         var sinceTime = Math.floor(Date.now() / 1000);
 
-        // Pages that auto-reload (no typing involved)
+        // Pages that auto-reload (complaints/feedback/documents/verification now use per-page AJAX)
         var reloadPages = {
-            'admin.documents.index':    'document_requests',
-            'admin.verification.index': 'verification',
-            'admin.archive.index':      'archive',
+            'admin.archive.index': 'archive',
         };
 
-        // Pages that show a banner instead of reloading (admin may be typing)
-        var bannerPages = {
-            'admin.complaints.index': { key: 'complaints', color: '#1d4ed8', shadow: 'rgba(29,78,216,.4)', text: '🔔 New complaints — click to refresh' },
-            'admin.feedback.index':   { key: 'feedback',   color: '#16a34a', shadow: 'rgba(22,163,74,.4)',  text: '🔔 New feedback — click to refresh' },
-        };
+        var bannerPages = {};
 
-        @foreach(array_merge(['admin.complaints.index','admin.documents.index','admin.feedback.index','admin.verification.index','admin.archive.index']) as $r)
+        @foreach(['admin.archive.index'] as $r)
         @if(request()->routeIs($r))
         var currentPageKey = '{{ $r }}';
         @endif

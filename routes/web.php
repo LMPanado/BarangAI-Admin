@@ -218,6 +218,76 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             return response()->json($data);
         })->name('admin.poll');
 
+        // AJAX: new complaints since timestamp
+        Route::get('/complaints/new', function (\Illuminate\Http\Request $request) {
+            $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
+            $newComplaints = \App\Models\Complaint::with('residentUser')
+                ->where('created_at', '>', $since)
+                ->where('status', 'open')
+                ->latest()
+                ->get();
+            $msgCounts = \App\Models\ComplaintMessage::whereIn('complaint_id', $newComplaints->pluck('id'))
+                ->selectRaw('complaint_id, count(*) as cnt')
+                ->groupBy('complaint_id')
+                ->pluck('cnt', 'complaint_id')
+                ->toArray();
+            $html = '';
+            foreach ($newComplaints as $complaint) {
+                $messageCounts = $msgCounts;
+                $html .= view('admin.complaints._row', compact('complaint', 'messageCounts'))->render();
+            }
+            return response()->json(['open_html' => $html, 'open_count' => $newComplaints->count()]);
+        })->middleware('role:1,2')->name('admin.complaints.new');
+
+        // AJAX: new feedback since timestamp
+        Route::get('/feedback/new', function (\Illuminate\Http\Request $request) {
+            $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
+            $newFeedbacks = \App\Models\Feedback::where('created_at', '>', $since)->latest()->get();
+            $html = '';
+            foreach ($newFeedbacks as $item) {
+                $html .= view('admin.feedback._item', compact('item'))->render();
+            }
+            return response()->json(['html' => $html ?: null, 'count' => $newFeedbacks->count()]);
+        })->middleware('role:2,3')->name('admin.feedback.new');
+
+        // AJAX: new document requests since timestamp
+        Route::get('/documents/new', function (\Illuminate\Http\Request $request) {
+            $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
+            $newMobile = \App\Models\DocumentRequest::where('created_at', '>', $since)
+                ->where(function ($q) { $q->where('source', '!=', 'kiosk')->orWhereNull('source'); })
+                ->latest()->get();
+            $newKiosk = \App\Models\DocumentRequest::where('created_at', '>', $since)
+                ->where('source', 'kiosk')->latest()->get();
+            $mobileHtml = '';
+            foreach ($newMobile as $request2) {
+                $mobileHtml .= view('admin.documents._row', ['request' => $request2, 'showVerify' => false])->render();
+            }
+            $kioskHtml = '';
+            foreach ($newKiosk as $request2) {
+                $kioskHtml .= view('admin.documents._row', ['request' => $request2, 'showVerify' => true])->render();
+            }
+            return response()->json([
+                'mobile_html'  => $mobileHtml ?: null,
+                'mobile_count' => $newMobile->count(),
+                'kiosk_html'   => $kioskHtml ?: null,
+                'kiosk_count'  => $newKiosk->count(),
+            ]);
+        })->middleware('role:1,2,3')->name('admin.documents.new');
+
+        // AJAX: new verification requests since timestamp
+        Route::get('/verification/new', function (\Illuminate\Http\Request $request) {
+            $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
+            $newUsers = \App\Models\User::where('role', 0)
+                ->where('verification_status', 'pending')
+                ->where('created_at', '>', $since)
+                ->latest()->get();
+            $html = '';
+            foreach ($newUsers as $user) {
+                $html .= view('admin.verification._card', compact('user'))->render();
+            }
+            return response()->json(['html' => $html ?: null, 'count' => $newUsers->count()]);
+        })->middleware('role:3')->name('admin.verification.new');
+
         // Reports (Analytics): Visible to 1 and 2 (Role 3 Blocked)
         Route::get('/reports', [ReportController::class, 'index'])
             ->middleware('role:1,2')
