@@ -129,13 +129,6 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Voter Status</label>
-                        <select name="is_voter" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 text-sm font-extrabold text-[#1d4ed8] focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all appearance-none">
-                            <option value="0" {{ old('is_voter', $resident->is_voter) == 0 ? 'selected' : '' }}>NOT REGISTERED</option>
-                            <option value="1" {{ old('is_voter', $resident->is_voter) == 1 ? 'selected' : '' }}>REGISTERED VOTER</option>
-                        </select>
-                    </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Resident Address</label>
