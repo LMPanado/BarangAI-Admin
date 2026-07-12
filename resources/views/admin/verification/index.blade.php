@@ -292,8 +292,9 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
 });
 
 function verifyUser(id, action, url) {
-    if (!confirm('Are you sure you want to verify this account?')) return;
-    performVerification(id, action, url, null);
+    confirmAction(function() {
+        performVerification(id, action, url, null);
+    }, 'Are you sure you want to verify this resident?');
 }
 
 function performVerification(id, action, url, reason) {
