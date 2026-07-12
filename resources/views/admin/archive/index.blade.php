@@ -179,6 +179,7 @@
                             Restore
                         </button>
                     </form>
+                    @if(auth()->user()->role != 1)
                     <form id="perm-resident-{{ $item->id }}" action="{{ route('admin.archive.force-delete', ['type'=>'resident','id'=>$item->id]) }}" method="POST">
                         @csrf @method('DELETE')
                     </form>
@@ -187,6 +188,7 @@
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         Delete Forever
                     </button>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -233,6 +235,7 @@
                             Restore
                         </button>
                     </form>
+                    @if(auth()->user()->role != 1)
                     <form id="perm-ann-{{ $item->id }}" action="{{ route('admin.archive.force-delete', ['type'=>'announcement','id'=>$item->id]) }}" method="POST">
                         @csrf @method('DELETE')
                     </form>
@@ -241,6 +244,7 @@
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         Delete Forever
                     </button>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -284,6 +288,7 @@
                             Restore
                         </button>
                     </form>
+                    @if(auth()->user()->role != 1)
                     <form id="perm-event-{{ $item->id }}" action="{{ route('admin.archive.force-delete', ['type'=>'event','id'=>$item->id]) }}" method="POST">
                         @csrf @method('DELETE')
                     </form>
@@ -292,6 +297,7 @@
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         Delete Forever
                     </button>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -344,6 +350,7 @@
                             Restore
                         </button>
                     </form>
+                    @if(auth()->user()->role != 1)
                     <form id="perm-fb-{{ $item->id }}" action="{{ route('admin.archive.force-delete', ['type'=>'feedback','id'=>$item->id]) }}" method="POST">
                         @csrf @method('DELETE')
                     </form>
@@ -352,6 +359,7 @@
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         Delete Forever
                     </button>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -400,6 +408,7 @@
                             Restore
                         </button>
                     </form>
+                    @if(auth()->user()->role != 1)
                     <form id="perm-req-{{ $item->id }}" action="{{ route('admin.archive.force-delete', ['type'=>'request','id'=>$item->id]) }}" method="POST">
                         @csrf @method('DELETE')
                     </form>
@@ -408,6 +417,7 @@
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         Delete Forever
                     </button>
+                    @endif
                 </div>
             </div>
             @endforeach
