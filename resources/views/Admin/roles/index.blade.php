@@ -138,14 +138,6 @@
                                         <option value="3" {{ $user->role == 3 ? 'selected' : '' }}>Brgy Staff</option>
                                     </select>
                                 </form>
-                                {{-- Reset Password --}}
-                                <button onclick="openResetModal({{ $user->id }}, '{{ addslashes($user->first_name . ' ' . $user->last_name) }}')"
-                                    title="Reset Password"
-                                    class="flex-shrink-0 p-2.5 rounded-xl border-2 border-slate-100 bg-slate-50/50 text-slate-400 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600 transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                                    </svg>
-                                </button>
                             </div>
                         </td>
                     </tr>
@@ -169,59 +161,11 @@
     </div>
 
     {{-- Pagination --}}
-    @if(method_exists($users, 'hasPages') && $users->hasPages())
     <div class="pt-6 pb-10">
         <div class="bg-white px-6 py-4 rounded-3xl border border-slate-100 shadow-sm">
             {{ $users->appends(request()->query())->links() }}
         </div>
     </div>
-    @endif
 </div>
 
-{{-- Reset Password Modal --}}
-<div id="resetPasswordModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md mx-4">
-        <h2 class="text-lg font-extrabold text-slate-800 mb-1">Reset Password</h2>
-        <p id="resetModalSubtitle" class="text-xs text-slate-400 font-medium mb-6"></p>
-        <form id="resetPasswordForm" method="POST">
-            @csrf
-            @method('PATCH')
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">New Password</label>
-                    <input type="password" name="password" required minlength="8"
-                        class="w-full px-4 py-3 text-sm border-2 border-slate-100 rounded-2xl focus:border-brgyGreen focus:ring-0 outline-none bg-slate-50">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Confirm Password</label>
-                    <input type="password" name="password_confirmation" required minlength="8"
-                        class="w-full px-4 py-3 text-sm border-2 border-slate-100 rounded-2xl focus:border-brgyGreen focus:ring-0 outline-none bg-slate-50">
-                </div>
-            </div>
-            <div class="flex gap-3 mt-6">
-                <button type="button" onclick="closeResetModal()"
-                    class="flex-1 px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-2xl border-2 border-slate-100 text-slate-500 hover:bg-slate-50 transition-all">
-                    Cancel
-                </button>
-                <button type="submit"
-                    class="flex-1 px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-2xl bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition-all">
-                    Reset Password
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-function openResetModal(userId, userName) {
-    document.getElementById('resetModalSubtitle').textContent = 'Setting new password for: ' + userName;
-    document.getElementById('resetPasswordForm').action = '/admin/roles/' + userId + '/reset-password';
-    document.getElementById('resetPasswordModal').classList.remove('hidden');
-    document.getElementById('resetPasswordModal').classList.add('flex');
-}
-function closeResetModal() {
-    document.getElementById('resetPasswordModal').classList.add('hidden');
-    document.getElementById('resetPasswordModal').classList.remove('flex');
-}
-</script>
 @endsection
