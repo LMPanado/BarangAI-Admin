@@ -438,21 +438,6 @@
         {{-- ── SIDEBAR (no-print) ── --}}
         <div class="w-64 shrink-0 space-y-5 no-print">
 
-            {{-- Template Switcher --}}
-            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6">
-                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">Document Type</p>
-                <div class="space-y-2">
-                    @foreach($templateKeys as $key)
-                    <button onclick="switchTemplate('{{ $key }}')"
-                            id="btn-{{ Str::slug($key) }}"
-                            class="w-full text-left px-4 py-3 rounded-2xl text-xs font-bold transition-all
-                                   {{ $docType === $key ? 'bg-brgyGreen text-white shadow-md shadow-brgyGreen/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100' }}">
-                        {{ $key }}
-                    </button>
-                    @endforeach
-                </div>
-            </div>
-
             {{-- Requester Info --}}
             <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6">
                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">Requester Info</p>
