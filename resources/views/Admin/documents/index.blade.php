@@ -348,13 +348,17 @@ function toggleRequestRow(id, currentStatus, csrf) {
 }
 
 function updateStatusBadge(id, status) {
-    const badge = document.getElementById('status-badge-' + id);
-    if (!badge) return;
-    // Remove old colour classes
-    Object.values(statusBadgeClasses).forEach(cls => cls.split(' ').forEach(c => badge.classList.remove(c)));
+    const inner = '<span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span> ' + (statusBadgeLabels[status] || status);
     const newClasses = (statusBadgeClasses[status] || 'bg-gray-50 text-gray-400 border-gray-100').split(' ');
-    badge.classList.add(...newClasses);
-    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span> ' + (statusBadgeLabels[status] || status);
+    const allOld = Object.values(statusBadgeClasses).join(' ').split(' ').filter((v,i,a)=>a.indexOf(v)===i);
+
+    [document.getElementById('status-badge-' + id), document.getElementById('detail-status-badge-' + id)]
+        .filter(Boolean)
+        .forEach(badge => {
+            allOld.forEach(c => badge.classList.remove(c));
+            badge.classList.add(...newClasses);
+            badge.innerHTML = inner;
+        });
 }
 
 // ── Cancel modal ───────────────────────────────────────────────

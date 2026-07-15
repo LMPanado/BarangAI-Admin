@@ -158,14 +158,18 @@ class DocumentRequestController extends Controller
         $docRequest = DocumentRequest::findOrFail($id);
 
         $refNo = 'REF-' . now()->format('Ymd') . '-' . str_pad($docRequest->id, 4, '0', STR_PAD_LEFT);
-        $docRequest->update(['reference_no' => $refNo]);
 
-        AuditLogger::log('updated', 'DocumentRequest',
-            'Kiosk request #' . $docRequest->id . ' verified → ' . $refNo,
+        $docRequest->update([
+            'reference_no' => $refNo,
+            'status'       => 'processing',
+        ]);
+
+        AuditLogger::log('status_changed', 'DocumentRequest',
+            'Kiosk request #' . $docRequest->id . ' verified → processing (' . $refNo . ')',
             $docRequest->id
         );
 
-        return redirect()->back()->with('success', 'Request verified. Reference number generated: ' . $refNo);
+        return redirect()->back()->with('success', 'Request verified. Reference: ' . $refNo . '. Status set to Processing.');
     }
 
     public function destroy($id)

@@ -103,7 +103,7 @@
     </td>
 
     {{-- Status badge (non-clickable) --}}
-    <td class="px-6 py-4">
+    <td class="px-6 py-4 align-middle">
         <span id="status-badge-{{ $request->id }}"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest {{ $badgeClass }}">
             <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
@@ -213,7 +213,9 @@
                 </div>
                 <div>
                     <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Current Status</p>
-                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest {{ $badgeClass }}">
+                    <span id="detail-status-badge-{{ $request->id }}"
+                          class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest {{ $badgeClass }}">
+                        <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
                         {{ $badgeLabel }}
                     </span>
                 </div>
