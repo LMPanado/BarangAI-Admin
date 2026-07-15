@@ -62,7 +62,7 @@
                 $catColors = match(strtolower($announcement->category ?? 'general')) {
                     'health', 'health advisory' => ['bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'border-emerald-100', 'dot' => 'bg-emerald-500'],
                     'security'                  => ['bg' => 'bg-red-50',     'text' => 'text-red-600',     'border' => 'border-red-100',     'dot' => 'bg-red-500'],
-                    'advisory'                  => ['bg' => 'bg-orange-50',  'text' => 'text-orange-600',  'border' => 'border-orange-100',  'dot' => 'bg-orange-500'],
+                    'advisory', 'emergency'     => ['bg' => 'bg-orange-50',  'text' => 'text-orange-600',  'border' => 'border-orange-100',  'dot' => 'bg-orange-500'],
                     default                     => ['bg' => 'bg-blue-50',    'text' => 'text-blue-600',    'border' => 'border-blue-100',    'dot' => 'bg-blue-500'],
                 };
             @endphp
@@ -159,9 +159,7 @@
         </div>
 
         {{-- Pagination --}}
-        @if($announcements->hasPages())
-            <div class="mt-4">{{ $announcements->links() }}</div>
-        @endif
+        <div class="mt-4">{{ $announcements->links() }}</div>
     @endif
 
 </div>

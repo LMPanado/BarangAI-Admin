@@ -53,7 +53,7 @@
                             <option value="General"  {{ old('category', $announcement->category) == 'General'  ? 'selected' : '' }}>General News</option>
                             <option value="Health"   {{ old('category', $announcement->category) == 'Health'   ? 'selected' : '' }}>Health Advisory</option>
                             <option value="Security" {{ old('category', $announcement->category) == 'Security' ? 'selected' : '' }}>Security Notice</option>
-                            <option value="Advisory" {{ old('category', $announcement->category) == 'Advisory' ? 'selected' : '' }}>Emergency Bulletin</option>
+                            <option value="Emergency" {{ old('category', $announcement->category) == 'Emergency' ? 'selected' : '' }}>Emergency Bulletin</option>
                         </select>
                     </div>
 

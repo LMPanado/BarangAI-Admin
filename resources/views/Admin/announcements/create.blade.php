@@ -52,7 +52,7 @@
                             <option value="General" {{ old('category') == 'General' ? 'selected' : '' }}>General News</option>
                             <option value="Health"  {{ old('category') == 'Health'  ? 'selected' : '' }}>Health Advisory</option>
                             <option value="Security"{{ old('category') == 'Security'? 'selected' : '' }}>Security Notice</option>
-                            <option value="Advisory"{{ old('category') == 'Advisory'? 'selected' : '' }}>Emergency Bulletin</option>
+                            <option value="Emergency"{{ old('category') == 'Emergency'? 'selected' : '' }}>Emergency Bulletin</option>
                         </select>
                     </div>
 
