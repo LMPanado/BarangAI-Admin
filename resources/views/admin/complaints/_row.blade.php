@@ -123,7 +123,7 @@
 
                 @if($complaint->respondent_is_resident && $complaint->respondent_matched_uid)
                 <button
-                    onclick="notifyRespondent({{ $complaint->id }}, this)"
+                    onclick="notifyRespondent({{ $complaint->id }}, this, '{{ addslashes($complaint->respondent_name ?? '') }}')"
                     class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 hover:bg-amber-500 hover:text-white hover:border-amber-500 text-[10px] font-black uppercase tracking-widest transition-all">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     Notify Respondent
@@ -178,7 +178,41 @@
 @endif
 
 @once
+{{-- Notify Respondent modal --}}
+<div id="notify-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeNotifyModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-black text-gray-800">Notify Respondent</h3>
+                <p class="text-[10px] text-gray-400 font-medium">Send a push notification</p>
+            </div>
+        </div>
+        <p class="text-xs text-gray-600 leading-relaxed mb-5">
+            This will send a push notification to <span id="notify-respondent-name" class="font-bold text-gray-800"></span> informing them that they have been named as a respondent in a blotter report and must visit the barangay hall.
+        </p>
+        <div class="flex gap-2">
+            <button onclick="closeNotifyModal()"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 text-[10px] font-black uppercase tracking-widest transition-all">
+                Cancel
+            </button>
+            <button id="notify-confirm-btn" onclick="confirmNotify()"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-amber-500 text-white hover:bg-amber-600 text-[10px] font-black uppercase tracking-widest transition-all">
+                Send Notification
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+var _notifyId   = null;
+var _notifyBtn  = null;
+
 function toggleBlotter(id) {
     const detail  = document.getElementById('blotter-detail-' + id);
     const chevron = document.getElementById('blotter-chevron-' + id);
@@ -188,12 +222,28 @@ function toggleBlotter(id) {
     if (chevron) chevron.style.transform = isHidden ? 'rotate(90deg)' : '';
 }
 
-function notifyRespondent(id, btn) {
-    if (!confirm('Send a push notification to the respondent?')) return;
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
+function notifyRespondent(id, btn, name) {
+    _notifyId  = id;
+    _notifyBtn = btn;
+    document.getElementById('notify-respondent-name').textContent = name || 'the respondent';
+    const modal = document.getElementById('notify-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
 
-    fetch('/admin/complaints/' + id + '/notify-respondent', {
+function closeNotifyModal() {
+    const modal = document.getElementById('notify-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function confirmNotify() {
+    if (!_notifyId || !_notifyBtn) return;
+    const confirmBtn = document.getElementById('notify-confirm-btn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Sending…';
+
+    fetch('/admin/complaints/' + _notifyId + '/notify-respondent', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -203,20 +253,23 @@ function notifyRespondent(id, btn) {
     })
     .then(r => r.json())
     .then(data => {
+        closeNotifyModal();
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Send Notification';
         if (data.success) {
-            btn.textContent = 'Notified ✓';
-            btn.classList.remove('bg-amber-50','text-amber-700','border-amber-100','hover:bg-amber-500','hover:text-white','hover:border-amber-500');
-            btn.classList.add('bg-green-50','text-green-700','border-green-100');
+            _notifyBtn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Notified';
+            _notifyBtn.disabled = true;
+            _notifyBtn.classList.remove('bg-amber-50','text-amber-700','border-amber-100','hover:bg-amber-500','hover:text-white','hover:border-amber-500');
+            _notifyBtn.classList.add('bg-green-50','text-green-700','border-green-100');
         } else {
-            btn.disabled = false;
-            btn.textContent = 'Notify Respondent';
-            alert(data.message || 'Notification failed.');
+            _notifyBtn.disabled = false;
         }
     })
     .catch(() => {
-        btn.disabled = false;
-        btn.textContent = 'Notify Respondent';
-        alert('Request failed. Please try again.');
+        closeNotifyModal();
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Send Notification';
+        _notifyBtn.disabled = false;
     });
 }
 </script>
