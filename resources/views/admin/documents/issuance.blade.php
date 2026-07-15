@@ -80,10 +80,15 @@
     $isIdCard    = ($docType === 'Barangay ID');
 @endphp
 
+{{-- html2pdf.js — free client-side PDF export --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+
 {{-- ======================== PRINT CSS ======================== --}}
 <style>
 /* ---------- SCREEN: hide print-only elements ---------- */
 .print-only { display: none !important; }
+[contenteditable]:focus { outline: 2px dashed #1d4ed8; outline-offset: 2px; background: #eff6ff; border-radius: 3px; }
+[contenteditable]:hover:not(:focus) { background: #f0fdf4; border-radius: 3px; }
 
 @media print {
     /* Hide everything admin */
@@ -96,8 +101,12 @@
         margin: 0 !important; padding: 0 !important;
     }
 
+    /* Both areas hidden by default — body class controls which one prints */
+    #certificate-area, #id-card-area { display: none !important; }
+
     /* ---- Certificate print ---- */
-    #certificate-area {
+    body.print-cert #certificate-area {
+        display: block !important;
         position: fixed !important;
         inset: 0 !important;
         width: 100% !important;
@@ -110,7 +119,7 @@
     }
 
     /* ---- ID Card print ---- */
-    #id-card-area {
+    body.print-id #id-card-area {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
@@ -138,9 +147,6 @@
 
     .print-only { display: block !important; }
 }
-
-/* ---------- Shared ---------- */
-[contenteditable]:focus { outline: 2px dashed #1d4ed8; outline-offset: 2px; background: #eff6ff; }
 
 /* ---------- Certificate body text ---------- */
 .cert-body p.indented {
@@ -353,8 +359,8 @@
                 </div>
             </div>
 
-            {{-- Print Button --}}
-            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6">
+            {{-- Print / PDF Buttons --}}
+            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 space-y-3">
                 <button onclick="window.print()"
                         class="w-full bg-brgyGreen text-white font-black text-[10px] uppercase tracking-widest py-3.5 rounded-2xl hover:shadow-lg hover:shadow-brgyGreen/30 transition-all flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,7 +368,18 @@
                     </svg>
                     Print Document
                 </button>
-                <p class="text-[9px] text-gray-300 text-center mt-3 font-bold uppercase tracking-widest" id="paper-size-hint">A4 / Letter size</p>
+                <button onclick="downloadPdf()"
+                        class="w-full bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest py-3.5 rounded-2xl hover:shadow-lg hover:shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download PDF
+                </button>
+                <p class="text-[9px] text-gray-300 text-center font-bold uppercase tracking-widest" id="paper-size-hint">A4 / Letter size</p>
+                <p class="text-[9px] text-gray-400 text-center leading-relaxed">
+                    <svg class="w-3 h-3 inline text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Click any text in the document to edit it before printing or downloading.
+                </p>
             </div>
         </div>
 
@@ -415,6 +432,7 @@
 
             {{-- Document Title --}}
             <h2 id="doc-title"
+                contenteditable="true"
                 style="text-align:center; font-size:22px; font-weight:900; text-decoration:underline; text-transform:uppercase; letter-spacing:0.12em; color:#111827; margin-bottom:2rem;">
                 {{ $tpl['title'] }}
             </h2>
@@ -423,7 +441,7 @@
             <div class="cert-body">
                 <p style="font-weight:700; font-size:16px; margin-bottom:1rem;">TO WHOM IT MAY CONCERN:</p>
 
-                <p id="doc-body" class="indented">{!! $tpl['body'] !!}</p>
+                <p id="doc-body" class="indented" contenteditable="true">{!! $tpl['body'] !!}</p>
 
                 <p class="indented" id="doc-footer">{{ $tpl['footer'] }}
                     <span id="doc-purpose"
@@ -602,14 +620,18 @@ function switchTemplate(type) {
     document.getElementById('id-card-area').style.display     = isId ? ''     : 'none';
     document.getElementById('paper-size-hint').textContent    = isId ? 'ID card size (3.375″ × 2.125″)' : 'A4 / Letter size';
 
+    // Fix print CSS: body class controls which area prints
+    document.body.classList.remove('print-cert', 'print-id');
+    document.body.classList.add(isId ? 'print-id' : 'print-cert');
+
     if (!isId && templates[type]) {
         document.getElementById('doc-title').innerText = templates[type].title;
         document.getElementById('doc-body').innerHTML  = templates[type].body;
 
-        const footer  = document.getElementById('doc-footer');
+        const footer      = document.getElementById('doc-footer');
         const prevPurpose = document.getElementById('doc-purpose');
         const purposeText = prevPurpose ? prevPurpose.innerText : '';
-        footer.innerHTML = '';
+        footer.innerHTML  = '';
         footer.appendChild(document.createTextNode(templates[type].footer + ' '));
         const span = document.createElement('span');
         span.id = 'doc-purpose';
@@ -628,6 +650,22 @@ function switchTemplate(type) {
     if (activeBtn) {
         activeBtn.className = 'w-full text-left px-4 py-3 rounded-2xl text-xs font-bold transition-all bg-brgyGreen text-white shadow-md';
     }
+}
+
+function downloadPdf() {
+    const isId   = document.body.classList.contains('print-id');
+    const el     = document.getElementById(isId ? 'id-card-area' : 'certificate-area');
+    const fname  = document.getElementById('doc-title')?.innerText?.trim()
+                   || (isId ? 'Barangay_ID' : 'Document');
+    const refNo  = @json($refNo);
+
+    html2pdf().set({
+        margin:      [0.3, 0.3, 0.3, 0.3],
+        filename:    fname.replace(/\s+/g, '_') + '_' + refNo + '.pdf',
+        image:       { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF:       { unit: 'in', format: isId ? [4.5, 3] : 'letter', orientation: 'portrait' },
+    }).from(el).save();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
