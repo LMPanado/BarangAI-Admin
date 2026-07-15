@@ -174,11 +174,9 @@
                 </tbody>
             </table>
 
-            @if($logs->hasPages())
-                <div class="px-6 py-4 border-t border-gray-50">
-                    {{ $logs->links() }}
-                </div>
-            @endif
+            <div class="px-6 py-4 border-t border-gray-50">
+                {{ $logs->links() }}
+            </div>
         @endif
     </div>
 </div>

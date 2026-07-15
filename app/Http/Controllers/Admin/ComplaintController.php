@@ -164,6 +164,87 @@ class ComplaintController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function notifyRespondent($id)
+    {
+        $complaint = Complaint::findOrFail($id);
+
+        if (!$complaint->respondent_is_resident || !$complaint->respondent_matched_uid) {
+            return response()->json(['success' => false, 'message' => 'Respondent is not a registered resident.'], 422);
+        }
+
+        $fcmToken = \Illuminate\Support\Facades\DB::selectOne(
+            'SELECT fcm_token FROM users WHERE supabase_uid = ?',
+            [$complaint->respondent_matched_uid]
+        )?->fcm_token;
+
+        if (!$fcmToken) {
+            return response()->json(['success' => false, 'message' => 'Respondent has no push notification token.'], 422);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('SUPABASE_SERVICE_KEY'),
+                'Content-Type'  => 'application/json',
+            ])->post('https://ypcumosboftjylrnmyih.supabase.co/functions/v1/send-notification', [
+                'token' => $fcmToken,
+                'title' => 'Barangay 419 – Blotter Notice',
+                'body'  => 'You have been named as respondent in a blotter report. Please visit the barangay hall.',
+                'data'  => [
+                    'type'         => 'blotter_notice',
+                    'complaint_id' => (string) $complaint->id,
+                ],
+            ]);
+
+            if (!$response->successful()) {
+                return response()->json(['success' => false, 'message' => 'Notification service error.'], 500);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Blotter notify failed #' . $id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Could not send notification.'], 500);
+        }
+
+        AuditLogger::log('updated', 'Complaint', 'Blotter #' . $id . ' – respondent notified', $id);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function printBlotter($id)
+    {
+        $complaint = Complaint::findOrFail($id);
+
+        $whatSection = null;
+
+        if ($complaint->message) {
+            try {
+                $prompt = "You are a barangay blotter assistant. Given the following incident narrative, extract and write a concise \"What happened\" section (2-4 sentences, factual, third-person). Do NOT include dates, times, or location — only what actually happened.\n\nNarrative:\n" . $complaint->message;
+
+                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                    'Content-Type'  => 'application/json',
+                ])->post('https://api.openai.com/v1/chat/completions', [
+                    'model'       => 'gpt-4o-mini',
+                    'max_tokens'  => 300,
+                    'messages'    => [
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                ]);
+
+                $whatSection = $response->json('choices.0.message.content');
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('OpenAI blotter parse failed #' . $id . ': ' . $e->getMessage());
+            }
+        }
+
+        // Fallback: use raw narrative if AI fails
+        if (!$whatSection) {
+            $whatSection = $complaint->message;
+        }
+
+        $captain = \App\Models\User::where('role', 2)->first();
+
+        return view('admin.complaints.blotter-print', compact('complaint', 'whatSection', 'captain'));
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $complaint = Complaint::findOrFail($id);

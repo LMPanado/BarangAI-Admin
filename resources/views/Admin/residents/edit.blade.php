@@ -129,7 +129,6 @@
                         </div>
                     </div>
 
-
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Resident Address</label>
                         <textarea name="address" rows="4" class="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] px-6 py-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-[#1d4ed8] focus:ring-0 outline-none transition-all resize-none" required>{{ old('address', $resident->address) }}</textarea>

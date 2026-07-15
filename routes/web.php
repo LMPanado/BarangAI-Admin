@@ -187,6 +187,12 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::post('/complaints/{id}/message', [ComplaintController::class, 'sendMessage'])
             ->middleware('role:1,2')
             ->name('admin.complaints.sendMessage');
+        Route::post('/complaints/{id}/notify-respondent', [ComplaintController::class, 'notifyRespondent'])
+            ->middleware('role:1,2')
+            ->name('admin.complaints.notifyRespondent');
+        Route::get('/complaints/{id}/print-blotter', [ComplaintController::class, 'printBlotter'])
+            ->middleware('role:1,2')
+            ->name('admin.complaints.printBlotter');
 
         // Real-time poll endpoint
         Route::get('/poll', function (\Illuminate\Http\Request $request) {
