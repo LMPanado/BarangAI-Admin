@@ -415,8 +415,15 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
             if (data.open_html) {
                 var tbody = document.getElementById('complaints-tbody-open');
                 if (tbody) {
-                    tbody.insertAdjacentHTML('afterbegin', data.open_html);
-                    showToast('🔔 ' + data.open_count + ' new complaint(s) received');
+                    var temp = document.createElement('tbody');
+                    temp.innerHTML = data.open_html;
+                    var inserted = 0;
+                    Array.from(temp.children).forEach(function(row) {
+                        if (row.id && document.getElementById(row.id)) return;
+                        tbody.insertAdjacentElement('afterbegin', row);
+                        inserted++;
+                    });
+                    if (inserted > 0) showToast('🔔 ' + inserted + ' new complaint(s) received');
                 }
             }
         })
