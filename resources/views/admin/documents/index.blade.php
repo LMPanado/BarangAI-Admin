@@ -273,7 +273,7 @@
         </div>
         <textarea id="cancelReasonText" rows="4" placeholder="e.g. Incomplete requirements, duplicate request..."
             style="width:100%;padding:0.875rem 1rem;border:2px solid #f1f5f9;border-radius:0.75rem;font-size:0.8125rem;font-weight:600;color:#334155;background:#f8fafc;resize:none;outline:none;box-sizing:border-box;"
-            onfocus="this.style.borderColor='#1d4ed8';this.style.background='#fff';"
+            onfocus="this.style.borderColor='#ef4444';this.style.background='#fff';"
             onblur="this.style.borderColor='#f1f5f9';this.style.background='#f8fafc';"></textarea>
         <p id="cancelReasonError" style="display:none;font-size:0.625rem;font-weight:800;color:#ef4444;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.5rem;">Reason is required.</p>
         <div style="display:flex;gap:0.75rem;margin-top:1.25rem;">
@@ -290,43 +290,42 @@
 </div>
 
 <script>
-let _cancelFormId = null;
-let _cancelSelectEl = null;
-let _cancelPrevValue = null;
+let _cancelRequestId = null;
 
-const statusColors = {
+// ── Row accordion ──────────────────────────────────────────────
+const statusBadgeClasses = {
     pending:          'bg-amber-50 text-amber-600 border-amber-100',
-    processing:       'bg-blue-50 text-blue-600 border-blue-100',
-    ready_for_pickup: 'bg-indigo-50 text-indigo-600 border-indigo-100',
-    completed:        'bg-green-50 text-green-600 border-green-100',
+    processing:       'bg-violet-50 text-violet-600 border-violet-100',
+    ready_for_pickup: 'bg-blue-50 text-blue-600 border-blue-100',
+    completed:        'bg-emerald-50 text-emerald-600 border-emerald-100',
     cancelled:        'bg-red-50 text-red-600 border-red-100',
 };
-const allStatusClasses = Object.values(statusColors).join(' ').split(' ').filter((v, i, a) => a.indexOf(v) === i);
+const statusBadgeLabels = {
+    pending:          'Pending',
+    processing:       'Processing',
+    ready_for_pickup: 'Ready for Pick-up',
+    completed:        'Completed',
+    cancelled:        'Cancelled',
+};
 
-function applyStatusColor(selectEl, status) {
-    selectEl.classList.remove(...allStatusClasses);
-    const classes = (statusColors[status] || 'bg-gray-50 text-gray-400 border-gray-100').split(' ');
-    selectEl.classList.add(...classes);
-    Array.from(selectEl.options).forEach(o => { o.defaultSelected = (o.value === status); });
-}
+function toggleRequestRow(id, currentStatus, csrf) {
+    const detail  = document.getElementById('detail-' + id);
+    const chevron = document.getElementById('chevron-' + id);
+    const isOpen  = !detail.classList.contains('hidden');
 
-function handleStatusChange(selectEl, formId) {
-    if (selectEl.value === 'cancelled') {
-        _cancelFormId = formId;
-        _cancelSelectEl = selectEl;
-        _cancelPrevValue = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
-        document.getElementById('cancelReasonText').value = '';
-        document.getElementById('cancelReasonError').style.display = 'none';
-        document.getElementById('cancelModal').style.display = 'flex';
-    } else {
-        const newStatus = selectEl.value;
-        const prevValue = Array.from(selectEl.options).find(o => o.defaultSelected)?.value ?? 'pending';
-        confirmAction(function () {
-            const form = document.getElementById('status-form-' + formId);
-            const url  = form.action;
-            const csrf = form.querySelector('[name=_token]').value;
+    if (isOpen) {
+        detail.classList.add('hidden');
+        if (chevron) chevron.style.transform = '';
+        return;
+    }
 
-        fetch(url, {
+    // Open the row
+    detail.classList.remove('hidden');
+    if (chevron) chevron.style.transform = 'rotate(90deg)';
+
+    // Auto-advance pending → processing
+    if (currentStatus === 'pending') {
+        fetch('/admin/documents/' + id + '/mark-processing', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -334,30 +333,41 @@ function handleStatusChange(selectEl, formId) {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: '_method=PATCH&status=' + encodeURIComponent(newStatus),
         })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                applyStatusColor(selectEl, newStatus);
-            } else {
-                selectEl.value = prevValue;
+                updateStatusBadge(id, 'processing');
+                // update the onclick so re-toggling doesn't re-trigger
+                const row = document.getElementById('row-' + id);
+                if (row) row.setAttribute('onclick', "toggleRequestRow(" + id + ", 'processing', '" + csrf + "')");
             }
         })
-        .catch(() => { selectEl.value = prevValue; });
-        }, 'Change document status to \'' + selectEl.options[selectEl.selectedIndex].text + '\'?');
-        // revert select visually while waiting for confirmation
-        selectEl.value = prevValue;
+        .catch(() => {});
     }
+}
+
+function updateStatusBadge(id, status) {
+    const badge = document.getElementById('status-badge-' + id);
+    if (!badge) return;
+    // Remove old colour classes
+    Object.values(statusBadgeClasses).forEach(cls => cls.split(' ').forEach(c => badge.classList.remove(c)));
+    const newClasses = (statusBadgeClasses[status] || 'bg-gray-50 text-gray-400 border-gray-100').split(' ');
+    badge.classList.add(...newClasses);
+    badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span> ' + (statusBadgeLabels[status] || status);
+}
+
+// ── Cancel modal ───────────────────────────────────────────────
+function openCancelModal(requestId) {
+    _cancelRequestId = requestId;
+    document.getElementById('cancelReasonText').value = '';
+    document.getElementById('cancelReasonError').style.display = 'none';
+    document.getElementById('cancelModal').style.display = 'flex';
 }
 
 function closeCancelModal() {
     document.getElementById('cancelModal').style.display = 'none';
-    if (_cancelSelectEl) {
-        _cancelSelectEl.value = _cancelPrevValue;
-    }
-    _cancelFormId = null;
-    _cancelSelectEl = null;
+    _cancelRequestId = null;
 }
 
 function submitCancellation() {
@@ -367,17 +377,16 @@ function submitCancellation() {
         return;
     }
     document.getElementById('cancelReasonError').style.display = 'none';
-    document.getElementById('cancel-reason-input-' + _cancelFormId).value = reason;
-    document.getElementById('status-form-' + _cancelFormId).submit();
+    document.getElementById('cancel-reason-input-' + _cancelRequestId).value = reason;
+    document.getElementById('cancel-form-' + _cancelRequestId).submit();
     document.getElementById('cancelModal').style.display = 'none';
 }
 
-// Close modal on backdrop click
 document.getElementById('cancelModal').addEventListener('click', function(e) {
     if (e.target === this) closeCancelModal();
 });
 
-// AJAX real-time polling for new document requests
+// ── Real-time polling for new requests ────────────────────────
 (function () {
     var lastTs = Math.floor(Date.now() / 1000);
     var toastTimeout;
@@ -396,8 +405,7 @@ document.getElementById('cancelModal').addEventListener('click', function(e) {
     }
 
     function pollDocuments() {
-        var modal = document.getElementById('cancelModal');
-        if (modal && !modal.classList.contains('hidden')) return;
+        if (document.getElementById('cancelModal').style.display === 'flex') return;
         fetch('/admin/documents/new?since=' + lastTs, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })

@@ -84,11 +84,40 @@ class DocumentRequestController extends Controller
     {
         $request = DocumentRequest::with('resident')->findOrFail($id);
         $residentName = optional($request->resident)->last_name . ', ' . optional($request->resident)->first_name;
+
+        // Auto-advance: processing → ready_for_pickup when admin opens the issuance page
+        if ($request->status === 'processing') {
+            $request->update(['status' => 'ready_for_pickup']);
+            AuditLogger::log('status_changed', 'DocumentRequest',
+                $request->document_type . ' for ' . $residentName . ' → ready_for_pickup',
+                $request->id
+            );
+        }
+
         AuditLogger::log('issued', 'DocumentRequest',
             $request->document_type . ' for ' . $residentName,
             $request->id
         );
         return view('admin.documents.issuance', compact('request'));
+    }
+
+    public function markProcessing(Request $request, $id)
+    {
+        $docRequest = DocumentRequest::findOrFail($id);
+
+        if ($docRequest->status !== 'pending') {
+            return response()->json(['success' => false, 'status' => $docRequest->status]);
+        }
+
+        $docRequest->update(['status' => 'processing']);
+
+        $residentName = optional($docRequest->resident)->last_name . ', ' . optional($docRequest->resident)->first_name;
+        AuditLogger::log('status_changed', 'DocumentRequest',
+            $docRequest->document_type . ' for ' . $residentName . ' → processing',
+            $docRequest->id
+        );
+
+        return response()->json(['success' => true, 'status' => 'processing']);
     }
 
     /**
