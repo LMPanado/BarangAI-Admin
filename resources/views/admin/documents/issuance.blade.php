@@ -25,6 +25,18 @@
     $weightKg    = $resident->weight_kg    ?? null;
     $phone       = $resident->phone        ?? null;
 
+    // Verification images from Supabase
+    $storageBase  = 'https://ypcumosboftjylrnmyih.supabase.co/storage/v1/object/public/verification-docs/';
+    $residentUser = null;
+    if ($request->supabase_uid) {
+        $residentUser = \Illuminate\Support\Facades\DB::selectOne(
+            'SELECT first_name, last_name, email, valid_id_image, selfie_image FROM users WHERE supabase_uid = ?',
+            [$request->supabase_uid]
+        );
+    }
+    $validIdUrl = ($residentUser && $residentUser->valid_id_image) ? $storageBase . $residentUser->valid_id_image : null;
+    $selfieUrl  = ($residentUser && $residentUser->selfie_image)   ? $storageBase . $residentUser->selfie_image   : null;
+
     $docType     = $request->document_type ?? 'Barangay Certificate';
     $purpose     = $request->purpose       ?? '';
     $refNo       = $request->reference_no  ?? ('REF-' . str_pad($request->id, 6, '0', STR_PAD_LEFT));
@@ -441,6 +453,32 @@
             {{-- Requester Info --}}
             <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6">
                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">Requester Info</p>
+
+                {{-- Verification images --}}
+                @if($validIdUrl || $selfieUrl)
+                <div class="flex gap-3 mb-4">
+                    @if($selfieUrl)
+                    <div class="text-center">
+                        <p class="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Selfie</p>
+                        <a href="{{ $selfieUrl }}" target="_blank">
+                            <img src="{{ $selfieUrl }}" alt="Selfie"
+                                 class="w-16 h-16 object-cover rounded-xl border-2 border-gray-100 hover:border-brgyGreen transition-all shadow-sm">
+                        </a>
+                    </div>
+                    @endif
+                    @if($validIdUrl)
+                    <div class="text-center flex-1">
+                        <p class="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Valid ID</p>
+                        <a href="{{ $validIdUrl }}" target="_blank">
+                            <img src="{{ $validIdUrl }}" alt="Valid ID"
+                                 class="w-full h-16 object-cover rounded-xl border-2 border-gray-100 hover:border-brgyGreen transition-all shadow-sm">
+                        </a>
+                    </div>
+                    @endif
+                </div>
+                <hr class="border-gray-50 mb-4">
+                @endif
+
                 <div class="space-y-2 text-xs">
                     <div>
                         <p class="text-[9px] font-black text-gray-300 uppercase tracking-widest">Name</p>
