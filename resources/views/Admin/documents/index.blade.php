@@ -133,7 +133,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-4 flex justify-end">
+        <div class="mt-4 bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm">
             {{ $mobileRequests->links() }}
         </div>
     </div>
@@ -173,7 +173,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-4 flex justify-end">
+        <div class="mt-4 bg-white px-6 py-4 rounded-2xl border border-gray-100 shadow-sm">
             {{ $kioskRequests->links() }}
         </div>
     </div>
