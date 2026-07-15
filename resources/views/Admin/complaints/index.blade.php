@@ -390,20 +390,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
 // AJAX real-time polling for new complaints
 (function () {
     var lastTs = Math.floor(Date.now() / 1000);
-    var toastTimeout;
-
-    function showToast(msg) {
-        var toast = document.getElementById('ajax-toast');
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(function () {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(-8px)';
-        }, 3000);
-    }
 
     function pollComplaints() {
         fetch('/admin/complaints/new?since=' + lastTs, {
@@ -417,13 +403,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
                 if (tbody) {
                     var temp = document.createElement('tbody');
                     temp.innerHTML = data.open_html;
-                    var inserted = 0;
                     Array.from(temp.children).forEach(function(row) {
                         if (row.id && document.getElementById(row.id)) return;
                         tbody.insertAdjacentElement('afterbegin', row);
-                        inserted++;
                     });
-                    if (inserted > 0) showToast('🔔 ' + inserted + ' new complaint(s) received');
                 }
             }
         })
@@ -434,6 +417,5 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
 })();
 </script>
 
-<div id="ajax-toast" style="position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:9999;background:#1d4ed8;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 4px 20px rgba(29,78,216,.4);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;"></div>
 
 @endsection
