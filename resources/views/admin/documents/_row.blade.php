@@ -103,9 +103,9 @@
     </td>
 
     {{-- Status badge (non-clickable) --}}
-    <td class="px-6 py-4 align-middle text-center">
+    <td class="px-6 py-4 align-middle">
         <span id="status-badge-{{ $request->id }}"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest {{ $badgeClass }}">
+              class="inline-flex items-center gap-1 px-2 py-1 rounded-md border text-[9px] font-black uppercase tracking-widest {{ $badgeClass }}">
             <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
             {{ $badgeLabel }}
         </span>
