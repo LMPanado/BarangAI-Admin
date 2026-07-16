@@ -95,17 +95,20 @@ class RoleController extends Controller
 
         $role = (int) $request->role;
 
-        $user = User::create([
+        $id = \DB::table('users')->insertGetId([
             'first_name'          => $request->first_name,
             'last_name'           => $request->last_name,
             'name'                => $request->first_name . ' ' . $request->last_name,
             'email'               => $request->email,
             'password'            => Hash::make($request->password),
             'role'                => $role,
-            'is_admin'            => true,
+            'is_admin'            => \DB::raw('true'),
             'verification_status' => 'verified',
+            'created_at'          => now(),
+            'updated_at'          => now(),
         ]);
 
+        $user = User::find($id);
         $label = $role === 2 ? 'Barangay Captain' : 'Barangay Staff';
         AuditLogger::log('created', 'User', "{$label}: {$user->last_name}, {$user->first_name}", $user->id);
 
