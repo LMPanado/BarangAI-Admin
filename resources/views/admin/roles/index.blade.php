@@ -222,13 +222,13 @@
             </div>
             <div>
                 <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Password</label>
-                <div class="relative">
+                <div style="position:relative;">
                     <input type="password" name="password" id="staff-password" required minlength="8"
-                           class="w-full px-4 py-2.5 pr-11 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                           style="width:100%;padding:10px 44px 10px 16px;font-size:14px;border-radius:12px;border:2px solid #e2e8f0;outline:none;box-sizing:border-box;"
                            placeholder="Min. 8 characters">
                     <button type="button" onclick="togglePw('staff-password','staff-pw-eye')"
-                            class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
-                        <svg id="staff-pw-eye" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            style="position:absolute;top:50%;right:12px;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;color:#9ca3af;display:flex;align-items:center;">
+                        <svg id="staff-pw-eye" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
@@ -237,13 +237,13 @@
             </div>
             <div>
                 <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Confirm Password</label>
-                <div class="relative">
+                <div style="position:relative;">
                     <input type="password" name="password_confirmation" id="staff-password-confirm" required
-                           class="w-full px-4 py-2.5 pr-11 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                           style="width:100%;padding:10px 44px 10px 16px;font-size:14px;border-radius:12px;border:2px solid #e2e8f0;outline:none;box-sizing:border-box;"
                            placeholder="Repeat password">
                     <button type="button" onclick="togglePw('staff-password-confirm','staff-pw-confirm-eye')"
-                            class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
-                        <svg id="staff-pw-confirm-eye" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            style="position:absolute;top:50%;right:12px;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;color:#9ca3af;display:flex;align-items:center;">
+                        <svg id="staff-pw-confirm-eye" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
