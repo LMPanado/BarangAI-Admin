@@ -187,11 +187,10 @@ class ComplaintController extends Controller
                 'Content-Type'  => 'application/json',
             ])->post('https://ypcumosboftjylrnmyih.supabase.co/functions/v1/send-notification', [
                 'token' => $fcmToken,
-                'title' => 'Barangay 419 – Blotter Notice',
-                'body'  => 'You have been named as respondent in a blotter report. Please visit the barangay hall.',
+                'title' => 'Barangay Notice',
+                'body'  => 'A blotter report has been filed that concerns you. Please visit the barangay hall for more information.',
                 'data'  => [
-                    'type'         => 'blotter_notice',
-                    'complaint_id' => (string) $complaint->id,
+                    'type' => 'blotter_notice',
                 ],
             ]);
 
