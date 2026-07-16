@@ -44,20 +44,25 @@ class ResidentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'first_name'   => 'required|string|max:255',
-            'last_name'    => 'required|string|max:255',
-            'middle_name'  => 'nullable|string|max:255',
-            'email'        => 'required|email|unique:residents,email', 
-            'phone'        => 'nullable|string|max:20',
-            'age'          => 'required|integer|min:0',
-            'gender'       => 'required|string',
-            'civil_status' => 'nullable|string',
-            'birth_date'   => 'nullable|date',
-            'place_birth'  => 'nullable|string|max:255',
-            'height_cm'    => 'nullable|numeric|min:0',
-            'weight_kg'    => 'nullable|numeric|min:0',
-            'address'      => 'required|string',
+            'first_name'      => 'required|string|max:255',
+            'last_name'       => 'required|string|max:255',
+            'middle_name'     => 'nullable|string|max:255',
+            'email'           => 'required|email|unique:residents,email',
+            'phone'           => 'nullable|string|max:20',
+            'age'             => 'required|integer|min:0',
+            'gender'          => 'required|string',
+            'civil_status'    => 'nullable|string',
+            'birth_date'      => 'nullable|date',
+            'place_birth'     => 'nullable|string|max:255',
+            'height_cm'       => 'nullable|numeric|min:0',
+            'weight_kg'       => 'nullable|numeric|min:0',
+            'address'         => 'required|string',
+            'children_groups'   => 'nullable|array',
+            'children_groups.*' => 'in:0-2,3-5,6-12',
         ]);
+
+        $childrenGroups = $validated['children_groups'] ?? [];
+        unset($validated['children_groups']);
 
         $id = DB::table('residents')->insertGetId(array_merge(
             $validated,
