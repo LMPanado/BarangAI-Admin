@@ -33,7 +33,7 @@
         @foreach([
             ['Total',    $totalComplaints,        'text-gray-700',   'bg-gray-50',   'border-gray-100'],
             ['Open',     $openComplaints,         'text-amber-600',  'bg-amber-50',  'border-amber-100'],
-            ['Closed',   $closedComplaints,       'text-green-600',  'bg-green-50',  'border-green-100'],
+            ['Resolved', $closedComplaints,       'text-green-600',  'bg-green-50',  'border-green-100'],
             ['Critical', $bySeverity['critical'], 'text-red-600',    'bg-red-50',    'border-red-100'],
             ['Medium',   $bySeverity['medium'],   'text-orange-600', 'bg-orange-50', 'border-orange-100'],
         ] as [$lbl, $val, $clr, $bg, $border])
@@ -64,8 +64,9 @@
             <select name="status"
                     class="bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
                 <option value="">All Statuses</option>
-                <option value="open"   {{ request('status') === 'open'   ? 'selected' : '' }}>Open</option>
-                <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+                <option value="open"                {{ request('status') === 'open'                ? 'selected' : '' }}>Open</option>
+                <option value="under_investigation" {{ request('status') === 'under_investigation' ? 'selected' : '' }}>Under Investigation</option>
+                <option value="resolved"            {{ request('status') === 'resolved'            ? 'selected' : '' }}>Resolved</option>
             </select>
         </div>
 
@@ -155,13 +156,13 @@
     <div>
         <div class="flex items-center gap-3 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>
-            <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Closed Complaints</h2>
+            <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Resolved Complaints</h2>
             <span class="text-[10px] font-black text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">{{ $closedList->total() }}</span>
         </div>
         <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
             @if($closedList->isEmpty())
                 <div class="py-16 text-center">
-                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No closed complaints</p>
+                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No resolved complaints</p>
                 </div>
             @else
                 @include('admin.complaints._table', ['complaints' => $closedList, 'messageCounts' => $messageCounts, 'tbodyId' => 'closed'])
@@ -228,7 +229,7 @@
         <p style="font-size:9px;color:#cbd5e1;text-align:center;margin:6px 0 0;">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
     </div>
     <div id="chatClosedBanner" style="display:none;padding:12px;background:#f1f5f9;border-top:1px solid #e2e8f0;flex-shrink:0;text-align:center;">
-        <p style="font-size:11px;font-weight:600;color:#94a3b8;margin:0;">This complaint is closed. Messaging is disabled.</p>
+        <p style="font-size:11px;font-weight:600;color:#94a3b8;margin:0;">This complaint is resolved. Messaging is disabled.</p>
     </div>
 </div>
 
@@ -252,7 +253,7 @@ function openChat(complaintId, email, status) {
     document.getElementById('chatEmpty').style.display = 'none';
     document.getElementById('chatInput').value = '';
 
-    const isClosed = status === 'closed';
+    const isClosed = status === 'closed' || status === 'resolved';
     document.getElementById('chatInputArea').style.display = isClosed ? 'none' : 'block';
     document.getElementById('chatClosedBanner').style.display = isClosed ? 'block' : 'none';
 
