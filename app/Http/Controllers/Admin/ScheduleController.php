@@ -84,19 +84,18 @@ class ScheduleController extends Controller
 
     private function notifyResidents(Schedule $schedule, array $childrenAgeGroups = []): void
     {
-        // Notify all residents
-        $users = DB::select("SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL");
-
-        // Additionally notify parents whose children match selected age groups
         if (!empty($childrenAgeGroups)) {
+            // Notify only parents whose children match the selected age groups
             $childConditions = array_map(
                 fn($g) => "children @> '[{\"age_group\": \"" . addslashes($g) . "\"}]'::jsonb",
                 $childrenAgeGroups
             );
-            $parentUsers = DB::select(
+            $users = DB::select(
                 "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND (" . implode(' OR ', $childConditions) . ")"
             );
-            $users = array_merge($users, $parentUsers);
+        } else {
+            // No filter — notify all residents
+            $users = DB::select("SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL");
         }
 
         // Deduplicate by fcm_token

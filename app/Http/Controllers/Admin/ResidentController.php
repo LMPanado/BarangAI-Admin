@@ -131,11 +131,19 @@ class ResidentController extends Controller
             'children_groups.*' => 'in:0-2,3-5,6-12',
         ]);
 
-        $isVoter = !empty($validated['is_voter'] ?? false);
+        $isVoter     = !empty($validated['is_voter'] ?? false);
+        $civilStatus = $validated['civil_status'] ?? null;
+        $childrenGroups = $request->input('children_groups', []);
 
-        // Use DB::table directly so boolean is_voter is cast correctly for PostgreSQL
+        // Strip fields that don't belong on the residents table
+        $residentData = array_diff_key($validated, [
+            'is_voter'       => '',
+            'children_groups' => '',
+            'children_groups.*' => '',
+        ]);
+
         DB::table('residents')->where('id', $resident->id)->update(array_merge(
-            array_diff_key($validated, ['is_voter' => '']),
+            $residentData,
             [
                 'is_voter'   => DB::raw($isVoter ? 'true' : 'false'),
                 'updated_at' => now(),
@@ -143,13 +151,8 @@ class ResidentController extends Controller
         ));
 
         // Build children JSONB array
-        $childrenJson = '[]';
-        $civilStatus = $validated['civil_status'] ?? null;
-        if (in_array($civilStatus, ['Married', 'Widowed', 'Separated'])) {
-            $groups = $request->input('children_groups', []);
-            $childrenArr = array_map(fn($g) => ['age_group' => $g], $groups);
-            $childrenJson = json_encode($childrenArr);
-        }
+        $childrenArr = array_map(fn($g) => ['age_group' => $g], $childrenGroups);
+        $childrenJson = json_encode($childrenArr);
 
         // Sync back to the linked user account if one exists
         if ($resident->user_id) {
@@ -168,9 +171,14 @@ class ResidentController extends Controller
                 'place_birth'  => $validated['place_birth'] ?? null,
                 'height_cm'    => $validated['height_cm'] ?? null,
                 'weight_kg'    => $validated['weight_kg'] ?? null,
-                'children'     => DB::raw("'{$childrenJson}'::jsonb"),
                 'updated_at'   => now(),
             ]);
+
+            // Update children separately with proper JSONB binding
+            DB::statement(
+                "UPDATE users SET children = ?::jsonb WHERE id = ?",
+                [$childrenJson, $resident->user_id]
+            );
         }
 
         AuditLogger::log('updated', 'Resident', $resident->last_name . ', ' . $resident->first_name, $resident->id);
