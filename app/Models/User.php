@@ -37,7 +37,7 @@ class User extends Authenticatable
         'address', 'is_voter', 'birth_date', 'place_birth',
         'height_cm', 'weight_kg', 'role', 'is_admin',
         'verification_status', 'selfie_image', 'valid_id_image',
-        'verification_submitted_at',
+        'verification_submitted_at', 'children',
     ];
 
     /**
@@ -61,7 +61,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
-            'role' => 'integer', // Ensure role is treated as an integer
+            'role' => 'integer',
+            'children' => 'array',
         ];
     }
 

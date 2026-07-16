@@ -60,15 +60,18 @@ class ScheduleController extends Controller
             'schedule_time_to' => 'required',
             'location'         => 'nullable|string',
             'image'            => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'age_groups'       => 'nullable|array',
-            'age_groups.*'     => 'in:children,youth,adults,senior',
+            'age_groups'            => 'nullable|array',
+            'age_groups.*'          => 'in:children,youth,adults,senior',
+            'children_age_groups'   => 'nullable|array',
+            'children_age_groups.*' => 'in:0-2,3-5,6-12',
         ]);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('events', 'public');
         }
 
-        $ageGroups = $request->input('age_groups', ['children', 'youth', 'adults', 'senior']);
+        $ageGroups         = $request->input('age_groups', ['children', 'youth', 'adults', 'senior']);
+        $childrenAgeGroups = $request->input('children_age_groups', []);
         $validated['age_groups'] = $ageGroups;
 
         $schedule = Schedule::create($validated);
@@ -79,14 +82,14 @@ class ScheduleController extends Controller
             ['{' . implode(',', $ageGroups) . '}', $schedule->id]
         );
 
-        $this->notifyByAgeGroups($schedule, $ageGroups);
+        $this->notifyByAgeGroups($schedule, $ageGroups, $childrenAgeGroups);
 
         AuditLogger::log('created', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
 
         return redirect()->route('admin.schedules.index')->with('success', 'Event created successfully!');
     }
 
-    private function notifyByAgeGroups(Schedule $schedule, array $ageGroups): void
+    private function notifyByAgeGroups(Schedule $schedule, array $ageGroups, array $childrenAgeGroups = []): void
     {
         $conditions = [];
         if (in_array('children', $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) < 13";
@@ -106,6 +109,27 @@ class ScheduleController extends Controller
             );
             $users = array_merge($users, $extra);
         }
+
+        // Also notify parents whose children match the selected children age groups
+        if (!empty($childrenAgeGroups)) {
+            $childConditions = array_map(
+                fn($g) => "children @> '[{\"age_group\": \"" . addslashes($g) . "\"}]'::jsonb",
+                $childrenAgeGroups
+            );
+            $whereChildren = '(' . implode(' OR ', $childConditions) . ')';
+            $parentUsers = \Illuminate\Support\Facades\DB::select(
+                "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND {$whereChildren}"
+            );
+            $users = array_merge($users, $parentUsers);
+        }
+
+        // Deduplicate by fcm_token
+        $seen  = [];
+        $users = array_filter($users, function ($u) use (&$seen) {
+            if (!$u->fcm_token || isset($seen[$u->fcm_token])) return false;
+            $seen[$u->fcm_token] = true;
+            return true;
+        });
 
         $supabaseUrl = 'https://ypcumosboftjylrnmyih.supabase.co/functions/v1/send-notification';
         $serviceKey  = env('SUPABASE_SERVICE_KEY');

@@ -110,6 +110,30 @@
                         </div>
                     </div>
 
+                    {{-- Children Age Group Targeting --}}
+                    <div class="border-t border-gray-100 pt-6">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Notify Parents With Children</label>
+                        <p class="text-xs text-gray-400 mb-4">Select children's age groups to also notify parents. Leave all unchecked to skip this filter.</p>
+                        <div class="flex flex-wrap gap-3">
+                            @foreach([
+                                ['0-2',  'Infant / Toddler', '0 – 2 yrs'],
+                                ['3-5',  'Preschool',        '3 – 5 yrs'],
+                                ['6-12', 'School Age',       '6 – 12 yrs'],
+                            ] as [$val, $label, $sub])
+                            <label id="child-lbl-{{ str_replace('-','_',$val) }}"
+                                   style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;border:2px solid #e5e7eb;background:#f9fafb;cursor:pointer;user-select:none;transition:all .15s;">
+                                <input type="checkbox" name="children_age_groups[]" value="{{ $val }}"
+                                       class="children-group-cb" style="width:16px;height:16px;accent-color:#1a5c2a;"
+                                       onchange="syncChildLabel(this)">
+                                <div>
+                                    <p style="font-size:9px;font-weight:900;color:#374151;text-transform:uppercase;letter-spacing:.1em;line-height:1;">{{ $label }}</p>
+                                    <p style="font-size:9px;color:#9ca3af;margin-top:2px;">{{ $sub }}</p>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -187,6 +211,14 @@
         allCb.checked = allChecked;
         applyLabelStyle(document.getElementById('label-all'), allChecked);
         cbs.forEach(cb => applyLabelStyle(document.getElementById('label-' + cb.value), cb.checked));
+    }
+
+    function syncChildLabel(cb) {
+        const id = 'child-lbl-' + cb.value.replace(/-/g, '_');
+        const lbl = document.getElementById(id);
+        if (!lbl) return;
+        lbl.style.borderColor = cb.checked ? '#1a5c2a' : '#e5e7eb';
+        lbl.style.background  = cb.checked ? '#f0faf0' : '#f9fafb';
     }
 
     function previewImage(input) {
