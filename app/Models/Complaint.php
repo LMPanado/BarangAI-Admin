@@ -12,14 +12,15 @@ class Complaint extends Model
         'user_email', 'message', 'severity', 'severity_score',
         'ai_summary', 'status', 'supabase_uid',
         'type', 'respondent_name', 'respondent_address', 'respondent_is_resident',
-        'respondent_matched_uid', 'incident_type', 'incident_date', 'incident_time',
-        'incident_location', 'witnesses',
+        'respondent_matched_uid', 'respondent_notified_at', 'incident_type', 'incident_date',
+        'incident_time', 'incident_location', 'witnesses',
     ];
 
     protected $casts = [
         'created_at'              => 'datetime',
         'severity_score'          => 'float',
         'respondent_is_resident'  => 'boolean',
+        'respondent_notified_at'  => 'datetime',
         'incident_date'           => 'date',
     ];
 

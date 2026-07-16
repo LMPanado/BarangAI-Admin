@@ -206,6 +206,8 @@ class ComplaintController extends Controller
             return response()->json(['success' => false, 'message' => 'Could not send notification.'], 500);
         }
 
+        $complaint->update(['respondent_notified_at' => now()]);
+
         AuditLogger::log('updated', 'Complaint', 'Blotter #' . $id . ' – respondent notified', $id);
 
         return response()->json(['success' => true]);
