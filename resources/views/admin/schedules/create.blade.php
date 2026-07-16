@@ -78,6 +78,39 @@
                 </div>
             </div>
 
+            {{-- Age Group Targeting --}}
+            <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 lg:col-span-2">
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Notify Age Groups</label>
+                <p class="text-xs text-gray-400 mb-5">Select which age groups will receive a push notification. All events are still visible to everyone in the app.</p>
+                <div class="flex flex-wrap gap-3">
+
+                    {{-- All checkbox --}}
+                    <label id="label-all" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 border-brgyGreen bg-brgyGreen/5 cursor-pointer transition-all select-none">
+                        <input type="checkbox" id="age-all" class="w-4 h-4 accent-brgyGreen" checked
+                               onchange="toggleAllAgeGroups(this)">
+                        <span class="text-[10px] font-black text-brgyGreen uppercase tracking-widest">All Residents</span>
+                    </label>
+
+                    @foreach([
+                        ['children', 'Children',        '0 – 12 yrs'],
+                        ['youth',    'Youth',           '13 – 17 yrs'],
+                        ['adults',   'Adults',          '18 – 59 yrs'],
+                        ['senior',   'Senior Citizens', '60+ yrs'],
+                    ] as [$val, $label, $sub])
+                    <label id="label-{{ $val }}" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 border-gray-100 bg-gray-50 cursor-pointer transition-all select-none">
+                        <input type="checkbox" name="age_groups[]" value="{{ $val }}"
+                               class="age-group-cb w-4 h-4 accent-brgyGreen" checked
+                               onchange="syncAllCheckbox()">
+                        <div>
+                            <p class="text-[10px] font-black text-gray-700 uppercase tracking-widest leading-none">{{ $label }}</p>
+                            <p class="text-[9px] text-gray-400 mt-0.5">{{ $sub }}</p>
+                        </div>
+                    </label>
+                    @endforeach
+
+                </div>
+            </div>
+
             {{-- Sidebar --}}
             <div class="space-y-6">
 
@@ -129,6 +162,45 @@
 </div>
 
 <script>
+    const ageGroups = ['children', 'youth', 'adults', 'senior'];
+
+    function toggleAllAgeGroups(allCb) {
+        document.querySelectorAll('.age-group-cb').forEach(cb => {
+            cb.checked = allCb.checked;
+            styleAgeLabel(cb);
+        });
+        styleAllLabel(allCb.checked);
+    }
+
+    function syncAllCheckbox() {
+        const cbs = document.querySelectorAll('.age-group-cb');
+        const allChecked = Array.from(cbs).every(cb => cb.checked);
+        const allCb = document.getElementById('age-all');
+        allCb.checked = allChecked;
+        styleAllLabel(allChecked);
+        cbs.forEach(cb => styleAgeLabel(cb));
+    }
+
+    function styleAllLabel(checked) {
+        const lbl = document.getElementById('label-all');
+        lbl.classList.toggle('border-brgyGreen', checked);
+        lbl.classList.toggle('bg-brgyGreen/5', checked);
+        lbl.classList.toggle('border-gray-100', !checked);
+        lbl.classList.toggle('bg-gray-50', !checked);
+    }
+
+    function styleAgeLabel(cb) {
+        const lbl = document.getElementById('label-' + cb.value);
+        if (!lbl) return;
+        lbl.classList.toggle('border-brgyGreen', cb.checked);
+        lbl.classList.toggle('bg-brgyGreen/5', cb.checked);
+        lbl.classList.toggle('border-gray-100', !cb.checked);
+        lbl.classList.toggle('bg-gray-50', !cb.checked);
+    }
+
+    // Init styles on load
+    document.querySelectorAll('.age-group-cb').forEach(cb => styleAgeLabel(cb));
+
     function previewImage(input) {
         const preview = document.getElementById('image-preview');
         const previewSrc = document.getElementById('preview-src');

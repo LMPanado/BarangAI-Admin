@@ -15,6 +15,11 @@ class Schedule extends Model
         'schedule_time_to',
         'description',
         'location',
-        'image' 
+        'image',
+        'age_groups',
+    ];
+
+    protected $casts = [
+        'age_groups' => 'array',
     ];
 }
