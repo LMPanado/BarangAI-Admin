@@ -196,7 +196,7 @@
             <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Create Staff Account</h2>
             <p class="text-xs text-gray-400 mt-1">Create a Barangay Captain or Staff account directly.</p>
         </div>
-        <form action="{{ route('create-staff') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.roles.create-staff') }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -260,7 +260,7 @@
             <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Create System Admin</h2>
             <p class="text-xs text-gray-400 mt-1">Create a new I.T. Administrator account.</p>
         </div>
-        <form action="{{ route('create-admin') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.roles.create-admin') }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-2 gap-3">
                 <div>
