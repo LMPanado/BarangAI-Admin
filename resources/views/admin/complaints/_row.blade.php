@@ -131,16 +131,17 @@
 
                 {{-- Resolved button (right side) --}}
                 @if(in_array($complaint->status, ['under_investigation', 'open']))
-                <form action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST" class="inline">
+                {{-- Hidden form submitted by the modal --}}
+                <form id="resolve-form-{{ $complaint->id }}" action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST" class="hidden">
                     @csrf @method('PATCH')
                     <input type="hidden" name="status" value="resolved">
-                    <button type="submit"
-                            onclick="return confirm('Mark this complaint as Resolved?')"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-700 border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 text-[10px] font-black uppercase tracking-widest transition-all">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                        Mark as Resolved
-                    </button>
                 </form>
+                <button type="button"
+                        onclick="openResolveModal({{ $complaint->id }})"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-700 border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 text-[10px] font-black uppercase tracking-widest transition-all">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    Mark as Resolved
+                </button>
                 @endif
             </div>
 
@@ -191,6 +192,37 @@
 @endif
 
 @once
+{{-- Resolve Complaint modal --}}
+<div id="resolve-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeResolveModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-black text-gray-800">Mark as Resolved</h3>
+                <p class="text-[10px] text-gray-400 font-medium">This action cannot be undone</p>
+            </div>
+        </div>
+        <p class="text-xs text-gray-600 leading-relaxed mb-5">
+            Are you sure you want to mark this complaint as <span class="font-bold text-green-700">Resolved</span>? The complaint will be moved to the resolved list and the resident will no longer be able to send messages.
+        </p>
+        <div class="flex gap-2">
+            <button onclick="closeResolveModal()"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 text-[10px] font-black uppercase tracking-widest transition-all">
+                Cancel
+            </button>
+            <button onclick="submitResolve()"
+                    class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700 text-[10px] font-black uppercase tracking-widest transition-all">
+                Yes, Resolve
+            </button>
+        </div>
+    </div>
+</div>
+
 {{-- Notify Respondent modal --}}
 <div id="notify-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeNotifyModal()"></div>
@@ -223,6 +255,27 @@
 </div>
 
 <script>
+var _resolveId = null;
+
+function openResolveModal(id) {
+    _resolveId = id;
+    const modal = document.getElementById('resolve-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeResolveModal() {
+    const modal = document.getElementById('resolve-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    _resolveId = null;
+}
+
+function submitResolve() {
+    if (!_resolveId) return;
+    document.getElementById('resolve-form-' + _resolveId).submit();
+}
+
 var _notifyId   = null;
 var _notifyBtn  = null;
 var _notifyToastTimer = null;
