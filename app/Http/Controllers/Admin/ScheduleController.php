@@ -72,8 +72,15 @@ class ScheduleController extends Controller
         }
 
         $childrenAgeGroups = $request->input('children_age_groups', []);
+        unset($validated['children_age_groups']);
 
         $schedule = Schedule::create($validated);
+
+        // Persist children age groups as Postgres TEXT[] in age_groups column
+        $pgArray = empty($childrenAgeGroups)
+            ? 'NULL'
+            : "'{" . implode(',', $childrenAgeGroups) . "}'";
+        DB::statement("UPDATE schedules SET age_groups = {$pgArray} WHERE id = ?", [$schedule->id]);
 
         $this->notifyResidents($schedule, $childrenAgeGroups);
 
@@ -160,6 +167,12 @@ class ScheduleController extends Controller
 
         unset($validated['children_age_groups']);
         $schedule->update($validated);
+
+        // Persist children age groups as Postgres TEXT[] in age_groups column
+        $pgArray = empty($childrenAgeGroups)
+            ? 'NULL'
+            : "'{" . implode(',', $childrenAgeGroups) . "}'";
+        DB::statement("UPDATE schedules SET age_groups = {$pgArray} WHERE id = ?", [$schedule->id]);
 
         if (!empty($childrenAgeGroups)) {
             $this->notifyResidents($schedule, $childrenAgeGroups);
