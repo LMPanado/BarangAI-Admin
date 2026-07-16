@@ -212,6 +212,21 @@
 <script>
 var _notifyId   = null;
 var _notifyBtn  = null;
+var _notifyToastTimer = null;
+
+function showNotifyToast(msg, isError) {
+    var toast = document.getElementById('notify-toast');
+    if (!toast) return;
+    toast.textContent = (isError ? '✕ ' : '✓ ') + msg;
+    toast.style.background = isError ? '#dc2626' : '#16a34a';
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    clearTimeout(_notifyToastTimer);
+    _notifyToastTimer = setTimeout(function () {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-8px)';
+    }, 3500);
+}
 
 function toggleBlotter(id) {
     const detail  = document.getElementById('blotter-detail-' + id);
@@ -261,8 +276,10 @@ function confirmNotify() {
             _notifyBtn.disabled = true;
             _notifyBtn.classList.remove('bg-amber-50','text-amber-700','border-amber-100','hover:bg-amber-500','hover:text-white','hover:border-amber-500');
             _notifyBtn.classList.add('bg-green-50','text-green-700','border-green-100');
+            showNotifyToast('Notification sent successfully.');
         } else {
             _notifyBtn.disabled = false;
+            showNotifyToast((data.message || 'Failed to send notification.'), true);
         }
     })
     .catch(() => {
@@ -273,4 +290,8 @@ function confirmNotify() {
     });
 }
 </script>
+
+<div id="notify-toast"
+     style="position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:99999;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.15);">
+</div>
 @endonce
