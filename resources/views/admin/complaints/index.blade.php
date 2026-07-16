@@ -33,7 +33,7 @@
         @foreach([
             ['Total',    $totalComplaints,        'text-gray-700',   'bg-gray-50',   'border-gray-100'],
             ['Open',     $openComplaints,         'text-amber-600',  'bg-amber-50',  'border-amber-100'],
-            ['Closed',   $closedComplaints,       'text-green-600',  'bg-green-50',  'border-green-100'],
+            ['Resolved', $closedComplaints,       'text-green-600',  'bg-green-50',  'border-green-100'],
             ['Critical', $bySeverity['critical'], 'text-red-600',    'bg-red-50',    'border-red-100'],
             ['Medium',   $bySeverity['medium'],   'text-orange-600', 'bg-orange-50', 'border-orange-100'],
         ] as [$lbl, $val, $clr, $bg, $border])
@@ -64,8 +64,9 @@
             <select name="status"
                     class="bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen outline-none transition-all">
                 <option value="">All Statuses</option>
-                <option value="open"   {{ request('status') === 'open'   ? 'selected' : '' }}>Open</option>
-                <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+                <option value="open"                {{ request('status') === 'open'                ? 'selected' : '' }}>Open</option>
+                <option value="under_investigation" {{ request('status') === 'under_investigation' ? 'selected' : '' }}>Under Investigation</option>
+                <option value="resolved"            {{ request('status') === 'resolved'            ? 'selected' : '' }}>Resolved</option>
             </select>
         </div>
 
@@ -155,13 +156,13 @@
     <div>
         <div class="flex items-center gap-3 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>
-            <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Closed Complaints</h2>
+            <h2 class="text-sm font-black text-gray-700 uppercase tracking-widest">Resolved Complaints</h2>
             <span class="text-[10px] font-black text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">{{ $closedList->total() }}</span>
         </div>
         <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
             @if($closedList->isEmpty())
                 <div class="py-16 text-center">
-                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No closed complaints</p>
+                    <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">No resolved complaints</p>
                 </div>
             @else
                 @include('admin.complaints._table', ['complaints' => $closedList, 'messageCounts' => $messageCounts, 'tbodyId' => 'closed'])
@@ -228,7 +229,7 @@
         <p style="font-size:9px;color:#cbd5e1;text-align:center;margin:6px 0 0;">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
     </div>
     <div id="chatClosedBanner" style="display:none;padding:12px;background:#f1f5f9;border-top:1px solid #e2e8f0;flex-shrink:0;text-align:center;">
-        <p style="font-size:11px;font-weight:600;color:#94a3b8;margin:0;">This complaint is closed. Messaging is disabled.</p>
+        <p style="font-size:11px;font-weight:600;color:#94a3b8;margin:0;">This complaint is resolved. Messaging is disabled.</p>
     </div>
 </div>
 
@@ -252,7 +253,7 @@ function openChat(complaintId, email, status) {
     document.getElementById('chatEmpty').style.display = 'none';
     document.getElementById('chatInput').value = '';
 
-    const isClosed = status === 'closed';
+    const isClosed = status === 'closed' || status === 'resolved';
     document.getElementById('chatInputArea').style.display = isClosed ? 'none' : 'block';
     document.getElementById('chatClosedBanner').style.display = isClosed ? 'block' : 'none';
 
@@ -376,7 +377,10 @@ function sendChatMessage() {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) fetchNewMessages(currentComplaintId);
+        if (data.success) {
+            fetchNewMessages(currentComplaintId);
+            if (data.status) updateStatusBadge(currentComplaintId, data.status);
+        }
     })
     .finally(() => { document.getElementById('chatSendBtn').disabled = false; input.focus(); });
 }
@@ -387,23 +391,28 @@ function handleChatKey(e) {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
 
+function updateStatusBadge(complaintId, status) {
+    const badge = document.getElementById('status-badge-' + complaintId);
+    if (!badge) return;
+    const labels = {
+        'open':                'Open',
+        'under_investigation': 'Under Investigation',
+        'resolved':            'Resolved',
+        'closed':              'Closed',
+    };
+    const classes = {
+        'open':                'bg-amber-50 text-amber-700',
+        'under_investigation': 'bg-blue-50 text-blue-700',
+        'resolved':            'bg-green-50 text-green-700',
+        'closed':              'bg-gray-100 text-gray-500',
+    };
+    badge.textContent = labels[status] || status;
+    badge.className = 'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ' + (classes[status] || 'bg-gray-50 text-gray-400');
+}
+
 // AJAX real-time polling for new complaints
 (function () {
     var lastTs = Math.floor(Date.now() / 1000);
-    var toastTimeout;
-
-    function showToast(msg) {
-        var toast = document.getElementById('ajax-toast');
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(function () {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(-8px)';
-        }, 3000);
-    }
 
     function pollComplaints() {
         fetch('/admin/complaints/new?since=' + lastTs, {
@@ -415,8 +424,12 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
             if (data.open_html) {
                 var tbody = document.getElementById('complaints-tbody-open');
                 if (tbody) {
-                    tbody.insertAdjacentHTML('afterbegin', data.open_html);
-                    showToast('🔔 ' + data.open_count + ' new complaint(s) received');
+                    var temp = document.createElement('tbody');
+                    temp.innerHTML = data.open_html;
+                    Array.from(temp.children).forEach(function(row) {
+                        if (row.id && document.getElementById(row.id)) return;
+                        tbody.insertAdjacentElement('afterbegin', row);
+                    });
                 }
             }
         })
@@ -427,6 +440,5 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat();
 })();
 </script>
 
-<div id="ajax-toast" style="position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:9999;background:#1d4ed8;color:#fff;padding:10px 24px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 4px 20px rgba(29,78,216,.4);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;"></div>
 
 @endsection
