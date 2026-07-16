@@ -102,12 +102,11 @@ class RoleController extends Controller
             $email = $request->email;
 
             \DB::statement("
-                INSERT INTO users (first_name, last_name, name, email, password, role, is_admin, verification_status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, true, 'verified', NOW(), NOW())
+                INSERT INTO users (first_name, last_name, email, password, role, is_admin, verification_status, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, true, 'verified', NOW(), NOW())
             ", [
                 $request->first_name,
                 $request->last_name,
-                $request->first_name . ' ' . $request->last_name,
                 $email,
                 Hash::make($request->password),
                 $role,
