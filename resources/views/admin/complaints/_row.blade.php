@@ -195,10 +195,10 @@
 {{-- Resolve Complaint modal --}}
 <div id="resolve-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeResolveModal()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 z-10">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                 </svg>
             </div>
@@ -207,8 +207,8 @@
                 <p class="text-[10px] text-gray-400 font-medium">This action cannot be undone</p>
             </div>
         </div>
-        <p class="text-xs text-gray-600 leading-relaxed mb-5">
-            Are you sure you want to mark this complaint as <span class="font-bold text-green-700">Resolved</span>? The complaint will be moved to the resolved list and the resident will no longer be able to send messages.
+        <p class="text-xs text-gray-600 leading-relaxed mb-4">
+            Are you sure you want to mark this as <span class="font-bold text-green-700">Resolved</span>? It will be moved to the resolved list.
         </p>
         <div class="flex gap-2">
             <button onclick="closeResolveModal()"
