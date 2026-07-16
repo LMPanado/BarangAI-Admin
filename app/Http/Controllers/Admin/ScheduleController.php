@@ -63,8 +63,6 @@ class ScheduleController extends Controller
             'schedule_time_to'      => 'required',
             'location'              => 'nullable|string',
             'image'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'age_groups'            => 'nullable|array',
-            'age_groups.*'          => 'in:youth,adults,senior',
             'children_age_groups'   => 'nullable|array',
             'children_age_groups.*' => 'in:0-2,3-5,6-12',
         ]);
@@ -73,52 +71,29 @@ class ScheduleController extends Controller
             $validated['image'] = $request->file('image')->store('events', 'public');
         }
 
-        $ageGroups         = $request->input('age_groups', ['youth', 'adults', 'senior']);
         $childrenAgeGroups = $request->input('children_age_groups', []);
-        $validated['age_groups'] = $ageGroups;
 
         $schedule = Schedule::create($validated);
 
-        \Illuminate\Support\Facades\DB::statement(
-            'UPDATE schedules SET age_groups = ? WHERE id = ?',
-            ['{' . implode(',', $ageGroups) . '}', $schedule->id]
-        );
-
-        $this->notifyByAgeGroups($schedule, $ageGroups, $childrenAgeGroups);
+        $this->notifyResidents($schedule, $childrenAgeGroups);
 
         AuditLogger::log('created', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
 
         return redirect()->route('admin.schedules.index')->with('success', 'Event created successfully!');
     }
 
-    private function notifyByAgeGroups(Schedule $schedule, array $ageGroups, array $childrenAgeGroups = []): void
+    private function notifyResidents(Schedule $schedule, array $childrenAgeGroups = []): void
     {
-        $conditions = [];
-        if (in_array('youth',  $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 13 AND 17";
-        if (in_array('adults', $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 18 AND 59";
-        if (in_array('senior', $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) >= 60";
+        // Notify all residents
+        $users = DB::select("SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL");
 
-        $whereAge = empty($conditions) ? '1=1' : '(' . implode(' OR ', $conditions) . ')';
-
-        $users = \Illuminate\Support\Facades\DB::select(
-            "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND birth_date IS NOT NULL AND {$whereAge}"
-        );
-
-        // If all three groups selected, also include users with no birth_date
-        if (count($ageGroups) === 3) {
-            $extra = \Illuminate\Support\Facades\DB::select(
-                "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND birth_date IS NULL"
-            );
-            $users = array_merge($users, $extra);
-        }
-
-        // Also notify parents whose children match the selected children age groups
+        // Additionally notify parents whose children match selected age groups
         if (!empty($childrenAgeGroups)) {
             $childConditions = array_map(
                 fn($g) => "children @> '[{\"age_group\": \"" . addslashes($g) . "\"}]'::jsonb",
                 $childrenAgeGroups
             );
-            $parentUsers = \Illuminate\Support\Facades\DB::select(
+            $parentUsers = DB::select(
                 "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND (" . implode(' OR ', $childConditions) . ")"
             );
             $users = array_merge($users, $parentUsers);
@@ -138,7 +113,7 @@ class ScheduleController extends Controller
 
         foreach ($users as $user) {
             try {
-                \Illuminate\Support\Facades\Http::withHeaders([
+                Http::withHeaders([
                     'Authorization' => 'Bearer ' . $serviceKey,
                     'Content-Type'  => 'application/json',
                 ])->post($supabaseUrl, [
@@ -148,7 +123,7 @@ class ScheduleController extends Controller
                     'data'  => ['type' => 'new_event', 'schedule_id' => (string) $schedule->id],
                 ]);
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('Event notify failed: ' . $e->getMessage());
+                Log::warning('Event notify failed: ' . $e->getMessage());
             }
         }
     }
