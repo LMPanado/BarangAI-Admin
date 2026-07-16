@@ -7,9 +7,18 @@
         default    => 'bg-gray-50 text-gray-400',
     };
     $statusStyle = match($complaint->status) {
-        'open'   => 'bg-amber-50 text-amber-700',
-        'closed' => 'bg-green-50 text-green-700',
-        default  => 'bg-gray-50 text-gray-400',
+        'open'                => 'bg-amber-50 text-amber-700',
+        'under_investigation' => 'bg-blue-50 text-blue-700',
+        'resolved'            => 'bg-green-50 text-green-700',
+        'closed'              => 'bg-gray-100 text-gray-500',
+        default               => 'bg-gray-50 text-gray-400',
+    };
+    $statusLabel = match($complaint->status) {
+        'open'                => 'Open',
+        'under_investigation' => 'Under Investigation',
+        'resolved'            => 'Resolved',
+        'closed'              => 'Closed',
+        default               => ucfirst($complaint->status ?? 'open'),
     };
     $msgCount = $messageCounts[$complaint->id] ?? 0;
 @endphp
@@ -55,21 +64,9 @@
         </span>
     </td>
     <td class="px-6 py-5" onclick="event.stopPropagation()">
-        @if(auth()->user()->isCaptain() || auth()->user()->isAdmin())
-        <form action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST">
-            @csrf @method('PATCH')
-            <select name="status" onchange="confirmAction(this.form, 'Change this complaint status to \'' + this.options[this.selectedIndex].text + '\'?')"
-                    class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 cursor-pointer focus:ring-2 focus:ring-brgyGreen/20 outline-none
-                           {{ ($complaint->status ?? 'open') === 'open' ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700' }}">
-                <option value="open"   {{ ($complaint->status ?? 'open') === 'open'   ? 'selected' : '' }}>Open</option>
-                <option value="closed" {{ ($complaint->status ?? 'open') === 'closed' ? 'selected' : '' }}>Closed</option>
-            </select>
-        </form>
-        @else
-        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $statusStyle }}">
-            {{ $complaint->status ?? 'open' }}
+        <span id="status-badge-{{ $complaint->id }}" class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $statusStyle }}">
+            {{ $statusLabel }}
         </span>
-        @endif
     </td>
     <td class="px-6 py-5" onclick="event.stopPropagation()">
         <div class="flex items-center gap-2">
@@ -130,6 +127,22 @@
                 </button>
                 @endif
             </div>
+
+            {{-- Resolved button --}}
+            @if(in_array($complaint->status, ['under_investigation', 'open']))
+            <div>
+                <form action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST" class="inline">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="status" value="resolved">
+                    <button type="submit"
+                            onclick="return confirm('Mark this complaint as Resolved?')"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-700 border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 text-[10px] font-black uppercase tracking-widest transition-all">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        Mark as Resolved
+                    </button>
+                </form>
+            </div>
+            @endif
 
             {{-- Incident details grid --}}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white rounded-xl p-4 border border-indigo-100/60">

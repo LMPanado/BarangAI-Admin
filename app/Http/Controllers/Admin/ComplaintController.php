@@ -42,8 +42,8 @@ class ComplaintController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $openList   = (clone $query)->where('status', 'open')->with('residentUser')->paginate(10, ['*'], 'open_page')->withQueryString();
-        $closedList = (clone $query)->where('status', 'closed')->with('residentUser')->paginate(10, ['*'], 'closed_page')->withQueryString();
+        $openList   = (clone $query)->whereIn('status', ['open', 'under_investigation'])->with('residentUser')->paginate(10, ['*'], 'open_page')->withQueryString();
+        $closedList = (clone $query)->whereIn('status', ['closed', 'resolved'])->with('residentUser')->paginate(10, ['*'], 'closed_page')->withQueryString();
 
         $allIds = $openList->pluck('id')->merge($closedList->pluck('id'));
         $messageCounts = ComplaintMessage::whereIn('complaint_id', $allIds)
@@ -53,8 +53,8 @@ class ComplaintController extends Controller
 
         $stats = Complaint::selectRaw("
             COUNT(*) as total,
-            COUNT(*) FILTER (WHERE status = 'open') as open,
-            COUNT(*) FILTER (WHERE status = 'closed') as closed,
+            COUNT(*) FILTER (WHERE status IN ('open','under_investigation')) as open,
+            COUNT(*) FILTER (WHERE status IN ('closed','resolved')) as closed,
             COUNT(*) FILTER (WHERE severity = 'critical') as critical,
             COUNT(*) FILTER (WHERE severity = 'medium') as medium,
             COUNT(*) FILTER (WHERE severity = 'low') as low
@@ -116,6 +116,10 @@ class ComplaintController extends Controller
             'sender_type'     => 'admin',
             'sender_name'     => $admin->first_name . ' ' . $admin->last_name,
         ]);
+
+        if ($complaint->status === 'open') {
+            $complaint->update(['status' => 'under_investigation']);
+        }
 
         try {
             $fcmToken = \Illuminate\Support\Facades\DB::selectOne(
@@ -247,7 +251,7 @@ class ComplaintController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $complaint = Complaint::findOrFail($id);
-        $request->validate(['status' => 'required|in:open,closed']);
+        $request->validate(['status' => 'required|in:open,closed,under_investigation,resolved']);
         $complaint->update(['status' => $request->status]);
         AuditLogger::log('updated', 'Complaint', 'Complaint #' . $id . ' status → ' . $request->status, $id);
         return redirect()->back()->with('success', 'Complaint status updated.');

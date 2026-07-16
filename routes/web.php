@@ -230,7 +230,7 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
             $newComplaints = \App\Models\Complaint::with('residentUser')
                 ->where('created_at', '>', $since)
-                ->where('status', 'open')
+                ->whereIn('status', ['open', 'under_investigation'])
                 ->latest()
                 ->get();
             $msgCounts = \App\Models\ComplaintMessage::whereIn('complaint_id', $newComplaints->pluck('id'))
