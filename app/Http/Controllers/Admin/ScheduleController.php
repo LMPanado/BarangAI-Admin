@@ -60,97 +60,35 @@ class ScheduleController extends Controller
             'schedule_time_to' => 'required',
             'location'         => 'nullable|string',
             'image'            => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'age_groups'            => 'nullable|array',
-            'age_groups.*'          => 'in:children,youth,adults,senior',
-            'children_age_groups'   => 'nullable|array',
-            'children_age_groups.*' => 'in:0-2,3-5,6-12',
+            'age_groups'   => 'nullable|array',
+            'age_groups.*' => 'in:0-2,3-5,6-12',
         ]);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('events', 'public');
         }
 
-        $ageGroups         = $request->input('age_groups', ['children', 'youth', 'adults', 'senior']);
-        $childrenAgeGroups = $request->input('children_age_groups', []);
-        $validated['age_groups'] = $ageGroups;
+        $ageGroups = $request->input('age_groups', []);
+        unset($validated['age_groups']);
 
         $schedule = Schedule::create($validated);
 
-        // Persist age_groups as Postgres array directly
-        \Illuminate\Support\Facades\DB::statement(
-            'UPDATE schedules SET age_groups = ? WHERE id = ?',
-            ['{' . implode(',', $ageGroups) . '}', $schedule->id]
-        );
-
-        $this->notifyByAgeGroups($schedule, $ageGroups, $childrenAgeGroups);
+        // Persist age_groups as Postgres TEXT[] (empty = notify all via edge function)
+        if (!empty($ageGroups)) {
+            \Illuminate\Support\Facades\DB::statement(
+                'UPDATE schedules SET age_groups = ? WHERE id = ?',
+                ['{' . implode(',', $ageGroups) . '}', $schedule->id]
+            );
+        } else {
+            \Illuminate\Support\Facades\DB::statement(
+                'UPDATE schedules SET age_groups = NULL WHERE id = ?',
+                [$schedule->id]
+            );
+        }
 
         AuditLogger::log('created', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
 
         return redirect()->route('admin.schedules.index')->with('success', 'Event created successfully!');
-    }
-
-    private function notifyByAgeGroups(Schedule $schedule, array $ageGroups, array $childrenAgeGroups = []): void
-    {
-        $conditions = [];
-        if (in_array('children', $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) < 13";
-        if (in_array('youth',    $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 13 AND 17";
-        if (in_array('adults',   $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 18 AND 59";
-        if (in_array('senior',   $ageGroups)) $conditions[] = "EXTRACT(YEAR FROM AGE(birth_date)) >= 60";
-
-        $whereAge = empty($conditions) ? '1=1' : '(' . implode(' OR ', $conditions) . ')';
-
-        $users = \Illuminate\Support\Facades\DB::select(
-            "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND birth_date IS NOT NULL AND {$whereAge}"
-        );
-
-        if (count($ageGroups) === 4) {
-            $extra = \Illuminate\Support\Facades\DB::select(
-                "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND birth_date IS NULL"
-            );
-            $users = array_merge($users, $extra);
-        }
-
-        // Also notify parents whose children match the selected children age groups
-        if (!empty($childrenAgeGroups)) {
-            $childConditions = array_map(
-                fn($g) => "children @> '[{\"age_group\": \"" . addslashes($g) . "\"}]'::jsonb",
-                $childrenAgeGroups
-            );
-            $whereChildren = '(' . implode(' OR ', $childConditions) . ')';
-            $parentUsers = \Illuminate\Support\Facades\DB::select(
-                "SELECT fcm_token FROM users WHERE fcm_token IS NOT NULL AND {$whereChildren}"
-            );
-            $users = array_merge($users, $parentUsers);
-        }
-
-        // Deduplicate by fcm_token
-        $seen  = [];
-        $users = array_filter($users, function ($u) use (&$seen) {
-            if (!$u->fcm_token || isset($seen[$u->fcm_token])) return false;
-            $seen[$u->fcm_token] = true;
-            return true;
-        });
-
-        $supabaseUrl = 'https://ypcumosboftjylrnmyih.supabase.co/functions/v1/send-notification';
-        $serviceKey  = env('SUPABASE_SERVICE_KEY');
-        $date        = \Carbon\Carbon::parse($schedule->schedule_date)->format('M d, Y');
-
-        foreach ($users as $user) {
-            if (!$user->fcm_token) continue;
-            try {
-                \Illuminate\Support\Facades\Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $serviceKey,
-                    'Content-Type'  => 'application/json',
-                ])->post($supabaseUrl, [
-                    'token' => $user->fcm_token,
-                    'title' => 'New Event: ' . $schedule->title,
-                    'body'  => $date . ($schedule->location ? ' at ' . $schedule->location : ''),
-                    'data'  => ['type' => 'new_event', 'schedule_id' => (string) $schedule->id],
-                ]);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('Event notify failed: ' . $e->getMessage());
-            }
-        }
     }
 
     public function update(Request $request, Schedule $schedule)
