@@ -75,38 +75,27 @@
                                    class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-700 focus:bg-white focus:border-brgyGreen focus:ring-4 focus:ring-brgyGreen/5 outline-none transition-all cursor-pointer">
                         </div>
                     </div>
-                    {{-- Age Group Targeting --}}
+                    {{-- Target by Children's Age Group --}}
                     <div class="border-t border-gray-100 pt-6">
-                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Notify Age Groups</label>
-                        <p class="text-xs text-gray-400 mb-4">Select which residents receive a push notification. All events are visible to everyone in the app.</p>
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Target by Children's Age Group</label>
+                        <p class="text-xs text-gray-400 mb-4">Checking these will also send a notification to <span class="font-bold text-gray-500">parents</span> who have children in the selected age group. Leave all unchecked to skip this filter.</p>
                         <div class="flex flex-wrap gap-3">
-
-                            {{-- All --}}
-                            <label id="label-all"
-                                   style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;border:2px solid #1a5c2a;background:#f0faf0;cursor:pointer;user-select:none;transition:all .15s;">
-                                <input type="checkbox" id="age-all" style="width:16px;height:16px;accent-color:#1a5c2a;" checked
-                                       onchange="toggleAllAgeGroups(this)">
-                                <span style="font-size:9px;font-weight:900;color:#1a5c2a;text-transform:uppercase;letter-spacing:.1em;">All Residents</span>
-                            </label>
-
                             @foreach([
-                                ['children', 'Children',        '0 – 12 yrs'],
-                                ['youth',    'Youth',           '13 – 17 yrs'],
-                                ['adults',   'Adults',          '18 – 59 yrs'],
-                                ['senior',   'Senior Citizens', '60+ yrs'],
-                            ] as [$val, $label, $sub])
-                            <label id="label-{{ $val }}"
-                                   style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;border:2px solid #1a5c2a;background:#f0faf0;cursor:pointer;user-select:none;transition:all .15s;">
-                                <input type="checkbox" name="age_groups[]" value="{{ $val }}"
-                                       class="age-group-cb" style="width:16px;height:16px;accent-color:#1a5c2a;" checked
-                                       onchange="syncAllCheckbox()">
+                                ['0-2',  'Infant / Toddler', '0 – 2 yrs'],
+                                ['3-5',  'Preschool',        '3 – 5 yrs'],
+                                ['6-12', 'School Age',       '6 – 12 yrs'],
+                            ] as [$val, $lbl, $sub])
+                            <label id="child-lbl-{{ str_replace('-','_',$val) }}"
+                                   style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;border:2px solid #e5e7eb;background:#f9fafb;cursor:pointer;user-select:none;transition:all .15s;">
+                                <input type="checkbox" name="children_age_groups[]" value="{{ $val }}"
+                                       class="children-group-cb" style="width:16px;height:16px;accent-color:#1a5c2a;"
+                                       onchange="syncChildLabel(this)">
                                 <div>
-                                    <p style="font-size:9px;font-weight:900;color:#374151;text-transform:uppercase;letter-spacing:.1em;line-height:1;">{{ $label }}</p>
-                                    <p style="font-size:9px;color:#9ca3af;margin-top:2px;">{{ $sub }}</p>
+                                    <p style="font-size:9px;font-weight:900;color:#374151;text-transform:uppercase;letter-spacing:.1em;line-height:1;">{{ $lbl }}</p>
+                                    <p style="font-size:9px;color:#9ca3af;margin-top:2px;">Notifies parents · {{ $sub }}</p>
                                 </div>
                             </label>
                             @endforeach
-
                         </div>
                     </div>
 
@@ -164,29 +153,12 @@
 </div>
 
 <script>
-    const ageGroups = ['children', 'youth', 'adults', 'senior'];
-
-    function applyLabelStyle(lbl, active) {
-        lbl.style.borderColor = active ? '#1a5c2a' : '#e5e7eb';
-        lbl.style.background  = active ? '#f0faf0' : '#f9fafb';
-    }
-
-    function toggleAllAgeGroups(e) {
-        const allCb = document.getElementById('age-all');
-        document.querySelectorAll('.age-group-cb').forEach(cb => {
-            cb.checked = allCb.checked;
-            applyLabelStyle(document.getElementById('label-' + cb.value), cb.checked);
-        });
-        applyLabelStyle(document.getElementById('label-all'), allCb.checked);
-    }
-
-    function syncAllCheckbox() {
-        const cbs = document.querySelectorAll('.age-group-cb');
-        const allChecked = Array.from(cbs).every(cb => cb.checked);
-        const allCb = document.getElementById('age-all');
-        allCb.checked = allChecked;
-        applyLabelStyle(document.getElementById('label-all'), allChecked);
-        cbs.forEach(cb => applyLabelStyle(document.getElementById('label-' + cb.value), cb.checked));
+    function syncChildLabel(cb) {
+        const id = 'child-lbl-' + cb.value.replace(/-/g, '_');
+        const lbl = document.getElementById(id);
+        if (!lbl) return;
+        lbl.style.borderColor = cb.checked ? '#1a5c2a' : '#e5e7eb';
+        lbl.style.background  = cb.checked ? '#f0faf0' : '#f9fafb';
     }
 
     function previewImage(input) {

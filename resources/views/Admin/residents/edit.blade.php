@@ -136,6 +136,35 @@
                 </div>
             </div>
 
+            {{-- Children Section (Married / Widowed / Separated only) --}}
+            @php
+                $civilStatus = old('civil_status', $resident->civil_status);
+                $showChildren = in_array($civilStatus, ['Married', 'Widowed', 'Separated']);
+                $childrenLabels = ['0-2' => 'Infant / Toddler', '3-5' => 'Preschool', '6-12' => 'School Age'];
+                $existingGroups = collect($children)->pluck('age_group')->toArray();
+            @endphp
+            <div id="children-section" class="mt-10 pt-8 border-t border-slate-50 {{ $showChildren ? '' : 'hidden' }}">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Children's Age Groups</h3>
+                <p class="text-xs text-slate-400 mb-5">Select the age groups of the resident's children. This is used for targeted event notifications.</p>
+                <div class="flex flex-wrap gap-3">
+                    @foreach($childrenLabels as $val => $label)
+                    @php $checked = in_array($val, old('children_groups', $existingGroups)); @endphp
+                    <label style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:12px;border:2px solid {{ $checked ? '#1d4ed8' : '#e2e8f0' }};background:{{ $checked ? '#eff6ff' : '#f8fafc' }};cursor:pointer;user-select:none;transition:all .15s;"
+                           id="child-label-{{ str_replace('-', '_', $val) }}"
+                           onclick="toggleChildLabel(this)">
+                        <input type="checkbox" name="children_groups[]" value="{{ $val }}"
+                               style="width:15px;height:15px;accent-color:#1d4ed8;"
+                               {{ $checked ? 'checked' : '' }}
+                               onchange="styleChildLabel(this)">
+                        <div>
+                            <p style="font-size:9px;font-weight:900;color:#374151;text-transform:uppercase;letter-spacing:.1em;line-height:1;">{{ $label }}</p>
+                            <p style="font-size:9px;color:#94a3b8;margin-top:2px;">Ages {{ $val }} yrs</p>
+                        </div>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
             {{-- Form Actions --}}
             <div class="mt-12 pt-8 border-t border-slate-50 flex flex-col sm:flex-row justify-end gap-6 items-center">
                 <a href="{{ route('admin.residents.index') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-all">
@@ -153,6 +182,18 @@
 </div>
 
 <script>
+    // Show/hide children section when civil status changes
+    document.querySelector('select[name="civil_status"]').addEventListener('change', function () {
+        const show = ['Married', 'Widowed', 'Separated'].includes(this.value);
+        document.getElementById('children-section').classList.toggle('hidden', !show);
+    });
+
+    function styleChildLabel(cb) {
+        const lbl = cb.closest('label');
+        lbl.style.borderColor = cb.checked ? '#1d4ed8' : '#e2e8f0';
+        lbl.style.background  = cb.checked ? '#eff6ff' : '#f8fafc';
+    }
+
     function calculateAge() {
         const birthInput = document.getElementById('birth_date');
         const ageInput = document.getElementById('age');
