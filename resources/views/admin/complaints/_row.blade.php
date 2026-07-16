@@ -212,11 +212,13 @@
         </p>
         <div class="flex gap-2">
             <button onclick="closeResolveModal()"
-                    class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 text-[10px] font-black uppercase tracking-widest transition-all">
+                    style="flex:1;padding:10px 16px;border-radius:12px;background:#f3f4f6;color:#4b5563;border:none;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;"
+                    onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
                 Cancel
             </button>
             <button onclick="submitResolve()"
-                    class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700 text-[10px] font-black uppercase tracking-widest transition-all">
+                    style="flex:1;padding:10px 16px;border-radius:12px;background:#16a34a;color:#fff;border:none;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;"
+                    onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
                 Yes, Resolve
             </button>
         </div>
