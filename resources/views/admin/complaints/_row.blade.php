@@ -24,15 +24,13 @@
 @endphp
 
 {{-- Main row --}}
-<tr class="hover:bg-gray-50/50 transition-colors {{ $isBlotter ? 'cursor-pointer' : '' }}" id="complaint-row-{{ $complaint->id }}"
-    @if($isBlotter) onclick="toggleBlotter({{ $complaint->id }})" @endif>
+<tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" id="complaint-row-{{ $complaint->id }}"
+    onclick="toggleBlotter({{ $complaint->id }})">
     <td class="px-6 py-5 whitespace-nowrap">
         <div class="flex items-center gap-2">
-            @if($isBlotter)
             <svg id="blotter-chevron-{{ $complaint->id }}" class="w-3.5 h-3.5 text-gray-300 flex-shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
             </svg>
-            @endif
             <div>
                 <p class="text-xs font-bold text-gray-700">{{ $complaint->created_at->timezone('Asia/Manila')->format('M d, Y') }}</p>
                 <p class="text-[10px] text-gray-400 mt-0.5">{{ $complaint->created_at->timezone('Asia/Manila')->format('h:i A') }}</p>
@@ -186,6 +184,31 @@
                 <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Narrative / Statement</p>
                 <p class="text-xs text-gray-700 leading-relaxed">{{ $complaint->message }}</p>
             </div>
+        </div>
+    </td>
+</tr>
+@endif
+
+@if(!$isBlotter)
+{{-- Regular complaint accordion row --}}
+<tr id="blotter-detail-{{ $complaint->id }}" class="hidden bg-slate-100/70">
+    <td colspan="7" class="px-6 py-4 border-b border-slate-200">
+        <div class="flex items-center justify-between">
+            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Complaint Actions</p>
+            @if(in_array($complaint->status, ['under_investigation', 'open']))
+            <form id="resolve-form-{{ $complaint->id }}" action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST" class="hidden">
+                @csrf @method('PATCH')
+                <input type="hidden" name="status" value="resolved">
+            </form>
+            <button type="button"
+                    onclick="openResolveModal({{ $complaint->id }})"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 text-green-700 border border-green-100 hover:bg-green-600 hover:text-white hover:border-green-600 text-[10px] font-black uppercase tracking-widest transition-all">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                Mark as Resolved
+            </button>
+            @else
+            <span class="text-[10px] font-black text-green-600 uppercase tracking-widest">✓ Complaint Resolved</span>
+            @endif
         </div>
     </td>
 </tr>
