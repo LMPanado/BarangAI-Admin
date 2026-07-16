@@ -80,7 +80,6 @@ class RoleController extends Controller
 
     public function createStaff(Request $request)
     {
-        // Only role 1 (IT Admin) can create barangay accounts
         if (auth()->user()->role !== 1) {
             abort(403);
         }
@@ -91,29 +90,40 @@ class RoleController extends Controller
             'email'      => 'required|email|unique:users,email',
             'password'   => 'required|string|min:8|confirmed',
             'role'       => 'required|in:2,3',
+        ], [
+            'email.unique'      => 'This email address is already in use. Please use a different email.',
+            'password.confirmed' => 'The passwords do not match.',
+            'password.min'      => 'Password must be at least 8 characters.',
         ]);
 
-        $role = (int) $request->role;
+        try {
+            $role = (int) $request->role;
 
-        $id = \DB::table('users')->insertGetId([
-            'first_name'          => $request->first_name,
-            'last_name'           => $request->last_name,
-            'name'                => $request->first_name . ' ' . $request->last_name,
-            'email'               => $request->email,
-            'password'            => Hash::make($request->password),
-            'role'                => $role,
-            'is_admin'            => \DB::raw('true'),
-            'verification_status' => 'verified',
-            'created_at'          => now(),
-            'updated_at'          => now(),
-        ]);
+            $id = \DB::table('users')->insertGetId([
+                'first_name'          => $request->first_name,
+                'last_name'           => $request->last_name,
+                'name'                => $request->first_name . ' ' . $request->last_name,
+                'email'               => $request->email,
+                'password'            => Hash::make($request->password),
+                'role'                => $role,
+                'is_admin'            => \DB::raw('true'),
+                'verification_status' => 'verified',
+                'created_at'          => now(),
+                'updated_at'          => now(),
+            ]);
 
-        $user = User::find($id);
-        $label = $role === 2 ? 'Barangay Captain' : 'Barangay Staff';
-        AuditLogger::log('created', 'User', "{$label}: {$user->last_name}, {$user->first_name}", $user->id);
+            $user = User::find($id);
+            $label = $role === 2 ? 'Barangay Captain' : 'Barangay Staff';
+            AuditLogger::log('created', 'User', "{$label}: {$user->last_name}, {$user->first_name}", $user->id);
 
-        return redirect()->route('admin.roles.index')
-            ->with('success', "{$label} account for {$user->first_name} {$user->last_name} created successfully.");
+            return redirect()->route('admin.roles.index')
+                ->with('success', "{$label} account for {$user->first_name} {$user->last_name} created successfully.");
+
+        } catch (\Exception $e) {
+            \Log::error('createStaff failed: ' . $e->getMessage());
+            return redirect()->route('admin.roles.index')
+                ->with('error', 'Failed to create account. Please try again.');
+        }
     }
 
     public function createAdmin(Request $request)

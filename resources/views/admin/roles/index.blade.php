@@ -180,7 +180,7 @@
 
 @if(auth()->user()->role === 1)
 {{-- Create Staff Account Modal --}}
-<div id="create-staff-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+<div id="create-staff-modal" class="{{ $errors->any() ? '' : 'hidden' }} fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 p-8 relative">
         <button onclick="document.getElementById('create-staff-modal').classList.add('hidden')"
                 class="absolute top-5 right-5 text-gray-300 hover:text-gray-500 transition-colors">
@@ -190,41 +190,51 @@
             <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Create Staff Account</h2>
             <p class="text-xs text-gray-400 mt-1">Create a Barangay Captain or Staff account directly.</p>
         </div>
+
+        @if($errors->any())
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:12px 16px;margin-bottom:16px;">
+            <p style="font-size:11px;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Please fix the following:</p>
+            @foreach($errors->all() as $error)
+                <p style="font-size:12px;color:#dc2626;margin:2px 0;">• {{ $error }}</p>
+            @endforeach
+        </div>
+        @endif
+
         <form action="{{ route('admin.roles.create-staff') }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">First Name</label>
-                    <input type="text" name="first_name" required
-                           class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                    <input type="text" name="first_name" required value="{{ old('first_name') }}"
+                           style="width:100%;padding:10px 16px;font-size:14px;border-radius:12px;border:2px solid {{ $errors->has('first_name') ? '#fca5a5' : '#e2e8f0' }};outline:none;box-sizing:border-box;"
                            placeholder="Juan">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Last Name</label>
-                    <input type="text" name="last_name" required
-                           class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                    <input type="text" name="last_name" required value="{{ old('last_name') }}"
+                           style="width:100%;padding:10px 16px;font-size:14px;border-radius:12px;border:2px solid {{ $errors->has('last_name') ? '#fca5a5' : '#e2e8f0' }};outline:none;box-sizing:border-box;"
                            placeholder="dela Cruz">
                 </div>
             </div>
             <div>
                 <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Email Address</label>
-                <input type="email" name="email" required
-                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                <input type="email" name="email" required value="{{ old('email') }}"
+                       style="width:100%;padding:10px 16px;font-size:14px;border-radius:12px;border:2px solid {{ $errors->has('email') ? '#fca5a5' : '#e2e8f0' }};outline:none;box-sizing:border-box;"
                        placeholder="staff@barangay419.gov.ph">
             </div>
             <div>
                 <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Role</label>
                 <select name="role" required
-                        class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors cursor-pointer">
-                    <option value="2">Barangay Captain</option>
-                    <option value="3">Barangay Staff</option>
+                        style="width:100%;padding:10px 16px;font-size:14px;border-radius:12px;border:2px solid #e2e8f0;outline:none;box-sizing:border-box;cursor:pointer;background:white;">
+                    <option value="2" {{ old('role') == '2' ? 'selected' : '' }}>Barangay Captain</option>
+                    <option value="3" {{ old('role') == '3' ? 'selected' : '' }}>Barangay Staff</option>
                 </select>
             </div>
             <div>
                 <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Password</label>
                 <div style="position:relative;">
                     <input type="password" name="password" id="staff-password" required minlength="8"
-                           style="width:100%;padding:10px 44px 10px 16px;font-size:14px;border-radius:12px;border:2px solid #e2e8f0;outline:none;box-sizing:border-box;"
+                           style="width:100%;padding:10px 44px 10px 16px;font-size:14px;border-radius:12px;border:2px solid {{ $errors->has('password') ? '#fca5a5' : '#e2e8f0' }};outline:none;box-sizing:border-box;"
                            placeholder="Min. 8 characters">
                     <button type="button" onclick="togglePw('staff-password','staff-pw-eye')"
                             style="position:absolute;top:50%;right:12px;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;color:#9ca3af;display:flex;align-items:center;">

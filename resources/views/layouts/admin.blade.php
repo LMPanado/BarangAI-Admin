@@ -299,6 +299,24 @@
     <script>setTimeout(() => { const t = document.getElementById('global-toast'); if(t) t.style.opacity = '0'; setTimeout(() => t && t.remove(), 500); }, 4000);</script>
     @endif
 
+    @if(session('error'))
+    <div id="global-error-toast"
+         class="fixed top-6 right-6 z-[200] flex items-center gap-3 bg-white border border-gray-100 shadow-2xl shadow-black/10 px-5 py-4 rounded-2xl transition-all duration-500">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#ef4444;">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </div>
+        <p class="text-xs font-black text-gray-700 uppercase tracking-widest">{{ session('error') }}</p>
+        <button onclick="document.getElementById('global-error-toast').remove()" class="ml-2 text-gray-300 hover:text-gray-500 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    <script>setTimeout(() => { const t = document.getElementById('global-error-toast'); if(t) t.style.opacity = '0'; setTimeout(() => t && t.remove(), 500); }, 5000);</script>
+    @endif
+
     {{-- Global Delete Confirm Modal --}}
     <div id="delete-modal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center">
