@@ -377,7 +377,10 @@ function sendChatMessage() {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) fetchNewMessages(currentComplaintId);
+        if (data.success) {
+            fetchNewMessages(currentComplaintId);
+            if (data.status) updateStatusBadge(currentComplaintId, data.status);
+        }
     })
     .finally(() => { document.getElementById('chatSendBtn').disabled = false; input.focus(); });
 }
@@ -387,6 +390,25 @@ function handleChatKey(e) {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChat(); });
+
+function updateStatusBadge(complaintId, status) {
+    const badge = document.getElementById('status-badge-' + complaintId);
+    if (!badge) return;
+    const labels = {
+        'open':                'Open',
+        'under_investigation': 'Under Investigation',
+        'resolved':            'Resolved',
+        'closed':              'Closed',
+    };
+    const classes = {
+        'open':                'bg-amber-50 text-amber-700',
+        'under_investigation': 'bg-blue-50 text-blue-700',
+        'resolved':            'bg-green-50 text-green-700',
+        'closed':              'bg-gray-100 text-gray-500',
+    };
+    badge.textContent = labels[status] || status;
+    badge.className = 'px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ' + (classes[status] || 'bg-gray-50 text-gray-400');
+}
 
 // AJAX real-time polling for new complaints
 (function () {

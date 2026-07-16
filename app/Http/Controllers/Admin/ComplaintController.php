@@ -165,7 +165,7 @@ class ComplaintController extends Controller
             $id
         );
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'status' => $complaint->fresh()->status]);
     }
 
     public function notifyRespondent($id)
