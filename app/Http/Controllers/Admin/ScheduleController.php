@@ -131,13 +131,17 @@ class ScheduleController extends Controller
     public function update(Request $request, Schedule $schedule)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'schedule_date' => 'required|date',
-            'schedule_time' => 'required',
-            'schedule_time_to' => 'required',
-            'location' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'title'                 => 'required|string|max:255',
+            'schedule_date'         => 'required|date',
+            'schedule_time'         => 'required',
+            'schedule_time_to'      => 'required',
+            'location'              => 'nullable|string',
+            'image'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'children_age_groups'   => 'nullable|array',
+            'children_age_groups.*' => 'in:0-2,3-5,6-12',
         ]);
+
+        $childrenAgeGroups = $request->input('children_age_groups', []);
 
         // Handle Image Deletion via "X" button
         if ($request->remove_image == '1' && !$request->hasFile('image')) {
@@ -155,7 +159,12 @@ class ScheduleController extends Controller
             $validated['image'] = $request->file('image')->store('events', 'public');
         }
 
+        unset($validated['children_age_groups']);
         $schedule->update($validated);
+
+        if (!empty($childrenAgeGroups)) {
+            $this->notifyResidents($schedule, $childrenAgeGroups);
+        }
 
         AuditLogger::log('updated', 'Schedule', $schedule->title . ' on ' . $schedule->schedule_date, $schedule->id);
 
