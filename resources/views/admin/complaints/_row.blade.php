@@ -99,38 +99,38 @@
 
 @if($isBlotter)
 {{-- Blotter accordion detail row --}}
-<tr id="blotter-detail-{{ $complaint->id }}" class="hidden bg-indigo-50/30">
-    <td colspan="7" class="px-6 py-5 border-b border-indigo-100/50">
+<tr id="blotter-detail-{{ $complaint->id }}" class="hidden bg-slate-100/70">
+    <td colspan="7" class="px-6 py-5 border-b border-slate-200">
         <div class="space-y-4">
 
-            {{-- Respondent check badge --}}
-            <div class="flex items-center gap-3">
-                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Respondent Status:</span>
-                @if($complaint->respondent_is_resident)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-100 text-[10px] font-black uppercase tracking-widest">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                        Found in resident records
-                    </span>
-                @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                        Not a registered resident
-                    </span>
-                @endif
+            {{-- Top bar: respondent status left, resolved button right --}}
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Respondent Status:</span>
+                    @if($complaint->respondent_is_resident)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-100 text-[10px] font-black uppercase tracking-widest">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Found in resident records
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Not a registered resident
+                        </span>
+                    @endif
 
-                @if($complaint->respondent_is_resident && $complaint->respondent_matched_uid)
-                <button
-                    onclick="notifyRespondent({{ $complaint->id }}, this, '{{ addslashes($complaint->respondent_name ?? '') }}')"
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 hover:bg-amber-500 hover:text-white hover:border-amber-500 text-[10px] font-black uppercase tracking-widest transition-all">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    Notify Respondent
-                </button>
-                @endif
-            </div>
+                    @if($complaint->respondent_is_resident && $complaint->respondent_matched_uid)
+                    <button
+                        onclick="notifyRespondent({{ $complaint->id }}, this, '{{ addslashes($complaint->respondent_name ?? '') }}')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 hover:bg-amber-500 hover:text-white hover:border-amber-500 text-[10px] font-black uppercase tracking-widest transition-all">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        Notify Respondent
+                    </button>
+                    @endif
+                </div>
 
-            {{-- Resolved button --}}
-            @if(in_array($complaint->status, ['under_investigation', 'open']))
-            <div>
+                {{-- Resolved button (right side) --}}
+                @if(in_array($complaint->status, ['under_investigation', 'open']))
                 <form action="{{ route('admin.complaints.updateStatus', $complaint->id) }}" method="POST" class="inline">
                     @csrf @method('PATCH')
                     <input type="hidden" name="status" value="resolved">
@@ -141,8 +141,8 @@
                         Mark as Resolved
                     </button>
                 </form>
+                @endif
             </div>
-            @endif
 
             {{-- Incident details grid --}}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white rounded-xl p-4 border border-indigo-100/60">
