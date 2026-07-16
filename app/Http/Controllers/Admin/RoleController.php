@@ -97,32 +97,39 @@ class RoleController extends Controller
         ]);
 
         try {
-            $role = (int) $request->role;
+            $role  = (int) $request->role;
+            $label = $role === 2 ? 'Barangay Captain' : 'Barangay Staff';
+            $email = $request->email;
 
-            $id = \DB::table('users')->insertGetId([
-                'first_name'          => $request->first_name,
-                'last_name'           => $request->last_name,
-                'name'                => $request->first_name . ' ' . $request->last_name,
-                'email'               => $request->email,
-                'password'            => Hash::make($request->password),
-                'role'                => $role,
-                'is_admin'            => \DB::raw('true'),
-                'verification_status' => 'verified',
-                'created_at'          => now(),
-                'updated_at'          => now(),
+            \DB::statement("
+                INSERT INTO users (first_name, last_name, name, email, password, role, is_admin, verification_status, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, true, 'verified', NOW(), NOW())
+            ", [
+                $request->first_name,
+                $request->last_name,
+                $request->first_name . ' ' . $request->last_name,
+                $email,
+                Hash::make($request->password),
+                $role,
             ]);
 
-            $user = User::find($id);
-            $label = $role === 2 ? 'Barangay Captain' : 'Barangay Staff';
-            AuditLogger::log('created', 'User', "{$label}: {$user->last_name}, {$user->first_name}", $user->id);
+            $user = \DB::table('users')->where('email', $email)->first();
+
+            try {
+                if ($user) {
+                    AuditLogger::log('created', 'User', "{$label}: {$user->last_name}, {$user->first_name}", $user->id);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('AuditLogger failed on createStaff: ' . $e->getMessage());
+            }
 
             return redirect()->route('admin.roles.index')
-                ->with('success', "{$label} account for {$user->first_name} {$user->last_name} created successfully.");
+                ->with('success', "{$label} account for {$request->first_name} {$request->last_name} created successfully.");
 
         } catch (\Exception $e) {
             \Log::error('createStaff failed: ' . $e->getMessage());
             return redirect()->route('admin.roles.index')
-                ->with('error', 'Failed to create account. Please try again.');
+                ->with('error', 'Account creation failed: ' . $e->getMessage());
         }
     }
 
