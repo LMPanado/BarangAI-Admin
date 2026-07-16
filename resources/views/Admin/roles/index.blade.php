@@ -9,11 +9,27 @@
             <h1 class="text-2xl font-extrabold text-gray-800 tracking-tight">Manage User Roles</h1>
             <p class="text-sm text-gray-500 mt-1 font-medium">Manage staff permissions and resident roles for <span class="text-brgyGreen font-bold">Barangay 419</span>.</p>
         </div>
-        <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
-            <span class="text-gray-400">Home</span>
-            <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-            <span class="text-brgyGreen">Roles</span>
-        </nav>
+        <div class="flex items-center gap-4">
+            @if(auth()->user()->role === 1)
+            <button onclick="document.getElementById('create-staff-modal').classList.remove('hidden')"
+                    style="background:#1d4ed8;"
+                    class="flex items-center gap-2 text-white text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-2xl shadow-md hover:opacity-90 transition-all active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                Create Staff Account
+            </button>
+            <button onclick="document.getElementById('create-admin-modal').classList.remove('hidden')"
+                    style="background:#1a5c2a;"
+                    class="flex items-center gap-2 text-white text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-2xl shadow-md hover:opacity-90 transition-all active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                Create System Admin
+            </button>
+            @endif
+            <nav class="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider">
+                <span class="text-gray-400">Home</span>
+                <svg class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                <span class="text-brgyGreen">Roles</span>
+            </nav>
+        </div>
     </div>
 
     {{-- Quick Stats --}}
@@ -167,5 +183,127 @@
         </div>
     </div>
 </div>
+
+@if(auth()->user()->role === 1)
+{{-- Create Staff Account Modal --}}
+<div id="create-staff-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 p-8 relative">
+        <button onclick="document.getElementById('create-staff-modal').classList.add('hidden')"
+                class="absolute top-5 right-5 text-gray-300 hover:text-gray-500 transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="mb-6">
+            <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Create Staff Account</h2>
+            <p class="text-xs text-gray-400 mt-1">Create a Barangay Captain or Staff account directly.</p>
+        </div>
+        <form action="{{ route('create-staff') }}" method="POST" class="space-y-4">
+            @csrf
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">First Name</label>
+                    <input type="text" name="first_name" required
+                           class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                           placeholder="Juan">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Last Name</label>
+                    <input type="text" name="last_name" required
+                           class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                           placeholder="dela Cruz">
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Email Address</label>
+                <input type="email" name="email" required
+                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                       placeholder="staff@barangay419.gov.ph">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Role</label>
+                <select name="role" required
+                        class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors cursor-pointer">
+                    <option value="2">Barangay Captain</option>
+                    <option value="3">Barangay Staff</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Password</label>
+                <input type="password" name="password" required minlength="8"
+                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                       placeholder="Min. 8 characters">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Confirm Password</label>
+                <input type="password" name="password_confirmation" required
+                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-colors"
+                       placeholder="Repeat password">
+            </div>
+            <div class="pt-2">
+                <button type="submit"
+                        style="background:#1d4ed8;"
+                        class="w-full text-white text-[10px] font-black uppercase tracking-widest py-3.5 rounded-2xl hover:opacity-90 transition-all active:scale-95">
+                    Create Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Create System Admin Modal --}}
+<div id="create-admin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 p-8 relative">
+        <button onclick="document.getElementById('create-admin-modal').classList.add('hidden')"
+                class="absolute top-5 right-5 text-gray-300 hover:text-gray-500 transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="mb-6">
+            <h2 class="text-lg font-extrabold text-gray-800 tracking-tight">Create System Admin</h2>
+            <p class="text-xs text-gray-400 mt-1">Create a new I.T. Administrator account.</p>
+        </div>
+        <form action="{{ route('create-admin') }}" method="POST" class="space-y-4">
+            @csrf
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">First Name</label>
+                    <input type="text" name="first_name" required
+                           class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-brgyGreen focus:ring-0 outline-none transition-colors"
+                           placeholder="Juan">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Last Name</label>
+                    <input type="text" name="last_name" required
+                           class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-brgyGreen focus:ring-0 outline-none transition-colors"
+                           placeholder="dela Cruz">
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Email Address</label>
+                <input type="email" name="email" required
+                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-brgyGreen focus:ring-0 outline-none transition-colors"
+                       placeholder="admin@barangay419.gov.ph">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Password</label>
+                <input type="password" name="password" required minlength="8"
+                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-brgyGreen focus:ring-0 outline-none transition-colors"
+                       placeholder="Min. 8 characters">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Confirm Password</label>
+                <input type="password" name="password_confirmation" required
+                       class="w-full px-4 py-2.5 text-sm font-medium rounded-xl border-2 border-slate-100 focus:border-brgyGreen focus:ring-0 outline-none transition-colors"
+                       placeholder="Repeat password">
+            </div>
+            <div class="pt-2">
+                <button type="submit"
+                        style="background:#1a5c2a;"
+                        class="w-full text-white text-[10px] font-black uppercase tracking-widest py-3.5 rounded-2xl hover:opacity-90 transition-all active:scale-95">
+                    Create Admin
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 @endsection

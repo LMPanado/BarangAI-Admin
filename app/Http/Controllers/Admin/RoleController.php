@@ -78,6 +78,67 @@ class RoleController extends Controller
         }
     }
 
+    public function createStaff(Request $request)
+    {
+        // Only role 1 (IT Admin) can create barangay accounts
+        if (auth()->user()->role !== 1) {
+            abort(403);
+        }
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|string|min:8|confirmed',
+            'role'       => 'required|in:2,3',
+        ]);
+
+        $role = (int) $request->role;
+
+        $user = User::create([
+            'first_name'          => $request->first_name,
+            'last_name'           => $request->last_name,
+            'name'                => $request->first_name . ' ' . $request->last_name,
+            'email'               => $request->email,
+            'password'            => Hash::make($request->password),
+            'role'                => $role,
+            'is_admin'            => true,
+            'verification_status' => 'verified',
+        ]);
+
+        $label = $role === 2 ? 'Barangay Captain' : 'Barangay Staff';
+        AuditLogger::log('created', 'User', "{$label}: {$user->last_name}, {$user->first_name}", $user->id);
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', "{$label} account for {$user->first_name} {$user->last_name} created successfully.");
+    }
+
+    public function createAdmin(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'first_name'          => $request->first_name,
+            'last_name'           => $request->last_name,
+            'name'                => $request->first_name . ' ' . $request->last_name,
+            'email'               => $request->email,
+            'password'            => Hash::make($request->password),
+            'role'                => 1,
+            'is_admin'            => true,
+            'verification_status' => 'verified',
+        ]);
+
+        AuditLogger::log('created', 'User', 'System Admin: ' . $user->last_name . ', ' . $user->first_name, $user->id);
+
+        return redirect()->route('admin.roles.index')
+            ->with('success', "System Admin account for {$user->first_name} {$user->last_name} created successfully.");
+    }
+
     public function resetPassword(Request $request, User $user)
     {
         $request->validate([

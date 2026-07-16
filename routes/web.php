@@ -327,6 +327,8 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
         Route::middleware(['role:1'])->group(function () {
             Route::prefix('roles')->name('admin.roles.')->group(function () {
                 Route::get('/', [RoleController::class, 'index'])->name('index');
+                Route::post('/create-admin', [RoleController::class, 'createAdmin'])->name('create-admin');
+                Route::post('/create-staff', [RoleController::class, 'createStaff'])->name('create-staff');
                 Route::patch('/{user}/update', [RoleController::class, 'update'])->name('update');
                 Route::patch('/{user}/reset-password', [RoleController::class, 'resetPassword'])->name('reset-password');
             });

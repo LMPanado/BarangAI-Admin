@@ -58,7 +58,7 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Civil Status</label>
-                            <select name="civil_status" id="civil_status" onchange="toggleChildrenSection(this.value)" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all appearance-none">
+                            <select name="civil_status" id="civil_status" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all appearance-none">
                                 <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
                                 <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
                                 <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
@@ -125,8 +125,7 @@
             </div>
 
             {{-- Children Section (Married / Widowed / Separated only) --}}
-            @php $showChildren = in_array(old('civil_status'), ['Married', 'Widowed', 'Separated']); @endphp
-            <div id="children-section" class="mt-10 pt-8 border-t border-slate-50 {{ $showChildren ? '' : 'hidden' }}">
+            <div id="children-section" class="mt-10 pt-8 border-t border-slate-50">
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Children's Age Groups</h3>
                 <p class="text-xs text-slate-400 mb-5">Select the age groups of the resident's children. Used for targeted event notifications.</p>
                 <div class="flex flex-wrap gap-3">
@@ -161,11 +160,6 @@
 </div>
 
 <script>
-    function toggleChildrenSection(val) {
-        const show = ['Married', 'Widowed', 'Separated'].includes(val);
-        document.getElementById('children-section').classList.toggle('hidden', !show);
-    }
-
     function styleCreateChildLabel(cb) {
         const lbl = cb.closest('label');
         lbl.style.borderColor = cb.checked ? '#1d4ed8' : '#e2e8f0';
