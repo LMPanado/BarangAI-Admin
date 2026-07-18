@@ -117,9 +117,21 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Resident Address</label>
-                        <textarea name="address" rows="4" class="w-full bg-slate-50 border-2 border-slate-50 rounded-[2rem] px-6 py-4 text-sm font-bold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all resize-none" placeholder="Full residential address..." required>{{ old('address') }}</textarea>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">House No.</label>
+                            <input type="text" name="house_no" value="{{ old('house_no') }}"
+                                   class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all"
+                                   placeholder="e.g. 123">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Street</label>
+                            <select name="street" class="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:bg-white focus:border-brgyGreen focus:ring-0 outline-none transition-all cursor-pointer">
+                                <option value="">— Select Street —</option>
+                                <option value="Loreto" {{ old('street') === 'Loreto' ? 'selected' : '' }}>Loreto</option>
+                                <option value="M. Francisco" {{ old('street') === 'M. Francisco' ? 'selected' : '' }}>M. Francisco</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

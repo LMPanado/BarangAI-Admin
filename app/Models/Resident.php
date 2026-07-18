@@ -22,6 +22,8 @@ class Resident extends Model
         'gender',
         'civil_status',
         'address',
+        'house_no',
+        'street',
         'is_voter',
         'birth_date',
         'place_birth',

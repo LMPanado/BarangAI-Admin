@@ -26,7 +26,7 @@ class ResidentController extends Controller
         }
 
         if ($request->filled('street')) {
-            $query->where('address', 'ilike', '%' . $request->street . '%');
+            $query->where('street', $request->street);
         }
 
         $sort = $request->get('sort', 'latest');
@@ -60,7 +60,8 @@ class ResidentController extends Controller
             'place_birth'     => 'nullable|string|max:255',
             'height_cm'       => 'nullable|numeric|min:0',
             'weight_kg'       => 'nullable|numeric|min:0',
-            'address'         => 'required|string',
+            'house_no'        => 'nullable|string|max:50',
+            'street'          => 'nullable|string|in:Loreto,M. Francisco',
             'children_groups'   => 'nullable|array',
             'children_groups.*' => 'in:0-2,3-5,6-12',
         ]);
@@ -130,7 +131,8 @@ class ResidentController extends Controller
             'height_cm'       => 'nullable|numeric|min:0',
             'weight_kg'       => 'nullable|numeric|min:0',
             'is_voter'        => 'nullable|boolean',
-            'address'         => 'required|string',
+            'house_no'        => 'nullable|string|max:50',
+            'street'          => 'nullable|string|in:Loreto,M. Francisco',
             'children_groups' => 'nullable|array',
             'children_groups.*' => 'in:0-2,3-5,6-12',
         ]);
@@ -169,7 +171,6 @@ class ResidentController extends Controller
                 'age'          => $validated['age'],
                 'gender'       => $validated['gender'],
                 'civil_status' => $civilStatus,
-                'address'      => $validated['address'],
                 'is_voter'     => DB::raw($isVoter ? 'true' : 'false'),
                 'birth_date'   => $validated['birth_date'] ?? null,
                 'place_birth'  => $validated['place_birth'] ?? null,
