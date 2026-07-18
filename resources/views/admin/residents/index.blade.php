@@ -39,18 +39,33 @@
                    placeholder="Search by name, ID, or email..."
                    class="pl-12 pr-4 py-4 text-xs font-bold border-none rounded-xl focus:ring-0 w-full transition-all bg-transparent placeholder:text-gray-300 uppercase tracking-widest">
             <input type="hidden" name="sort" value="{{ request('sort', 'latest') }}">
+            <input type="hidden" name="street" value="{{ request('street') }}">
             @if(request('search'))
-                <a href="{{ route('admin.residents.index', ['sort' => request('sort', 'latest')]) }}" class="absolute right-4 flex items-center text-gray-300 hover:text-red-400">
+                <a href="{{ route('admin.residents.index', ['sort' => request('sort', 'latest'), 'street' => request('street')]) }}" class="absolute right-4 flex items-center text-gray-300 hover:text-red-400">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
                 </a>
             @endif
         </form>
 
-        {{-- Sort Buttons --}}
-        <div class="flex items-center gap-1 px-2">
-            @php $currentSort = request('sort', 'latest'); $search = request('search'); @endphp
+        {{-- Street Filter + Sort --}}
+        <div class="flex items-center gap-2 px-2">
+            @php $currentSort = request('sort', 'latest'); $search = request('search'); $currentStreet = request('street'); @endphp
+
+            {{-- Street Dropdown --}}
+            <form action="{{ route('admin.residents.index') }}" method="GET" id="street-filter-form">
+                <input type="hidden" name="search" value="{{ $search }}">
+                <input type="hidden" name="sort" value="{{ $currentSort }}">
+                <select name="street" onchange="document.getElementById('street-filter-form').submit()"
+                        style="padding:8px 12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;border-radius:12px;border:2px solid {{ $currentStreet ? '#1a5c2a' : '#f1f5f9' }};background:{{ $currentStreet ? '#f0fdf4' : 'white' }};color:{{ $currentStreet ? '#1a5c2a' : '#94a3b8' }};outline:none;cursor:pointer;">
+                    <option value="">All Streets</option>
+                    <option value="Loreto" {{ $currentStreet === 'Loreto' ? 'selected' : '' }}>Loreto</option>
+                    <option value="M. Francisco" {{ $currentStreet === 'M. Francisco' ? 'selected' : '' }}>M. Francisco</option>
+                </select>
+            </form>
+
+            {{-- Sort Buttons --}}
             @foreach([['latest', 'Latest'], ['az', 'A–Z'], ['id', 'ID #']] as [$val, $label])
-                <a href="{{ route('admin.residents.index', ['sort' => $val, 'search' => $search]) }}"
+                <a href="{{ route('admin.residents.index', ['sort' => $val, 'search' => $search, 'street' => $currentStreet]) }}"
                    class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all
                           {{ $currentSort === $val ? 'bg-brgyGreen text-white shadow-sm' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-700' }}">
                     {{ $label }}
@@ -190,7 +205,7 @@
                     Showing {{ $residents->firstItem() }} to {{ $residents->lastItem() }} of {{ $residents->total() }} entries
                 </p>
                 <div>
-                    {{ $residents->links() }}
+                    {{ $residents->appends(request()->query())->links() }}
                 </div>
             </div>
         </div>

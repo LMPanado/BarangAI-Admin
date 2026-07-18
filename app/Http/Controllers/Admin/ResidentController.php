@@ -25,6 +25,10 @@ class ResidentController extends Controller
             });
         }
 
+        if ($request->filled('street')) {
+            $query->where('address', 'ilike', '%' . $request->street . '%');
+        }
+
         $sort = $request->get('sort', 'latest');
         match ($sort) {
             'az'     => $query->orderBy('last_name')->orderBy('first_name'),
