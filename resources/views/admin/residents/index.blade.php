@@ -57,7 +57,7 @@
                 <input type="hidden" name="sort" value="{{ $currentSort }}">
                 <select name="street" onchange="document.getElementById('street-filter-form').submit()"
                         style="padding:8px 12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;border-radius:12px;border:2px solid {{ $currentStreet ? '#1a5c2a' : '#f1f5f9' }};background:{{ $currentStreet ? '#f0fdf4' : 'white' }};color:{{ $currentStreet ? '#1a5c2a' : '#94a3b8' }};outline:none;cursor:pointer;">
-                    <option value="">All Streets</option>
+                    <option value="">Filter by Street</option>
                     <option value="Loreto" {{ $currentStreet === 'Loreto' ? 'selected' : '' }}>Loreto</option>
                     <option value="M. Francisco" {{ $currentStreet === 'M. Francisco' ? 'selected' : '' }}>M. Francisco</option>
                 </select>
