@@ -392,7 +392,7 @@ document.getElementById('cancelModal').addEventListener('click', function(e) {
 
 // ── Real-time polling for new requests ────────────────────────
 (function () {
-    var lastTs = Math.floor(Date.now() / 1000);
+    var lastId = {{ \App\Models\DocumentRequest::latest('id')->value('id') ?? 0 }};
     var toastTimeout;
 
     function showToast(msg) {
@@ -410,12 +410,12 @@ document.getElementById('cancelModal').addEventListener('click', function(e) {
 
     function pollDocuments() {
         if (document.getElementById('cancelModal').style.display === 'flex') return;
-        fetch('/admin/documents/new?since=' + lastTs, {
+        fetch('/admin/documents/new?after_id=' + lastId, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
-            lastTs = Math.floor(Date.now() / 1000);
+            if (data.latest_id) lastId = data.latest_id;
             var count = 0;
             if (data.mobile_html) {
                 var tbody = document.getElementById('mobile-requests-tbody');

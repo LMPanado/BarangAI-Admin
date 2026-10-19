@@ -258,14 +258,14 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             return response()->json(['html' => $html ?: null, 'count' => $newFeedbacks->count(), 'latest_id' => $latestId]);
         })->middleware('role:2,3')->name('admin.feedback.new');
 
-        // AJAX: new document requests since timestamp
+        // AJAX: new document requests since last seen ID
         Route::get('/documents/new', function (\Illuminate\Http\Request $request) {
-            $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
-            $newMobile = \App\Models\DocumentRequest::where('created_at', '>', $since)
+            $afterId = (int) $request->get('after_id', 0);
+            $newMobile = \App\Models\DocumentRequest::where('id', '>', $afterId)
                 ->where(function ($q) { $q->where('source', '!=', 'kiosk')->orWhereNull('source'); })
-                ->latest()->get();
-            $newKiosk = \App\Models\DocumentRequest::where('created_at', '>', $since)
-                ->where('source', 'kiosk')->latest()->get();
+                ->latest('id')->get();
+            $newKiosk = \App\Models\DocumentRequest::where('id', '>', $afterId)
+                ->where('source', 'kiosk')->latest('id')->get();
             $mobileHtml = '';
             foreach ($newMobile as $request2) {
                 $mobileHtml .= view('admin.documents._row', ['request' => $request2, 'showVerify' => false])->render();
@@ -274,11 +274,14 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             foreach ($newKiosk as $request2) {
                 $kioskHtml .= view('admin.documents._row', ['request' => $request2, 'showVerify' => true])->render();
             }
+            $allNew = $newMobile->merge($newKiosk);
+            $latestId = $allNew->isNotEmpty() ? $allNew->max('id') : $afterId;
             return response()->json([
                 'mobile_html'  => $mobileHtml ?: null,
                 'mobile_count' => $newMobile->count(),
                 'kiosk_html'   => $kioskHtml ?: null,
                 'kiosk_count'  => $newKiosk->count(),
+                'latest_id'    => $latestId,
             ]);
         })->middleware('role:1,2,3')->name('admin.documents.new');
 
