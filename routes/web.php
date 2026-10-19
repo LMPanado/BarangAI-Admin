@@ -254,7 +254,10 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             foreach ($newFeedbacks as $item) {
                 $html .= view('admin.feedback._item', compact('item'))->render();
             }
-            return response()->json(['html' => $html ?: null, 'count' => $newFeedbacks->count()]);
+            $latestTs = $newFeedbacks->isNotEmpty()
+                ? $newFeedbacks->first()->created_at->timestamp
+                : $request->get('since', 0);
+            return response()->json(['html' => $html ?: null, 'count' => $newFeedbacks->count(), 'latest_ts' => $latestTs]);
         })->middleware('role:2,3')->name('admin.feedback.new');
 
         // AJAX: new document requests since timestamp

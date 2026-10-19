@@ -290,7 +290,9 @@ new Chart(document.getElementById('sentimentChart'), {
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
-            lastTs = Math.floor(Date.now() / 1000);
+            if (data.latest_ts) {
+                lastTs = data.latest_ts;
+            }
             if (data.html) {
                 var list = document.getElementById('feedback-list');
                 if (list) {
