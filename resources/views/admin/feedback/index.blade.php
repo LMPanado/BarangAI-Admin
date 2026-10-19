@@ -268,7 +268,7 @@ new Chart(document.getElementById('sentimentChart'), {
 <script>
 // AJAX real-time polling for new feedback
 (function () {
-    var lastTs = Math.floor(Date.now() / 1000);
+    var lastTs = {{ \App\Models\Feedback::latest()->first()?->created_at?->timestamp ?? now()->timestamp }};
     var toastTimeout;
 
     function showToast(msg) {
@@ -291,7 +291,7 @@ new Chart(document.getElementById('sentimentChart'), {
         .then(function (r) { return r.json(); })
         .then(function (data) {
             if (data.latest_ts) {
-                lastTs = data.latest_ts;
+                lastTs = data.latest_ts + 1;
             }
             if (data.html) {
                 var list = document.getElementById('feedback-list');
