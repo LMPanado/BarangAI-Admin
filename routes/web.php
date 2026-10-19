@@ -246,18 +246,16 @@ Route::middleware([\App\Http\Middleware\PreventBackHistory::class])->group(funct
             return response()->json(['open_html' => $html, 'open_count' => $newComplaints->count()]);
         })->middleware('role:1,2')->name('admin.complaints.new');
 
-        // AJAX: new feedback since timestamp
+        // AJAX: new feedback since last seen ID
         Route::get('/feedback/new', function (\Illuminate\Http\Request $request) {
-            $since = \Carbon\Carbon::createFromTimestamp($request->get('since', 0));
-            $newFeedbacks = \App\Models\Feedback::where('created_at', '>', $since)->latest()->get();
+            $afterId = (int) $request->get('after_id', 0);
+            $newFeedbacks = \App\Models\Feedback::where('id', '>', $afterId)->latest('id')->get();
             $html = '';
             foreach ($newFeedbacks as $item) {
                 $html .= view('admin.feedback._item', compact('item'))->render();
             }
-            $latestTs = $newFeedbacks->isNotEmpty()
-                ? $newFeedbacks->first()->created_at->timestamp
-                : $request->get('since', 0);
-            return response()->json(['html' => $html ?: null, 'count' => $newFeedbacks->count(), 'latest_ts' => $latestTs]);
+            $latestId = $newFeedbacks->isNotEmpty() ? $newFeedbacks->first()->id : $afterId;
+            return response()->json(['html' => $html ?: null, 'count' => $newFeedbacks->count(), 'latest_id' => $latestId]);
         })->middleware('role:2,3')->name('admin.feedback.new');
 
         // AJAX: new document requests since timestamp
